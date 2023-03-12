@@ -6,8 +6,8 @@ namespace levels::arena
     Arena::Arena()
     {
 
-        SDL_Surface *surface = IMG_Load("../data/stars.webp");
-        SDL_Texture *texture = SDL_CreateTextureFromSurface(gRenderer, surface);
+        SDL_Surface *surface = IMG_Load("data/stars.png");
+        texture = SDL_CreateTextureFromSurface(gRenderer, surface);
         SDL_FreeSurface(surface);
     }
     void Arena::handleEvent(const SDL_Event &event, Level &level)
@@ -22,6 +22,8 @@ namespace levels::arena
     }
     void Arena::renderArena()
     {
+        SDL_RenderClear(gRenderer);
         SDL_RenderCopy(gRenderer, texture, NULL, NULL);
+        SDL_RenderPresent(gRenderer);
     }
 }

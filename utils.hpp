@@ -1,6 +1,7 @@
 #pragma once
 
 #include "sdl.hpp"
+#include <iostream>
 
 namespace utils
 {
