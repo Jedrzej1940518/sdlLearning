@@ -2,20 +2,24 @@
 
 #include "../sdl.hpp"
 #include "../utils.hpp"
+#include "../object.hpp"
+#include "level.hpp"
 
-using namespace utils;
-
-namespace levels::arena
+namespace levels
 {
-    class Arena
+    class Arena: public Level
     {
         SDL_Texture *texture;
+        SDL_Rect viewport;
+        Object ship{"data/graphics/ships/scarab/scarab.png", {500, 500}, {0,0}, Direction::NONE, 1, {5,5}};
+        Object* controledObject{&ship};
 
     public:
         Arena();
-        void handleEvent(const SDL_Event &event, Level &level);
+        virtual void handleEvent(const SDL_Event &event, LevelType &levelType, bool& /**/) override;
 
     private:
-        void renderArena();
+        void moveViewport();
+        virtual void render() override;
     };
 }

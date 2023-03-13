@@ -2,24 +2,21 @@
 #include "../sdl.hpp"
 #include "menu.hpp"
 
-using namespace utils;
-
-namespace levels::menu
+namespace levels
 {
-    Button Menu::newGameButton{"New Game", {100, 10, 100, 50}};
-    Button Menu::quitButton{"Quit", {100, 110, 100, 50}};
-
-    void Menu::handleEvent(const SDL_Event &event, Level &level, bool &quit)
+    Menu::Menu() : newGameButton{"New Game", {100, 10, 100, 50}}, quitButton{"Quit", {100, 110, 100, 50}}
     {
-        renderMenu();
+    }
 
+    void Menu::handleEvent(const SDL_Event &event, LevelType &levelType, bool &quit)
+    {
         if (event.type == SDL_MOUSEBUTTONDOWN)
         {
             SDL_Point p;
             SDL_GetMouseState(&p.x, &p.y);
             if (newGameButton.isInside(p))
             {
-                level = Level::ARENA;
+                levelType = LevelType::ARENA;
             }
             else if (quitButton.isInside(p))
             {
@@ -28,7 +25,7 @@ namespace levels::menu
         }
     }
 
-    void Menu::renderMenu()
+    void Menu::render()
     {
         SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 255);
         SDL_RenderClear(gRenderer);

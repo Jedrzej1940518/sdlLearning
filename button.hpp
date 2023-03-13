@@ -5,7 +5,6 @@
 #include <string>
 
 using namespace std;
-using namespace utils;
 
 class Button
 {
@@ -15,10 +14,6 @@ class Button
     string text;
     int textW;
     int textH;
-    bool init{false};
-
-    void initButton();
-
 public:
     void renderButton();
     bool isInside(const SDL_Point &p);

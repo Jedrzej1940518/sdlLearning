@@ -1,19 +1,29 @@
 #include "sdl.hpp"
-#include "eventHandling.hpp"
+#include "gameState.hpp"
+#include "clock.hpp"
+
 
 int main()
 {
-    sdl::initSdl();
+    constexpr uint32_t fps{30};
+    
+    initSdl();
 
     bool quit{false};
+    GameState gameState{};
+    Clock clock{fps};
+    
     SDL_Event event;
 
     while (not quit)
     {
+        clock.tick();
         while (SDL_PollEvent(&event))
         {
-            eventHandling::handleEvent(event, quit);
+            gameState.handleEvent(event, quit);
         }
+        gameState.render();
+        clock.tock();
     }
-    sdl::cleanSdl();
+    cleanSdl();
 }

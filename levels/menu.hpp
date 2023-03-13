@@ -1,20 +1,21 @@
 #pragma once
-
+#include "level.hpp"
 #include "../utils.hpp"
 #include "../button.hpp"
 
-namespace levels::menu
+namespace levels
 {
-    class Menu
+    class Menu: public Level
     {
-        static Button newGameButton;
-        static Button quitButton;
+        Button newGameButton;
+        Button quitButton;
 
     public:
-        void handleEvent(const SDL_Event &event, utils::Level &level, bool &quit);
-        Menu(){}
+        Menu();
+        virtual void handleEvent(const SDL_Event &event, LevelType &levelType, bool &quit) override;
+
     private:
-        void renderMenu();
+        virtual void render() override;
     };
 
 }
