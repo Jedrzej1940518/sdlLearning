@@ -1,4 +1,5 @@
 #include "object.hpp"
+#include <SDL2/SDL_rect.h>
 
 SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b)
 {
@@ -15,34 +16,25 @@ SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b)
     return res;
 }
 
-Object::Object(string texturePath, SDL_Point position) : Object(texturePath, position, {0, 0}, Direction::NONE, 0, {0, 0})
+Object::Object(string texturePath, SDL_Point position)
+    : Object(texturePath, Body{position, {0, 0}, {0, 0}, 0, Direction::NONE})
 {
 }
-Object::Object(string texturePath, SDL_Point position, Vector2d speed, Direction accelerationDirection, double acceleration, Vector2d maxSpeed) : speed{speed},
-                                                                                                                                                  direction{accelerationDirection},
-                                                                                                                                                  acceleration{acceleration},
-                                                                                                                                                  maxSpeed{maxSpeed}
+Object::Object(string texturePath, Body body) : body{body}
 {
     texture = loadTexture(texturePath);
     int width, height;
     SDL_QueryTexture(texture, NULL, NULL, &width, &height);
 
-    setPosition(dstrect, position);
+    setPosition(dstrect, body.getPosition());
 
     dstrect.w = width;
     dstrect.h = height;
 }
 void Object::frameUpdate(SDL_Rect viewport)
 {
-    if (isMoving(direction))
-    {
-        speed = calculateSpeed(speed, maxSpeed, acceleration, direction);
-        SDL_Point oldPosition{dstrect.x, dstrect.y};
-        SDL_Point newPosition = calculatePosition(speed, oldPosition);
-        dstrect.x = newPosition.x;
-        dstrect.y = newPosition.y;
-        printObject();
-    }
+    body.frameUpdate();
+    setPosition(dstrect, body.getPosition());
     renderObject(viewport);
 }
 void Object::renderObject(SDL_Rect viewport)
@@ -54,17 +46,4 @@ void Object::renderObject(SDL_Rect viewport)
     SDL_Rect dest = normalizedIntersection(viewport, dstrect);
 
     SDL_RenderCopy(gRenderer, texture, &src, &dest);
-}
-void Object::accelerate(Direction accelerationDirection)
-{
-    direction = accelerationDirection;
-}
-
-void Object::printObject() const
-{
-    printf(
-        "Position {%i, %i}, Speed {%i, %i}, Acceleration {%f},"\
-        "Direction { %s }\n ",
-        dstrect.x,
-        dstrect.y, speed.x, speed.y, acceleration, directionToString(direction).c_str());
 }

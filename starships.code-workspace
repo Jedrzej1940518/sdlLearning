@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"clangd.path": "/usr/bin/clangd",
+		"clangd.arguments": [
+			"-log=verbose",
+			"-pretty",
+			"--background-index",
+		],
+		"clang-format.style": "Microsoft"
+	}
+}

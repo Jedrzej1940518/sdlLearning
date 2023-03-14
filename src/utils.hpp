@@ -3,8 +3,6 @@
 #include "sdl.hpp"
 #include <iostream>
 
-using Vector2d = SDL_Point;
-
 extern const uint16_t WINDOW_HEIGHT;
 extern const uint16_t WINDOW_WIDTH;
 
@@ -19,20 +17,6 @@ enum class LevelType
     MENU,
     ARENA
 };
-enum class Direction
-{
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    NONE
-};
 
-void printRectangle(SDL_Rect r);
-string directionToString(Direction dir);
-
-Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, Direction accelerationDirection);
-SDL_Point calculatePosition(Vector2d speed, SDL_Point oldPosition);
-void setPosition(SDL_Rect &r, SDL_Point p);
-Direction getDirectionFromSdl(SDL_Keycode keyCode);
-bool isMoving(Direction direction);
+void printRectangle(SDL_Rect rectangle);
+void printPoint(SDL_Point point);

@@ -1,25 +1,27 @@
 #pragma once
 
+#include "../object.hpp"
+#include "../physics/body.hpp"
 #include "../sdl.hpp"
 #include "../utils.hpp"
-#include "../object.hpp"
 #include "level.hpp"
 
 namespace levels
 {
-    class Arena: public Level
-    {
-        SDL_Texture *texture;
-        SDL_Rect viewport;
-        Object ship{"../data/graphics/ships/scarab.png", {500, 500}, {0,0}, Direction::NONE, 1, {5,5}};
-        Object* controledObject{&ship};
+class Arena : public Level
+{
+    SDL_Texture *texture;
+    SDL_Rect viewport;
+    Object ship{"../data/graphics/ships/scarab.png", physics::Body{{500, 500}, {0, 0}, {5, 5}, 1, Direction::NONE}};
 
-    public:
-        Arena();
-        virtual void handleEvent(const SDL_Event &event, LevelType &levelType, bool& /**/) override;
+    Object *controledObject{&ship};
 
-    private:
-        void moveViewport();
-        virtual void render() override;
-    };
-}
+  public:
+    Arena();
+    virtual void handleEvent(const SDL_Event &event, LevelType &levelType, bool & /**/) override;
+
+  private:
+    void moveViewport();
+    virtual void render() override;
+};
+} // namespace levels
