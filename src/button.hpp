@@ -8,10 +8,10 @@ using namespace std;
 
 class Button
 {
-    SDL_Rect position;
-    SDL_Color textColor{0, 0, 0};
-    SDL_Texture *texture;
     string text;
+    SDL_Rect position;
+    SDL_Color textColor{0, 0, 0, 0};
+    SDL_Texture *texture;
     int textW;
     int textH;
 public:

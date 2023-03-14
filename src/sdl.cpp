@@ -10,7 +10,9 @@ void initSdl()
 
     TTF_Init();
 
-    gFont = TTF_OpenFont("data/TiltNeon-Regular.ttf", 20);
+    gFont = TTF_OpenFont("../data/graphics/fonts/TiltNeon-Regular.ttf", 20);
+    if(!gFont)
+        cerr<<"Error opening font!"<<endl;
 }
 void cleanSdl()
 {

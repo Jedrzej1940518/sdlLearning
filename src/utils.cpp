@@ -31,6 +31,8 @@ string directionToString(Direction dir)
 
     case Direction::NONE:
         return "None";
+    default:
+        return "";
     }
 }
 
@@ -63,6 +65,8 @@ Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, 
         break;
     case Direction::LEFT:
         speed.x = addIfNotMin(speed.x, -acceleration, -maxSpeed.x);
+        break;
+    case Direction::NONE:
         break;
     }
     return speed;

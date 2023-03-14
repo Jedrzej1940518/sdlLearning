@@ -11,7 +11,7 @@ namespace levels
     {
         SDL_Texture *texture;
         SDL_Rect viewport;
-        Object ship{"data/graphics/ships/scarab/scarab.png", {500, 500}, {0,0}, Direction::NONE, 1, {5,5}};
+        Object ship{"../data/graphics/ships/scarab.png", {500, 500}, {0,0}, Direction::NONE, 1, {5,5}};
         Object* controledObject{&ship};
 
     public:

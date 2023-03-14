@@ -4,6 +4,10 @@
 Button::Button(string text, SDL_Rect position) : text{text}, position{position}
 {
     SDL_Surface *textSurface = TTF_RenderText_Blended(gFont, text.c_str(), textColor);
+
+    if (!textSurface)
+        cerr<<"Error loading font!"<<endl;
+
     textW = textSurface->w;
     textH = textSurface->h;
 

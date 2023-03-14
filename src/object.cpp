@@ -64,7 +64,7 @@ void Object::printObject() const
 {
     printf(
         "Position {%i, %i}, Speed {%i, %i}, Acceleration {%f},"\
-        "Direction { % s }\n ",
+        "Direction { %s }\n ",
         dstrect.x,
         dstrect.y, speed.x, speed.y, acceleration, directionToString(direction).c_str());
 }

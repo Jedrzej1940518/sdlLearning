@@ -7,11 +7,10 @@ class Object
 {
     SDL_Texture *texture;
     SDL_Rect dstrect;
-
-    Vector2d speed;
-    Vector2d maxSpeed;
+   Vector2d speed;
     Direction direction;
     double acceleration;
+    Vector2d maxSpeed;
 
 public:
     Object(string texturePath, SDL_Point position);

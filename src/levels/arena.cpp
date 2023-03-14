@@ -11,7 +11,7 @@ namespace levels
         viewport.x = 0;
         viewport.y = 0;
 
-        const string path = "data/graphics/backgrounds/background3.jpg";
+        const string path = "../data/graphics/backgrounds/background3.jpg";
         texture = loadTexture(path);
     }
 
@@ -36,7 +36,7 @@ namespace levels
 
     void Arena::render()
     {
-        static Object asteroid{"data/graphics/asteroids/asteroid_big02.png", {1200, 1200}};
+        static Object asteroid{"../data/graphics/asteroids/asteroid_big02.png", {1200, 1200}};
 
         moveViewport();
         SDL_RenderClear(gRenderer);
