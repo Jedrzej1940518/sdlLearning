@@ -3,12 +3,13 @@ set(SOURCES
     gameState.cpp
     sdl.cpp
     utils.cpp
-    button.cpp
-    object.cpp
-    levels/menu.cpp
-    levels/arena.cpp
     physics/physics.cpp
     physics/body.cpp
+    rendering/button.cpp
+    rendering/controllableObject.cpp
+    rendering/object.cpp
+    levels/menu.cpp
+    levels/arena.cpp
 )
 
 add_executable(starships ${SOURCES})

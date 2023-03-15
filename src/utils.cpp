@@ -18,3 +18,8 @@ void printPoint(SDL_Point point)
 {
     printf("x = %i, y = %i\n", point.x, point.y);
 }
+
+string boolToString(bool b)
+{
+    return b ? "true" : "false";
+}

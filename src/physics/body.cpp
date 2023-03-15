@@ -5,29 +5,50 @@
 namespace physics
 {
 
-Body::Body() : Body{{0, 0}, {0, 0}, {0, 0}, 0, Direction::NONE}
+Body::Body(Vector2d speed, Vector2d maxSpeed, double acceleration)
+    : speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}
 {
-}
-
-Body::Body(SDL_Point position, Vector2d speed, Vector2d maxSpeed, double acceleration, Direction accelerationDirection)
-    : position{position}, speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}, accelerationDirection{
-                                                                                            accelerationDirection}
-{
+    for (auto &b : accelerationDirections)
+        b = false;
 }
 
 void Body::frameUpdate()
 {
-    if (isAccelerating(accelerationDirection))
+    for (int i = 0; i < directionNumber; ++i)
     {
-        speed = calculateSpeed(speed, maxSpeed, acceleration, accelerationDirection);
-        accelerationDirection = Direction::NONE;
+        if (accelerationDirections[i])
+        {
+            Direction dir = static_cast<Direction>(i);
+            speed = calculateSpeed(speed, maxSpeed, acceleration, dir);
+        }
     }
-    if (isMoving(speed))
-        position = calculatePosition(position, speed);
 }
 void Body::accelerate(Direction direction)
 {
-    accelerationDirection = direction;
+    accelerationDirections[static_cast<int>(direction)] = true;
 }
-
+void Body::deaccelerate(Direction direction)
+{
+    accelerationDirections[static_cast<int>(direction)] = false;
+}
+std::string Body::printDirections() const
+{
+    string s{"Directions "};
+    for (int i = 0; i < directionNumber; ++i)
+    {
+        s += directionToString(static_cast<Direction>(i));
+        s += ": ";
+        s += boolToString(accelerationDirections[i]);
+        s += ", ";
+    }
+    return s;
+}
+void Body::printBody() const
+{
+    printf("Speed {%f, %f}, %s\n", speed.x, speed.y, printDirections().c_str());
+}
+Vector2d Body::getSpeed() const
+{
+    return speed;
+}
 } // namespace physics

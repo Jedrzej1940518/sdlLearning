@@ -1,36 +1,28 @@
 #pragma once
 
 #include "physics.hpp"
-#include <SDL2/SDL_rect.h>
+#include <array>
 
 namespace physics
 {
 
 class Body
 {
-
-    SDL_Point position;
-
     Vector2d speed;
     Vector2d maxSpeed;
     double acceleration;
-    Direction accelerationDirection;
+    std::array<bool, directionNumber> accelerationDirections;
 
   public:
-    Body();
-    Body(SDL_Point position, Vector2d speed, Vector2d maxSpeed, double acceleration, Direction accelerationDirection);
+    Body(Vector2d speed, Vector2d maxSpeed, double acceleration);
 
     void accelerate(Direction direction);
+    void deaccelerate(Direction direction);
     void frameUpdate();
 
-    SDL_Point getPosition() const
-    {
-        return position;
-    }
-    void printBody() const
-    {
-        printf("Position {%i, %i}, Speed {%i, %i}, Direction {%s}\n", position.x, position.y, speed.x, speed.y,
-               directionToString(accelerationDirection).c_str());
-    }
+    Vector2d getSpeed() const;
+
+    string printDirections() const;
+    void printBody() const;
 };
 } // namespace physics

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../object.hpp"
 #include "../physics/body.hpp"
+#include "../rendering/controllableObject.hpp"
 #include "../sdl.hpp"
 #include "../utils.hpp"
 #include "level.hpp"
@@ -12,9 +12,9 @@ class Arena : public Level
 {
     SDL_Texture *texture;
     SDL_Rect viewport;
-    Object ship{"../data/graphics/ships/scarab.png", physics::Body{{500, 500}, {0, 0}, {5, 5}, 1, Direction::NONE}};
-
-    Object *controledObject{&ship};
+    rendering::ControllableObject ship{
+        "../data/graphics/ships/scarab.png", {500, 500, 100, 100}, physics::Body{{0, 0}, {10, 10}, 1}};
+    rendering::ControllableObject *controledObject{&ship};
 
   public:
     Arena();

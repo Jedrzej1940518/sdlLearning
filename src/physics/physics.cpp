@@ -34,11 +34,11 @@ bool isMoving(Vector2d speed)
     return speed.x != 0 || speed.y != 0;
 }
 
-int addIfNotMax(int a, double b, int max)
+double addIfNotMax(double a, double b, double max)
 {
     return a + b > max ? max : a + b;
 }
-int addIfNotMin(int a, double b, int min)
+double addIfNotMin(double a, double b, double min)
 {
     return a + b < min ? min : a + b;
 }
@@ -66,7 +66,7 @@ Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, 
 }
 SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset)
 {
-    return {oldPosition.x + offset.x, oldPosition.y + offset.y};
+    return {static_cast<int>(oldPosition.x + offset.x), static_cast<int>(oldPosition.y + offset.y)};
 }
 void setPosition(SDL_Rect &r, SDL_Point p)
 {
@@ -89,4 +89,28 @@ Direction getDirectionFromSdl(SDL_Keycode keyCode)
     default:
         return Direction::NONE;
     }
+}
+
+SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b)
+{
+    int x = a.x;
+    int y = a.y;
+
+    a.x = 0;
+    a.y = 0;
+    b.x -= x;
+    b.y -= y;
+
+    SDL_Rect res;
+    SDL_IntersectRect(&a, &b, &res);
+    return res;
+}
+
+Vector2d Vector2d::operator+(const Vector2d &rhs)
+{
+    return Vector2d{x * rhs.x, y * rhs.y};
+}
+Vector2d Vector2d::operator*(double factor)
+{
+    return Vector2d{x * factor, y * factor};
 }

@@ -1,10 +1,13 @@
 #pragma once
 
-#include "sdl.hpp"
-#include "utils.hpp"
+#include "../sdl.hpp"
+#include "../utils.hpp"
 #include <string>
 
 using namespace std;
+
+namespace rendering
+{
 
 class Button
 {
@@ -14,8 +17,10 @@ class Button
     SDL_Texture *texture;
     int textW;
     int textH;
-public:
+
+  public:
     void renderButton();
     bool isInside(const SDL_Point &p);
     Button(string text, SDL_Rect position);
 };
+} // namespace rendering

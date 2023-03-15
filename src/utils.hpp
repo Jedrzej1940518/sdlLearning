@@ -20,3 +20,4 @@ enum class LevelType
 
 void printRectangle(SDL_Rect rectangle);
 void printPoint(SDL_Point point);
+string boolToString(bool b);

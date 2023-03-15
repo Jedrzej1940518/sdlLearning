@@ -1,5 +1,4 @@
 #include "arena.hpp"
-#include "../object.hpp"
 
 namespace levels
 {
@@ -25,28 +24,36 @@ void Arena::handleEvent(const SDL_Event &event, LevelType &levelType, bool & /**
     {
         controledObject->getBody().accelerate(getDirectionFromSdl(event.key.keysym.sym));
     }
+    else if (event.type == SDL_KEYUP)
+    {
+        controledObject->getBody().deaccelerate(getDirectionFromSdl(event.key.keysym.sym));
+    }
 }
 void Arena::moveViewport()
 {
-    auto &body = controledObject->getBody();
-    auto pos = body.getPosition();
+    int x = controledObject->getX();
+    int y = controledObject->getY();
     int w = controledObject->getWidth();
     int h = controledObject->getHeight();
+    Vector2d offset{static_cast<double>(-WINDOW_WIDTH / 2. + w / 2.),
+                    static_cast<double>(-WINDOW_HEIGHT / 2. + h / 2.)};
 
-    auto screenCenter = calculatePosition(pos, {-WINDOW_WIDTH / 2 + w / 2, -WINDOW_HEIGHT / 2 + h / 2});
+    auto screenCenter = calculatePosition({x, y}, offset);
     setPosition(viewport, screenCenter);
     controledObject->getBody().printBody();
 }
 
 void Arena::render()
 {
-    static Object asteroid{"../data/graphics/asteroids/asteroid_big02.png", {800, 800}};
+    static rendering::Object asteroid{"../data/graphics/asteroids/asteroid_big02.png", {800, 800, 200, 200}};
 
+    ship.frameUpdate();
     moveViewport();
+
     SDL_RenderClear(gRenderer);
     SDL_RenderCopy(gRenderer, texture, NULL, NULL);
-    ship.frameUpdate(viewport);
-    asteroid.frameUpdate(viewport);
+    ship.renderObject(viewport);
+    asteroid.renderObject(viewport);
     SDL_RenderPresent(gRenderer);
 }
 } // namespace levels
