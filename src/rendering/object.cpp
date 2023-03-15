@@ -34,12 +34,6 @@ void Object::renderObject(SDL_Rect viewport)
     SDL_Rect src = normalizedIntersection(dstrect, viewport);
     SDL_Rect dest = normalizedIntersection(viewport, dstrect);
 
-    if (dstrect.w > 100)
-    {
-        printRectangle(src);
-        printRectangle(dest);
-        printRectangle(viewport);
-    }
     SDL_RenderCopy(gRenderer, texture, &src, &dest);
 }
 
