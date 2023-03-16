@@ -16,7 +16,7 @@ class ControllableObject : public Object
     Body body;
 
   public:
-    ControllableObject(string texturePath, SDL_Rect dstrect, Body body);
+    ControllableObject(string texturePath, Body body);
 
     void frameUpdate();
 

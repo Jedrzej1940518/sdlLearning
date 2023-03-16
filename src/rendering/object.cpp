@@ -6,8 +6,7 @@
 namespace rendering
 {
 
-Object::Object(string texturePath, SDL_Rect dstrect, double parallaxFactor)
-    : dstrect{dstrect}, parallaxFactor{parallaxFactor}
+Object::Object(string texturePath, SDL_Point position, double parallaxFactor) : parallaxFactor{parallaxFactor}
 {
     texture = loadTexture(texturePath);
 
@@ -15,8 +14,7 @@ Object::Object(string texturePath, SDL_Rect dstrect, double parallaxFactor)
     int height = 0;
     SDL_QueryTexture(texture, NULL, NULL, &width, &height);
 
-    this->dstrect.w = width;
-    this->dstrect.h = height;
+    dstrect = {position.x, position.y, width, height};
 }
 
 void Object::frameUpdate(Vector2d offset)

@@ -5,8 +5,8 @@
 namespace physics
 {
 
-Body::Body(Vector2d speed, Vector2d maxSpeed, double acceleration)
-    : speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}
+Body::Body(Vector2d position, Vector2d speed, Vector2d maxSpeed, double acceleration)
+    : position{position}, speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}
 {
     for (auto &b : accelerationDirections)
         b = false;
@@ -50,5 +50,9 @@ void Body::printBody() const
 Vector2d Body::getSpeed() const
 {
     return speed;
+}
+Vector2d Body::getPosition() const
+{
+    return position;
 }
 } // namespace physics

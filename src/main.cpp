@@ -1,18 +1,17 @@
-#include "sdl.hpp"
-#include "gameState.hpp"
 #include "clock.hpp"
-
+#include "gameState.hpp"
+#include "sdl.hpp"
 
 int main()
 {
-    constexpr uint32_t fps{30};
-    
+    constexpr uint32_t fps{60};
+
     initSdl();
 
     bool quit{false};
     GameState gameState{};
     Clock clock{fps};
-    
+
     SDL_Event event;
 
     while (not quit)

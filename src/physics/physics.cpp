@@ -64,10 +64,21 @@ Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, 
     }
     return speed;
 }
+Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset)
+{
+    return {oldPosition.x + offset.x, oldPosition.y + offset.y};
+}
+
 SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset)
 {
     return {static_cast<int>(oldPosition.x + offset.x), static_cast<int>(oldPosition.y + offset.y)};
 }
+
+SDL_Point vectorToPoint(Vector2d vector2d)
+{
+    return {static_cast<int>(vector2d.x), static_cast<int>(vector2d.y)};
+}
+
 void setPosition(SDL_Rect &r, SDL_Point p)
 {
     r.x = p.x;

@@ -38,14 +38,14 @@ void Arena::moveViewport()
     Vector2d offset{static_cast<double>(-WINDOW_WIDTH / 2. + w / 2.),
                     static_cast<double>(-WINDOW_HEIGHT / 2. + h / 2.)};
 
-    auto screenCenter = calculatePosition({x, y}, offset);
+    SDL_Point screenCenter = calculatePosition(SDL_Point{x, y}, offset);
     setPosition(viewport, screenCenter);
     controledObject->getBody().printBody();
 }
 
 void Arena::render()
 {
-    static rendering::Object asteroid{"../data/graphics/asteroids/asteroid_big02.png", {800, 800, 200, 200}};
+    static rendering::Object asteroid{"../data/graphics/asteroids/asteroid_big02.png", {800, 800}};
 
     ship.frameUpdate();
     background.frameUpdate(controledObject->getBody().getSpeed());

@@ -17,7 +17,7 @@ class Object
     double parallaxFactor;
 
   public:
-    Object(string texturePath, SDL_Rect dstrect, double parallaxFactor = 1.0);
+    Object(string texturePath, SDL_Point position, double parallaxFactor = 1.0);
 
     void printPosition() const;
 

@@ -4,8 +4,8 @@
 namespace rendering
 {
 
-ControllableObject::ControllableObject(string texturePath, SDL_Rect dstrect, Body body)
-    : Object{texturePath, dstrect}, body{body}
+ControllableObject::ControllableObject(string texturePath, Body body)
+    : Object{texturePath, vectorToPoint(body.getPosition())}, body{body}
 {
 }
 void ControllableObject::frameUpdate()

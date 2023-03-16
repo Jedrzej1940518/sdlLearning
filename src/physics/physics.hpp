@@ -29,7 +29,11 @@ bool isAccelerating(Direction accelerationDirection);
 bool isMoving(Vector2d speed);
 
 Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, Direction accelerationDirection);
+Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset);
 SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset);
+
+SDL_Point vectorToPoint(Vector2d vector2d);
+
 SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b);
 
 void setPosition(SDL_Rect &r, SDL_Point p);
