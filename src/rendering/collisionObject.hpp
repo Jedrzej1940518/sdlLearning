@@ -9,15 +9,22 @@
 
 namespace rendering
 {
-class ControllableObject : public Object
+struct Collison
+{
+    bool collided;
+    Vector2d speedSum;
+};
+class CollisionObject : public Object
 {
     using Body = physics::Body;
 
     Body body;
+    Collison collison;
 
   public:
-    ControllableObject(string texturePath, Body body);
+    CollisionObject(string texturePath, Body body);
 
+    bool collides(const CollisionObject &other);
     void frameUpdate();
 
     int getWidth() const;

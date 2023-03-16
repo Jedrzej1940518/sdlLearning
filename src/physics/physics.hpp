@@ -8,7 +8,9 @@ struct Vector2d
     double x;
     double y;
     Vector2d operator+(const Vector2d &rhs);
+    Vector2d operator-(const Vector2d &rhs);
     Vector2d operator*(double factor);
+    Vector2d operator-();
 };
 
 enum class Direction

@@ -119,9 +119,17 @@ SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b)
 
 Vector2d Vector2d::operator+(const Vector2d &rhs)
 {
-    return Vector2d{x * rhs.x, y * rhs.y};
+    return Vector2d{x + rhs.x, y + rhs.y};
+}
+Vector2d Vector2d::operator-(const Vector2d &rhs)
+{
+    return Vector2d{x - rhs.x, y - rhs.y};
 }
 Vector2d Vector2d::operator*(double factor)
 {
     return Vector2d{x * factor, y * factor};
+}
+Vector2d Vector2d::operator-()
+{
+    return Vector2d{-x, -y};
 }

@@ -6,7 +6,7 @@ set(SOURCES
     physics/physics.cpp
     physics/body.cpp
     rendering/button.cpp
-    rendering/controllableObject.cpp
+    rendering/collisionObject.cpp
     rendering/object.cpp
     levels/menu.cpp
     levels/arena.cpp

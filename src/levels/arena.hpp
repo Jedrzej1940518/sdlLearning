@@ -1,10 +1,11 @@
 #pragma once
 
 #include "../physics/body.hpp"
-#include "../rendering/controllableObject.hpp"
+#include "../rendering/collisionObject.hpp"
 #include "../sdl.hpp"
 #include "../utils.hpp"
 #include "level.hpp"
+#include <vector>
 
 namespace levels
 {
@@ -13,9 +14,9 @@ class Arena : public Level
     SDL_Texture *texture;
     SDL_Rect viewport;
     rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {0, 0}, 0.2};
-    rendering::ControllableObject ship{"../data/graphics/ships/scarab.png",
-                                       physics::Body{{500, 500}, {0, 0}, {10, 10}, 0.5}};
-    rendering::ControllableObject *controledObject{&ship};
+    rendering::CollisionObject ship{"../data/graphics/ships/scarab.png",
+                                    physics::Body{{500, 500}, {0, 0}, {10, 10}, 0.5}};
+    rendering::CollisionObject *controledObject{&ship};
 
   public:
     Arena();

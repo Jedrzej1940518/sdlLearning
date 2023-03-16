@@ -19,7 +19,8 @@ class Body
 
     void accelerate(Direction direction);
     void deaccelerate(Direction direction);
-    void frameUpdate();
+
+    void frameUpdate(bool &colided);
 
     Vector2d getSpeed() const;
     Vector2d getPosition() const;

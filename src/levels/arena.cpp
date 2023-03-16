@@ -9,9 +9,6 @@ Arena::Arena()
     viewport.w = WINDOW_WIDTH;
     viewport.x = 0;
     viewport.y = 0;
-
-    //    const string path = "../data/graphics/backgrounds/background3.jpg";
-    //    texture = loadTexture(path);
 }
 
 void Arena::handleEvent(const SDL_Event &event, LevelType &levelType, bool & /**/)
@@ -45,8 +42,9 @@ void Arena::moveViewport()
 
 void Arena::render()
 {
-    static rendering::Object asteroid{"../data/graphics/asteroids/asteroid_big02.png", {800, 800}};
-
+    static rendering::CollisionObject asteroid{"../data/graphics/asteroids/asteroid_big02.png",
+                                               {{800, 800}, {0, 0}, {0, 0}, 0}};
+    ship.collides(asteroid);
     ship.frameUpdate();
     background.frameUpdate(controledObject->getBody().getSpeed());
     moveViewport();

@@ -1,6 +1,7 @@
 
 #include "body.hpp"
 #include "physics.hpp"
+#include <SDL2/SDL_rect.h>
 
 namespace physics
 {
@@ -12,8 +13,14 @@ Body::Body(Vector2d position, Vector2d speed, Vector2d maxSpeed, double accelera
         b = false;
 }
 
-void Body::frameUpdate()
+void Body::frameUpdate(bool &colided)
 {
+    if (colided)
+    {
+        speed = -speed;
+        colided = false;
+        return;
+    }
     for (int i = 0; i < directionNumber; ++i)
     {
         if (accelerationDirections[i])
@@ -31,6 +38,7 @@ void Body::deaccelerate(Direction direction)
 {
     accelerationDirections[static_cast<int>(direction)] = false;
 }
+
 std::string Body::printDirections() const
 {
     string s{"Directions "};
