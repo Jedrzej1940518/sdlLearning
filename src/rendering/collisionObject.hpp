@@ -9,26 +9,26 @@
 
 namespace rendering
 {
-struct Collison
-{
-    bool collided;
-    Vector2d speedSum;
-};
 class CollisionObject : public Object
 {
     using Body = physics::Body;
 
     Body body;
-    Collison collison;
+    physics::CollisionParams collisionParams;
+    GridPosition gridPosition;
 
   public:
-    CollisionObject(string texturePath, Body body);
+    CollisionObject(string &&texturePath, string &&id, Body body);
+    static void collisionCheck(CollisionObject &a, CollisionObject &b);
 
-    bool collides(const CollisionObject &other);
     void frameUpdate();
+
+    void printGridPosition() const;
+    void printSpeed() const;
 
     int getWidth() const;
     int getHeight() const;
+    GridPosition &getGridPosition();
     Body &getBody();
 };
 } // namespace rendering

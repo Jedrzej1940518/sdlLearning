@@ -13,6 +13,13 @@ struct Vector2d
     Vector2d operator-();
 };
 
+struct GridPosition
+{
+    int row;
+    int column;
+    int index;
+};
+
 enum class Direction
 {
     UP,

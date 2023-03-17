@@ -1,7 +1,7 @@
 #include "utils.hpp"
 
-const uint16_t WINDOW_HEIGHT = 1024;
-const uint16_t WINDOW_WIDTH = 1024;
+const uint WINDOW_HEIGHT = 1024;
+const uint WINDOW_WIDTH = 1024;
 
 const double FRAME_RATE = 1000 / 10;
 

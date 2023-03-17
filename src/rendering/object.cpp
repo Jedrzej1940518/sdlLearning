@@ -6,7 +6,8 @@
 namespace rendering
 {
 
-Object::Object(string texturePath, SDL_Point position, double parallaxFactor) : parallaxFactor{parallaxFactor}
+Object::Object(string &&texturePath, SDL_Point position, string &&id, double parallaxFactor)
+    : id{id}, parallaxFactor{parallaxFactor}
 {
     texture = loadTexture(texturePath);
 
@@ -49,6 +50,6 @@ int Object::getX()
 }
 void Object::printPosition() const
 {
-    printf("Position {%u, %u}\n", dstrect.x, dstrect.y);
+    printf("[%s] Position {%u, %u}\n", id.c_str(), dstrect.x, dstrect.y);
 }
 } // namespace rendering

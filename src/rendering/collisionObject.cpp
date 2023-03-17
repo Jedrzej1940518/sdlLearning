@@ -5,23 +5,24 @@
 namespace rendering
 {
 
-CollisionObject::CollisionObject(string texturePath, Body body)
-    : Object{texturePath, vectorToPoint(body.getPosition())}, body{body}
+CollisionObject::CollisionObject(string &&texturePath, string &&id, Body body)
+    : Object{std::move(texturePath), vectorToPoint(body.getPosition()), std::move(id)}, body{body}, collisionParams{
+                                                                                                        false, {0, 0}}
 {
 }
 void CollisionObject::frameUpdate()
 {
-    body.frameUpdate(collison.collided);
+    body.frameUpdate(collisionParams);
     Object::frameUpdate(body.getSpeed());
 }
-bool CollisionObject::collides(const CollisionObject &other)
-{
-    if (not SDL_HasIntersection(&dstrect, &other.dstrect))
-        return false;
 
-    collison.speedSum = body.getSpeed() - other.body.getSpeed();
-    collison.collided = true;
-    return true;
+void CollisionObject::collisionCheck(CollisionObject &a, CollisionObject &b)
+{
+    if (not SDL_HasIntersection(&a.dstrect, &b.dstrect) || &a == &b)
+        return;
+
+    a.collisionParams = {true, b.body.getSpeed()};
+    b.collisionParams = {true, a.body.getSpeed()};
 }
 
 int CollisionObject::getWidth() const
@@ -35,5 +36,18 @@ int CollisionObject::getHeight() const
 CollisionObject::Body &CollisionObject::getBody()
 {
     return body;
+}
+GridPosition &CollisionObject::getGridPosition()
+{
+    return gridPosition;
+}
+void CollisionObject::printSpeed() const
+{
+    printf("[%s] Speed {%f, %f}\n", id.c_str(), body.getSpeed().x, body.getSpeed().y);
+}
+void CollisionObject::printGridPosition() const
+{
+    auto &g = gridPosition;
+    printf("[%s] Grid [%i][%i][%i]\n", id.c_str(), g.row, g.column, g.index);
 }
 } // namespace rendering

@@ -5,7 +5,11 @@
 
 namespace physics
 {
-
+struct CollisionParams
+{
+    bool collided;
+    Vector2d opponentSpeed;
+};
 class Body
 {
     Vector2d position;
@@ -20,7 +24,7 @@ class Body
     void accelerate(Direction direction);
     void deaccelerate(Direction direction);
 
-    void frameUpdate(bool &colided);
+    void frameUpdate(CollisionParams &collisionParams);
 
     Vector2d getSpeed() const;
     Vector2d getPosition() const;

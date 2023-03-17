@@ -13,12 +13,12 @@ Body::Body(Vector2d position, Vector2d speed, Vector2d maxSpeed, double accelera
         b = false;
 }
 
-void Body::frameUpdate(bool &colided)
+void Body::frameUpdate(CollisionParams &collisionParams)
 {
-    if (colided)
+    if (collisionParams.collided)
     {
-        speed = -speed;
-        colided = false;
+        speed = collisionParams.opponentSpeed;
+        collisionParams.collided = false;
         return;
     }
     for (int i = 0; i < directionNumber; ++i)

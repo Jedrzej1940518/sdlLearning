@@ -4,11 +4,11 @@
 
 class Clock
 {
-    uint32_t frameRate;
-    uint32_t startTime{0};
+    uint frameRate;
+    uint startTime{0};
 
-public:
-    Clock(uint32_t framesPerSecond) : frameRate{static_cast<uint32_t>(1000. / framesPerSecond)}
+  public:
+    Clock(uint framesPerSecond) : frameRate{static_cast<uint>(1000. / framesPerSecond)}
     {
     }
     void tick()
@@ -17,7 +17,7 @@ public:
     }
     void tock()
     {
-        uint32_t elapsedTime = SDL_GetTicks() - startTime;
+        uint elapsedTime = SDL_GetTicks() - startTime;
         if (elapsedTime < frameRate)
         {
             SDL_Delay(frameRate - elapsedTime);

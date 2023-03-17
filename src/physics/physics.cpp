@@ -81,6 +81,12 @@ SDL_Point vectorToPoint(Vector2d vector2d)
 
 void setPosition(SDL_Rect &r, SDL_Point p)
 {
+    // TODO remove this ugly box
+    p.x = addIfNotMax(p.x, 0, 3000);
+    p.x = addIfNotMin(p.x, 0, 0);
+    p.y = addIfNotMax(p.y, 0, 3000);
+    p.y = addIfNotMin(p.y, 0, 0);
+    // TODO remove this is ugly box
     r.x = p.x;
     r.y = p.y;
 }

@@ -4,7 +4,7 @@
 
 int main()
 {
-    constexpr uint32_t fps{60};
+    constexpr uint fps{60};
 
     initSdl();
 

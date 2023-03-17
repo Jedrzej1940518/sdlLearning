@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../physics/body.hpp"
+#include "../physics/collisionModel.hpp"
 #include "../rendering/collisionObject.hpp"
 #include "../sdl.hpp"
 #include "../utils.hpp"
@@ -11,12 +12,16 @@ namespace levels
 {
 class Arena : public Level
 {
+    using CollisionObject = rendering::CollisionObject;
+
     SDL_Texture *texture;
     SDL_Rect viewport;
-    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {0, 0}, 0.2};
-    rendering::CollisionObject ship{"../data/graphics/ships/scarab.png",
-                                    physics::Body{{500, 500}, {0, 0}, {10, 10}, 0.5}};
-    rendering::CollisionObject *controledObject{&ship};
+    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {0, 0}, "background", 0.2};
+
+    CollisionObject *controledObject;
+
+    vector<CollisionObject> collidableObjects;
+    physics::CollisionModel<10000, 10000, 500> collisionModel;
 
   public:
     Arena();
