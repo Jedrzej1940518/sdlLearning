@@ -18,7 +18,7 @@ class CollisionObject : public Object
     GridPosition gridPosition;
 
   public:
-    CollisionObject(string &&texturePath, string &&id, Body body);
+    CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body);
     static void collisionCheck(CollisionObject &a, CollisionObject &b);
 
     void frameUpdate();

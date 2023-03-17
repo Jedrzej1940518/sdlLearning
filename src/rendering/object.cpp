@@ -6,21 +6,18 @@
 namespace rendering
 {
 
-Object::Object(string &&texturePath, SDL_Point position, string &&id, double parallaxFactor)
-    : id{id}, parallaxFactor{parallaxFactor}
+Object::Object(string &&texturePath, Vector2d &&position, string &&id, double parallaxFactor)
+    : position{position}, id{id}, parallaxFactor{parallaxFactor}
 {
     texture = loadTexture(texturePath);
 
-    int width = 0;
-    int height = 0;
-    SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+    SDL_QueryTexture(texture, NULL, NULL, &dstrect.w, &dstrect.h);
 
-    dstrect = {position.x, position.y, width, height};
+    setPosition(dstrect, position);
 }
 
 void Object::frameUpdate(Vector2d offset)
 {
-    SDL_Point position{dstrect.x, dstrect.y};
     position = calculatePosition(position, offset * parallaxFactor);
     setPosition(dstrect, position);
 }
@@ -50,6 +47,6 @@ int Object::getX()
 }
 void Object::printPosition() const
 {
-    printf("[%s] Position {%u, %u}\n", id.c_str(), dstrect.x, dstrect.y);
+    printf("[%s] Position {%u, %u}, W: {%i}, H:{%i}\n", id.c_str(), dstrect.x, dstrect.y, dstrect.w, dstrect.h);
 }
 } // namespace rendering

@@ -45,4 +45,5 @@ SDL_Point vectorToPoint(Vector2d vector2d);
 
 SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b);
 
-void setPosition(SDL_Rect &r, SDL_Point p);
+void setPosition(SDL_Rect &r, const SDL_Point &p);
+void setPosition(SDL_Rect &r, const Vector2d &v);

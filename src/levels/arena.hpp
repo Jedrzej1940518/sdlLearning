@@ -16,7 +16,7 @@ class Arena : public Level
 
     SDL_Texture *texture;
     SDL_Rect viewport;
-    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {0, 0}, "background", 0.2};
+    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {0, 0}, "background", 0.9};
 
     CollisionObject *controledObject;
 

@@ -14,11 +14,12 @@ class Object
   protected:
     SDL_Texture *texture;
     SDL_Rect dstrect;
+    Vector2d position;
     string id;
     double parallaxFactor;
 
   public:
-    Object(string &&texturePath, SDL_Point position, string &&id = "", double parallaxFactor = 1.0);
+    Object(string &&texturePath, Vector2d &&position, string &&id = "", double parallaxFactor = 1.0);
 
     void printPosition() const;
 

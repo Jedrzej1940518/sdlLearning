@@ -5,9 +5,8 @@
 namespace rendering
 {
 
-CollisionObject::CollisionObject(string &&texturePath, string &&id, Body body)
-    : Object{std::move(texturePath), vectorToPoint(body.getPosition()), std::move(id)}, body{body}, collisionParams{
-                                                                                                        false, {0, 0}}
+CollisionObject::CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body)
+    : Object{std::move(texturePath), std::move(position), std::move(id)}, body{body}, collisionParams{false, {0, 0}}
 {
 }
 void CollisionObject::frameUpdate()

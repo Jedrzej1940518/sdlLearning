@@ -1,4 +1,5 @@
 #include "physics.hpp"
+#include <algorithm>
 
 string directionToString(Direction dir)
 {
@@ -79,16 +80,20 @@ SDL_Point vectorToPoint(Vector2d vector2d)
     return {static_cast<int>(vector2d.x), static_cast<int>(vector2d.y)};
 }
 
-void setPosition(SDL_Rect &r, SDL_Point p)
+void setPosition(SDL_Rect &r, const SDL_Point &p)
 {
     // TODO remove this ugly box
-    p.x = addIfNotMax(p.x, 0, 3000);
-    p.x = addIfNotMin(p.x, 0, 0);
-    p.y = addIfNotMax(p.y, 0, 3000);
-    p.y = addIfNotMin(p.y, 0, 0);
-    // TODO remove this is ugly box
-    r.x = p.x;
-    r.y = p.y;
+    r.x = std::clamp(p.x, 0, 2048);
+    r.y = std::clamp(p.y, 0, 2048);
+    // TODO remove this ugly box
+}
+
+void setPosition(SDL_Rect &r, const Vector2d &v)
+{
+    // TODO remove this ugly box
+    r.x = static_cast<int>(std::clamp(v.x, 0.0, 2048.0));
+    r.y = static_cast<int>(std::clamp(v.y, 0.0, 2048.0));
+    // TODO remove this ugly box
 }
 
 Direction getDirectionFromSdl(SDL_Keycode keyCode)
