@@ -7,7 +7,7 @@ namespace rendering
 {
 
 CollisionObject::CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body)
-    : Object{std::move(texturePath), std::move(position), std::move(id)}, body{body}, collisionParams{false, {0, 0}}
+    : Object{std::move(texturePath), std::move(position), std::move(id)}, body{body}, collisionParams{false, {0, 0}, 0}
 {
 }
 void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
@@ -23,7 +23,7 @@ void CollisionObject::collisionCheck(CollisionObject &oth)
     if (not SDL_HasIntersection(&dstrect, &oth.dstrect) || this == &oth)
         return;
 
-    this->collisionParams = {true, oth.body.getSpeed()};
+    this->collisionParams = {true, oth.body.getSpeed(), oth.body.getMass()};
 }
 
 int CollisionObject::getWidth() const

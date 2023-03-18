@@ -76,7 +76,6 @@ class CollisionModel
     }
     void remove(CollisionObject &obj)
     {
-        debugPrint("Before removing");
         auto &g = obj.getGridPosition();
         auto lastIndex = static_cast<int>(grid[g.row][g.column].size()) - 1;
         auto &vec = grid[g.row][g.column];
@@ -85,12 +84,10 @@ class CollisionModel
         std::swap(vec[lastIndex], vec[g.index]);
 
         grid[g.row][g.column].pop_back();
-        debugPrint("After removing");
     }
 
     void emplace(CollisionObject *obj)
     {
-        debugPrint("Before emplacing");
         auto gp = calculateGridCoords(obj->getX(), obj->getY());
         int column = gp.column;
         int row = gp.row;
@@ -98,7 +95,6 @@ class CollisionModel
         grid[row][column].push_back(obj);
         int indx = static_cast<int>(grid[row][column].size()) - 1;
         obj->getGridPosition() = {row, column, indx};
-        debugPrint("After emplacing");
     }
 
     void recalculateGridPosition(CollisionObject &obj)

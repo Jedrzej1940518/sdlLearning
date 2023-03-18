@@ -20,7 +20,7 @@ class CollisionObject : public Object
     using CollisionModel = physics::CollisionModel;
 
     Body body;
-    physics::CollisionParams collisionParams;
+    CollisionParams collisionParams;
     GridPosition gridPosition;
 
   public:

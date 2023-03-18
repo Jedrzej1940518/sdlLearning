@@ -30,7 +30,12 @@ struct GridParams
     int mapHeight;
     int cellSide;
 };
-
+struct CollisionParams
+{
+    bool collided;
+    Vector2d speed;
+    uint mass;
+};
 enum class Direction
 {
     UP,
@@ -48,6 +53,8 @@ Direction getDirectionFromSdl(SDL_Keycode keyCode);
 bool isAccelerating(Direction accelerationDirection);
 bool isMoving(Vector2d speed);
 
+Vector2d clampVector(const Vector2d &speed, const Vector2d &maxSpeed);
+
 Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, Direction accelerationDirection);
 Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset);
 SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset);
@@ -55,6 +62,8 @@ SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset);
 void slowDown(Vector2d &speed, Vector2d &position, const GridParams &gridParams);
 
 SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b);
+
+void printVector(Vector2d &v);
 
 void setPosition(SDL_Rect &r, const SDL_Point &p);
 void setPosition(SDL_Rect &r, const Vector2d &v);

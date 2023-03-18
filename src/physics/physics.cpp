@@ -65,6 +65,11 @@ Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, 
     }
     return speed;
 }
+
+Vector2d clampVector(const Vector2d &speed, const Vector2d &maxSpeed)
+{
+    return {std::clamp(speed.x, -maxSpeed.x, maxSpeed.x), std::clamp(speed.y, -maxSpeed.y, maxSpeed.y)};
+}
 Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset)
 {
     return {oldPosition.x + offset.x, oldPosition.y + offset.y};
@@ -131,6 +136,11 @@ SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b)
     SDL_Rect res;
     SDL_IntersectRect(&a, &b, &res);
     return res;
+}
+
+void printVector(Vector2d &v)
+{
+    printf("[%f,%f]\n", v.x, v.y);
 }
 
 Vector2d Vector2d::operator+(const Vector2d &rhs)

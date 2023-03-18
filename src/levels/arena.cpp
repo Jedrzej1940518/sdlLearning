@@ -11,16 +11,16 @@ Arena::Arena()
     viewport.y = 0;
 
     collidableObjects.push_back(
-        {"../data/graphics/asteroids/asteroid_big02.png", "asteroid1", {5000, 5000}, physics::Body{{0, 0}, {1, 1}, 0}});
+        {"../data/graphics/asteroids/asteroid_big02.png", "asteroid1", {5000, 5000}, {500, {0, 0}, {2, 2}, 0}});
 
     collidableObjects.push_back(
-        {"../data/graphics/asteroids/asteroid_big02.png", "asteroid2", {5500, 5500}, physics::Body{{0, 0}, {1, 1}, 0}});
+        {"../data/graphics/asteroids/asteroid2.png", "asteroid2", {5500, 5500}, {100, {0, 0}, {2, 2}, 0}});
 
     collidableObjects.push_back(
-        {"../data/graphics/asteroids/asteroid_big02.png", "asteroid3", {4500, 4500}, physics::Body{{1, 1}, {1, 1}, 0}});
+        {"../data/graphics/asteroids/asteroid3.png", "asteroid3", {4500, 4500}, {200, {0, 0}, {2, 2}, 0}});
 
     collidableObjects.push_back(
-        {"../data/graphics/ships/scarab.png", "scarab", {4000, 4000}, physics::Body{{0, 0}, {10, 10}, 0.5}});
+        {"../data/graphics/ships/scarab.png", "scarab", {4000, 4000}, {100, {0, 0}, {10, 10}, 0.5}});
 
     controledObject = &collidableObjects.back();
 
@@ -62,13 +62,10 @@ void Arena::render()
     for (auto &object : collidableObjects)
     {
         object.frameUpdate(collisionModel);
-        object.printPosition();
-        object.printGridPosition();
     }
     collisionModel.checkCollisions();
 
     background.frameUpdate(controledObject->getBody().getSpeed());
-    background.printPosition();
     moveViewport();
 
     SDL_RenderClear(gRenderer);

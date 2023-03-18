@@ -6,21 +6,29 @@
 namespace physics
 {
 
-Body::Body(Vector2d speed, Vector2d maxSpeed, double acceleration)
-    : speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}
+Body::Body(uint mass, Vector2d speed, Vector2d maxSpeed, double acceleration)
+    : mass{mass}, speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}
 {
     for (auto &b : accelerationDirections)
         b = false;
 }
 
+void Body::handleColision(CollisionParams &cp)
+{
+    if (cp.collided)
+    {
+        auto s = speed * ((static_cast<double>(mass) - cp.mass) / (static_cast<double>(mass) + cp.mass));
+        auto s2 = cp.speed * ((cp.mass * 2.) / (static_cast<double>(mass) + cp.mass));
+
+        speed = s + s2;
+        cp.collided = false;
+    }
+}
+
 void Body::frameUpdate(CollisionParams &collisionParams)
 {
-    if (collisionParams.collided)
-    {
-        speed = collisionParams.opponentSpeed;
-        collisionParams.collided = false;
-        return;
-    }
+    handleColision(collisionParams);
+
     for (int i = 0; i < directionNumber; ++i)
     {
         if (accelerationDirections[i])
@@ -58,5 +66,9 @@ void Body::printBody() const
 Vector2d &Body::getSpeed()
 {
     return speed;
+}
+uint Body::getMass()
+{
+    return mass;
 }
 } // namespace physics
