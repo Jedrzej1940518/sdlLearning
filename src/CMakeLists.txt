@@ -9,6 +9,7 @@ set(SOURCES
     rendering/button.cpp
     rendering/collisionObject.cpp
     rendering/object.cpp
+    rendering/chatbox.cpp
     levels/menu.cpp
     levels/arena.cpp
 )

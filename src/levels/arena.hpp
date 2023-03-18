@@ -2,6 +2,7 @@
 
 #include "../physics/body.hpp"
 #include "../physics/collisionModel.hpp"
+#include "../rendering/chatbox.hpp"
 #include "../rendering/collisionObject.hpp"
 #include "../sdl.hpp"
 #include "../utils.hpp"
@@ -10,12 +11,14 @@
 
 namespace levels
 {
+
 class Arena : public Level
 {
     using CollisionObject = rendering::CollisionObject;
 
     SDL_Texture *texture;
     SDL_Rect viewport;
+    rendering::Chatbox chatbox;
     rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {3000, 3000}, "background", 0.8};
 
     CollisionObject *controledObject;

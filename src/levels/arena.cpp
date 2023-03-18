@@ -4,11 +4,20 @@ namespace levels
 {
 
 using namespace physics;
-
-Arena::Arena()
+SDL_Rect getChatboxRect()
 {
-    viewport.h = WINDOW_HEIGHT;
-    viewport.w = WINDOW_WIDTH;
+    int w = SCREEN_WIDTH / 2;
+    int h = SCREEN_HEIGHT / 4;
+    int x = SCREEN_WIDTH / 2 - w / 2;
+    int y = SCREEN_HEIGHT - h;
+
+    return {x, y, w, h};
+}
+
+Arena::Arena() : chatbox{gRenderer, getChatboxRect()}
+{
+    viewport.h = SCREEN_HEIGHT;
+    viewport.w = SCREEN_WIDTH;
     viewport.x = 0;
     viewport.y = 0;
 
@@ -51,8 +60,8 @@ void Arena::moveViewport()
     int y = controledObject->getY();
     int w = controledObject->getWidth();
     int h = controledObject->getHeight();
-    Vector2d offset{static_cast<double>(-(WINDOW_WIDTH / 2.) + w / 2.),
-                    static_cast<double>(-(WINDOW_HEIGHT / 2.) + h / 2.)};
+    Vector2d offset{static_cast<double>(-(SCREEN_WIDTH / 2.) + w / 2.),
+                    static_cast<double>(-(SCREEN_HEIGHT / 2.) + h / 2.)};
 
     SDL_Point screenCenter = calculatePosition(SDL_Point{x, y}, offset);
     setPosition(viewport, screenCenter);
@@ -76,7 +85,7 @@ void Arena::render()
 
     for (auto &object : collidableObjects)
         object.renderObject(viewport);
-
+    chatbox.render();
     SDL_RenderPresent(gRenderer);
 }
 } // namespace levels

@@ -3,8 +3,8 @@
 #include "sdl.hpp"
 #include <iostream>
 
-extern const uint WINDOW_HEIGHT;
-extern const uint WINDOW_WIDTH;
+extern const uint SCREEN_HEIGHT;
+extern const uint SCREEN_WIDTH;
 
 extern const double FRAME_RATE;
 
