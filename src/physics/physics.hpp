@@ -13,11 +13,22 @@ struct Vector2d
     Vector2d operator-();
 };
 
+struct GridCoords
+{
+    int row;
+    int column;
+};
 struct GridPosition
 {
     int row;
     int column;
     int index;
+};
+struct GridParams
+{
+    int mapWidth;
+    int mapHeight;
+    int cellSide;
 };
 
 enum class Direction
@@ -41,7 +52,7 @@ Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, 
 Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset);
 SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset);
 
-SDL_Point vectorToPoint(Vector2d vector2d);
+void slowDown(Vector2d &speed, Vector2d &position, const GridParams &gridParams);
 
 SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b);
 

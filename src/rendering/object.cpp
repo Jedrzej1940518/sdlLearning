@@ -41,6 +41,10 @@ int Object::getY()
 {
     return dstrect.y;
 }
+Vector2d &Object::getPosition()
+{
+    return position;
+}
 int Object::getX()
 {
     return dstrect.x;

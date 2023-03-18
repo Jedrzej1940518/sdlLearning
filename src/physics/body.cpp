@@ -55,7 +55,7 @@ void Body::printBody() const
 {
     printf("Speed {%f, %f}, %s\n", speed.x, speed.y, printDirections().c_str());
 }
-Vector2d Body::getSpeed() const
+Vector2d &Body::getSpeed()
 {
     return speed;
 }

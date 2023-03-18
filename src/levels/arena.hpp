@@ -16,12 +16,13 @@ class Arena : public Level
 
     SDL_Texture *texture;
     SDL_Rect viewport;
-    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {0, 0}, "background", 0.9};
+    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {3000, 3000}, "background", 0.8};
 
     CollisionObject *controledObject;
 
     vector<CollisionObject> collidableObjects;
-    physics::CollisionModel<10000, 10000, 500> collisionModel;
+    static constexpr GridParams gridParams{10000, 10000, 500};
+    physics::CollisionModel collisionModel{gridParams};
 
   public:
     Arena();

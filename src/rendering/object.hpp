@@ -28,6 +28,7 @@ class Object
 
     int getX();
     int getY();
+    Vector2d &getPosition();
     SDL_Rect getDstrect();
 };
 } // namespace rendering

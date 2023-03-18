@@ -75,25 +75,30 @@ SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset)
     return {static_cast<int>(oldPosition.x + offset.x), static_cast<int>(oldPosition.y + offset.y)};
 }
 
-SDL_Point vectorToPoint(Vector2d vector2d)
+void slowDown(Vector2d &speed, Vector2d &position, const GridParams &gridParams)
 {
-    return {static_cast<int>(vector2d.x), static_cast<int>(vector2d.y)};
+    constexpr auto slowDownDistance = 200;
+    if (position.x < slowDownDistance)
+        speed.x = 1;
+    else if (position.x > gridParams.mapWidth - slowDownDistance)
+        speed.x = -1;
+
+    if (position.y < slowDownDistance)
+        speed.y = 1;
+    else if (position.y > gridParams.mapHeight - slowDownDistance)
+        speed.y = -1;
 }
 
 void setPosition(SDL_Rect &r, const SDL_Point &p)
 {
-    // TODO remove this ugly box
-    r.x = std::clamp(p.x, 0, 2048);
-    r.y = std::clamp(p.y, 0, 2048);
-    // TODO remove this ugly box
+    r.x = p.x;
+    r.y = p.y;
 }
 
 void setPosition(SDL_Rect &r, const Vector2d &v)
 {
-    // TODO remove this ugly box
-    r.x = static_cast<int>(std::clamp(v.x, 0.0, 2048.0));
-    r.y = static_cast<int>(std::clamp(v.y, 0.0, 2048.0));
-    // TODO remove this ugly box
+    r.x = static_cast<int>(v.x);
+    r.y = static_cast<int>(v.y);
 }
 
 Direction getDirectionFromSdl(SDL_Keycode keyCode)

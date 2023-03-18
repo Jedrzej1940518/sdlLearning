@@ -25,7 +25,7 @@ class Body
 
     void frameUpdate(CollisionParams &collisionParams);
 
-    Vector2d getSpeed() const;
+    Vector2d &getSpeed();
 
     string printDirections() const;
     void printBody() const;

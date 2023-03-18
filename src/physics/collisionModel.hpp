@@ -1,33 +1,38 @@
 #pragma once
 
 #include "../rendering/collisionObject.hpp"
+#include "physics.hpp"
 #include <cstdint>
 #include <sys/types.h>
 #include <vector>
 
 namespace physics
 {
-struct GridCoords
-{
-    int row;
-    int column;
-};
-
-template <uint mapWidth, uint mapHeight, uint gridSide> class CollisionModel
+class CollisionModel
 {
     using CollisionObject = rendering::CollisionObject;
 
+    //[rows][columns] of vector<CollisonObject*>
+    using Grid = vector<vector<vector<CollisionObject *>>>;
+
+    GridParams gridParams;
     int rows;
     int columns;
-
-    //[rows][columns] of vector<CollisonObject*>
-    using Grid = vector<CollisionObject *>[mapHeight / gridSide + 1][mapWidth / gridSide + 1];
-
     Grid grid;
 
   public:
-    CollisionModel() : rows{mapHeight / gridSide + 1}, columns{mapWidth / gridSide + 1}
+    CollisionModel(GridParams gridParams)
+        : gridParams{gridParams}, rows{gridParams.mapHeight / gridParams.cellSide + 1},
+          columns{gridParams.mapWidth / gridParams.cellSide + 1}
     {
+        for (int i = 0; i < rows; ++i)
+        {
+            grid.push_back({});
+            for (int j = 0; j < columns; ++j)
+            {
+                grid[i].push_back({});
+            }
+        }
     }
 
   private:
@@ -38,7 +43,7 @@ template <uint mapWidth, uint mapHeight, uint gridSide> class CollisionModel
 
         for (auto *object : grid[a.row][a.column])
             for (auto *neighObject : grid[neigh.row][neigh.column])
-                rendering::CollisionObject::collisionCheck(*object, *neighObject);
+                object->collisionCheck(*neighObject);
     }
 
   public:
@@ -47,9 +52,12 @@ template <uint mapWidth, uint mapHeight, uint gridSide> class CollisionModel
 
         for (int i = 0; i < rows; ++i)
             for (int j = 0; j < columns; ++j)
-                for (int n = j - 1; n <= j + 1; ++n)     // check neigbours
-                    for (int m = i - 1; m <= i + 1; ++m) // so n, m should be 9 grids
+                for (int n = i - 1; n <= i + 1; ++n) // check neigbours
+                    for (int m = j - 1; m <= j + 1; ++m)
+                    { // so n, m should be 9 grids
+                        printf("%i, %i, %i, %i\n", i, j, n, m);
                         collides(GridCoords{i, j}, GridCoords{n, m});
+                    }
     }
     void remove(CollisionObject &obj)
     {
@@ -62,29 +70,42 @@ template <uint mapWidth, uint mapHeight, uint gridSide> class CollisionModel
         grid[g.row][g.column].pop_back();
     }
 
-    GridPosition emplace(CollisionObject *obj)
+    GridCoords calculateGridCoords(int x, int y)
     {
-        int column = obj->getX() / gridSide;
-        int row = obj->getY() / gridSide;
+        int row = std::clamp(x / static_cast<int>(gridParams.cellSide), 0, rows - 1);
+        int column = std::clamp(y / static_cast<int>(gridParams.cellSide), 0, columns - 1);
+        return {row, column};
+    }
+
+    void emplace(CollisionObject *obj)
+    {
+        auto gp = calculateGridCoords(obj->getX(), obj->getY());
+        int column = gp.column;
+        int row = gp.row;
 
         grid[row][column].push_back(obj);
         int indx = static_cast<int>(grid[row][column].size()) - 1;
         obj->getGridPosition() = {row, column, indx};
-
-        return {row, column, indx};
     }
 
     void recalculateGridPosition(CollisionObject &obj)
     {
-        int column = obj.getX() / gridSide;
-        int row = obj.getY() / gridSide;
+        auto gp = calculateGridCoords(obj.getX(), obj.getY());
+        int column = gp.column;
+        int row = gp.row;
+
         auto &g = obj.getGridPosition();
 
         if (g.column != column || g.row != row)
         {
             remove(obj);
-            g = emplace(&obj);
+            emplace(&obj);
         }
+    }
+
+    const GridParams &getGridParams() const
+    {
+        return gridParams;
     }
 };
 } // namespace physics

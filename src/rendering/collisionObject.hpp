@@ -7,24 +7,32 @@
 #include "object.hpp"
 #include <SDL2/SDL_rect.h>
 
+namespace physics
+{
+class CollisionModel;
+};
+
 namespace rendering
 {
 class CollisionObject : public Object
 {
     using Body = physics::Body;
+    using CollisionModel = physics::CollisionModel;
 
     Body body;
+    physics::CollisionModel &collisionModel;
     physics::CollisionParams collisionParams;
     GridPosition gridPosition;
 
   public:
-    CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body);
-    static void collisionCheck(CollisionObject &a, CollisionObject &b);
+    CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body,
+                    physics::CollisionModel &collisionModel);
+    void collisionCheck(CollisionObject &oth);
 
     void frameUpdate();
 
     void printGridPosition() const;
-    void printSpeed() const;
+    void printSpeed();
 
     int getWidth() const;
     int getHeight() const;

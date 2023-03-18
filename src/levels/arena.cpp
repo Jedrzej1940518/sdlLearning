@@ -10,22 +10,31 @@ Arena::Arena()
     viewport.x = 0;
     viewport.y = 0;
 
-    collidableObjects.push_back(
-        {"../data/graphics/asteroids/asteroid_big02.png", "asteroid", {800, 800}, physics::Body{{0, 0}, {1, 1}, 0}});
+    collidableObjects.push_back({"../data/graphics/asteroids/asteroid_big02.png",
+                                 "asteroid",
+                                 {5000, 5000},
+                                 physics::Body{{0, 0}, {1, 1}, 0},
+                                 collisionModel});
 
-    collidableObjects.push_back(
-        {"../data/graphics/asteroids/asteroid_big02.png", "asteroid", {1200, 1200}, physics::Body{{0, 0}, {1, 1}, 0}});
+    collidableObjects.push_back({"../data/graphics/asteroids/asteroid_big02.png",
+                                 "asteroid",
+                                 {5500, 5500},
+                                 physics::Body{{0, 0}, {1, 1}, 0},
+                                 collisionModel});
 
-    collidableObjects.push_back(
-        {"../data/graphics/asteroids/asteroid_big02.png", "asteroid", {300, 300}, physics::Body{{+1, +1}, {1, 1}, 0}});
+    collidableObjects.push_back({"../data/graphics/asteroids/asteroid_big02.png",
+                                 "asteroid",
+                                 {4500, 4500},
+                                 physics::Body{{+1, +1}, {1, 1}, 0},
+                                 collisionModel});
 
-    collidableObjects.push_back(
-        {"../data/graphics/ships/scarab.png", "scarab", {500, 500}, physics::Body{{0, 0}, {10, 10}, 0.5}});
+    collidableObjects.push_back({"../data/graphics/ships/scarab.png",
+                                 "scarab",
+                                 {4000, 4000},
+                                 physics::Body{{0, 0}, {10, 10}, 0.5},
+                                 collisionModel});
 
     controledObject = &collidableObjects.back();
-
-    for (auto &object : collidableObjects)
-        object.getGridPosition() = collisionModel.emplace(&object);
 }
 
 void Arena::handleEvent(const SDL_Event &event, LevelType &levelType, bool & /**/)
@@ -64,10 +73,8 @@ void Arena::render()
 {
 
     for (auto &object : collidableObjects)
-    {
         object.frameUpdate();
-        collisionModel.recalculateGridPosition(object);
-    }
+
     collisionModel.checkCollisions();
 
     background.frameUpdate(controledObject->getBody().getSpeed());
