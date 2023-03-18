@@ -20,16 +20,14 @@ class CollisionObject : public Object
     using CollisionModel = physics::CollisionModel;
 
     Body body;
-    physics::CollisionModel &collisionModel;
     physics::CollisionParams collisionParams;
     GridPosition gridPosition;
 
   public:
-    CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body,
-                    physics::CollisionModel &collisionModel);
+    CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body);
     void collisionCheck(CollisionObject &oth);
 
-    void frameUpdate();
+    void frameUpdate(physics::CollisionModel &collisionModel);
 
     void printGridPosition() const;
     void printSpeed();
