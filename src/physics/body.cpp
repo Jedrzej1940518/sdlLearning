@@ -21,6 +21,7 @@ void Body::handleColision(CollisionParams &cp)
         auto s2 = cp.speed * ((cp.mass * 2.) / (static_cast<double>(mass) + cp.mass));
 
         speed = s + s2;
+        speed = physics::clampVector(speed, maxSpeed);
         cp.collided = false;
     }
 }

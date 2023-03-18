@@ -6,7 +6,7 @@
 namespace rendering
 {
 
-CollisionObject::CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body)
+CollisionObject::CollisionObject(string &&texturePath, string &&id, physics::Vector2d &&position, Body &&body)
     : Object{std::move(texturePath), std::move(position), std::move(id)}, body{body}, collisionParams{false, {0, 0}, 0}
 {
 }
@@ -38,7 +38,7 @@ CollisionObject::Body &CollisionObject::getBody()
 {
     return body;
 }
-GridPosition &CollisionObject::getGridPosition()
+physics::GridPosition &CollisionObject::getGridPosition()
 {
     return gridPosition;
 }

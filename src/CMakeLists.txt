@@ -5,6 +5,7 @@ set(SOURCES
     utils.cpp
     physics/physics.cpp
     physics/body.cpp
+    physics/collisionModel.cpp
     rendering/button.cpp
     rendering/collisionObject.cpp
     rendering/object.cpp

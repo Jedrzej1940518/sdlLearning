@@ -1,6 +1,9 @@
 #include "physics.hpp"
 #include <algorithm>
 
+namespace physics
+{
+
 string directionToString(Direction dir)
 {
     switch (dir)
@@ -25,40 +28,21 @@ string directionToString(Direction dir)
     }
 }
 
-bool isAccelerating(Direction accelerationDirection)
-{
-    return accelerationDirection != Direction::NONE;
-}
-
-bool isMoving(Vector2d speed)
-{
-    return speed.x != 0 || speed.y != 0;
-}
-
-double addIfNotMax(double a, double b, double max)
-{
-    return a + b > max ? max : a + b;
-}
-double addIfNotMin(double a, double b, double min)
-{
-    return a + b < min ? min : a + b;
-}
-
 Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, Direction accelerationDirection)
 {
     switch (accelerationDirection)
     {
     case Direction::DOWN:
-        speed.y = addIfNotMax(speed.y, acceleration, maxSpeed.y);
+        speed.y = std::clamp(speed.y + acceleration, -maxSpeed.y, maxSpeed.y);
         break;
     case Direction::UP:
-        speed.y = addIfNotMin(speed.y, -acceleration, -maxSpeed.y);
+        speed.y = std::clamp(speed.y - acceleration, -maxSpeed.y, maxSpeed.y);
         break;
     case Direction::RIGHT:
-        speed.x = addIfNotMax(speed.x, acceleration, maxSpeed.x);
+        speed.x = std::clamp(speed.x + acceleration, -maxSpeed.x, maxSpeed.x);
         break;
     case Direction::LEFT:
-        speed.x = addIfNotMin(speed.x, -acceleration, -maxSpeed.x);
+        speed.x = std::clamp(speed.x - acceleration, -maxSpeed.x, maxSpeed.x);
         break;
     case Direction::NONE:
         break;
@@ -159,3 +143,4 @@ Vector2d Vector2d::operator-()
 {
     return Vector2d{-x, -y};
 }
+} // namespace physics

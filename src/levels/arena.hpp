@@ -21,7 +21,7 @@ class Arena : public Level
     CollisionObject *controledObject;
 
     vector<CollisionObject> collidableObjects;
-    static constexpr GridParams gridParams{10000, 10000, 500};
+    static constexpr physics::GridParams gridParams{10000, 10000, 500};
     physics::CollisionModel collisionModel{gridParams};
 
   public:

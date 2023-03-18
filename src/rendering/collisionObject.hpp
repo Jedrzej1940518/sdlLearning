@@ -20,11 +20,11 @@ class CollisionObject : public Object
     using CollisionModel = physics::CollisionModel;
 
     Body body;
-    CollisionParams collisionParams;
-    GridPosition gridPosition;
+    physics::CollisionParams collisionParams;
+    physics::GridPosition gridPosition;
 
   public:
-    CollisionObject(string &&texturePath, string &&id, Vector2d &&position, Body &&body);
+    CollisionObject(string &&texturePath, string &&id, physics::Vector2d &&position, Body &&body);
     void collisionCheck(CollisionObject &oth);
 
     void frameUpdate(physics::CollisionModel &collisionModel);
@@ -34,7 +34,7 @@ class CollisionObject : public Object
 
     int getWidth() const;
     int getHeight() const;
-    GridPosition &getGridPosition();
+    physics::GridPosition &getGridPosition();
     Body &getBody();
 };
 } // namespace rendering

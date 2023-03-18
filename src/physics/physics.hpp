@@ -2,7 +2,8 @@
 
 #include "../sdl.hpp"
 #include "../utils.hpp"
-
+namespace physics
+{
 struct Vector2d
 {
     double x;
@@ -50,9 +51,6 @@ constexpr int directionNumber = static_cast<int>(Direction::NONE);
 string directionToString(Direction dir);
 Direction getDirectionFromSdl(SDL_Keycode keyCode);
 
-bool isAccelerating(Direction accelerationDirection);
-bool isMoving(Vector2d speed);
-
 Vector2d clampVector(const Vector2d &speed, const Vector2d &maxSpeed);
 
 Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, Direction accelerationDirection);
@@ -67,3 +65,5 @@ void printVector(Vector2d &v);
 
 void setPosition(SDL_Rect &r, const SDL_Point &p);
 void setPosition(SDL_Rect &r, const Vector2d &v);
+
+} // namespace physics

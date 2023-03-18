@@ -6,7 +6,7 @@
 namespace rendering
 {
 
-Object::Object(string &&texturePath, Vector2d &&position, string &&id, double parallaxFactor)
+Object::Object(string &&texturePath, physics::Vector2d &&position, string &&id, double parallaxFactor)
     : position{position}, id{id}, parallaxFactor{parallaxFactor}
 {
     texture = loadTexture(texturePath);
@@ -16,7 +16,7 @@ Object::Object(string &&texturePath, Vector2d &&position, string &&id, double pa
     setPosition(dstrect, position);
 }
 
-void Object::frameUpdate(Vector2d offset)
+void Object::frameUpdate(physics::Vector2d offset)
 {
     position = calculatePosition(position, offset * parallaxFactor);
     setPosition(dstrect, position);
@@ -27,8 +27,8 @@ void Object::renderObject(SDL_Rect viewport)
     if (not SDL_HasIntersection(&viewport, &dstrect))
         return;
 
-    SDL_Rect src = normalizedIntersection(dstrect, viewport);
-    SDL_Rect dest = normalizedIntersection(viewport, dstrect);
+    SDL_Rect src = physics::normalizedIntersection(dstrect, viewport);
+    SDL_Rect dest = physics::normalizedIntersection(viewport, dstrect);
 
     SDL_RenderCopy(gRenderer, texture, &src, &dest);
 }
@@ -41,7 +41,7 @@ int Object::getY()
 {
     return dstrect.y;
 }
-Vector2d &Object::getPosition()
+physics::Vector2d &Object::getPosition()
 {
     return position;
 }

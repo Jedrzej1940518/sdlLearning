@@ -3,6 +3,8 @@
 namespace levels
 {
 
+using namespace physics;
+
 Arena::Arena()
 {
     viewport.h = WINDOW_HEIGHT;
