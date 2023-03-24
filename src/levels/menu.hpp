@@ -12,7 +12,7 @@ class Menu : public Level
 
   public:
     Menu();
-    virtual void handleEvent(const SDL_Event &event, LevelType &levelType, bool &quit) override;
+    virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool &quit) override;
 
   private:
     virtual void render() override;

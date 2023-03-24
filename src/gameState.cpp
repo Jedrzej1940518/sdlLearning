@@ -1,9 +1,9 @@
 
-#include "levels/menu.hpp"
-#include "levels/arena.hpp"
 #include "gameState.hpp"
+#include "levels/arena.hpp"
+#include "levels/menu.hpp"
 
-void GameState::handleEvent(const SDL_Event &event, bool &quit)
+void GameState::handleEvent(SDL_Event &event, bool &quit)
 {
     switch (levelType)
     {

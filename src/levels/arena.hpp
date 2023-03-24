@@ -29,7 +29,7 @@ class Arena : public Level
 
   public:
     Arena();
-    virtual void handleEvent(const SDL_Event &event, LevelType &levelType, bool & /**/) override;
+    virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/) override;
 
   private:
     void moveViewport();

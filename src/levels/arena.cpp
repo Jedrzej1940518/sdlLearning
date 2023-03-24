@@ -14,7 +14,7 @@ SDL_Rect getChatboxRect()
     return {x, y, w, h};
 }
 
-Arena::Arena() : chatbox{gRenderer, getChatboxRect()}
+Arena::Arena() : chatbox{gRenderer, gFont, getChatboxRect()}
 {
     viewport.h = SCREEN_HEIGHT;
     viewport.w = SCREEN_WIDTH;
@@ -39,19 +39,31 @@ Arena::Arena() : chatbox{gRenderer, getChatboxRect()}
         collisionModel.emplace(&object);
 }
 
-void Arena::handleEvent(const SDL_Event &event, LevelType &levelType, bool & /**/)
+void Arena::handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/)
 {
+    static bool debug = true;
+
     if ((event.type == SDL_KEYDOWN) && (event.key.keysym.sym == SDLK_ESCAPE))
     {
         levelType = LevelType::MENU;
     }
-    else if (event.type == SDL_KEYDOWN)
+    else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_d)
+    {
+        debug = false;
+        printf("debugging off\n");
+        SDL_StartTextInput();
+    }
+    else if (event.type == SDL_KEYDOWN && debug)
     {
         controledObject->getBody().accelerate(getDirectionFromSdl(event.key.keysym.sym));
     }
-    else if (event.type == SDL_KEYUP)
+    else if (event.type == SDL_KEYUP && debug)
     {
         controledObject->getBody().deaccelerate(getDirectionFromSdl(event.key.keysym.sym));
+    }
+    else
+    {
+        chatbox.handleEvent(event, debug);
     }
 }
 void Arena::moveViewport()

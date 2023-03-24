@@ -1,9 +1,9 @@
 #pragma once
 
-#include "sdl.hpp"
+#include "levels/arena.hpp"
 #include "levels/level.hpp"
 #include "levels/menu.hpp"
-#include "levels/arena.hpp"
+#include "sdl.hpp"
 #include "utils.hpp"
 
 class GameState
@@ -11,9 +11,9 @@ class GameState
     LevelType levelType{LevelType::MENU};
     levels::Menu menu{};
     levels::Arena arena{};
-    levels::Level* currentLevel{&menu};
+    levels::Level *currentLevel{&menu};
 
-public:
-    void handleEvent(const SDL_Event &event, bool &quit);
+  public:
+    void handleEvent(SDL_Event &event, bool &quit);
     void render();
 };
