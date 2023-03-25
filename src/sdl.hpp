@@ -6,8 +6,6 @@
 
 using namespace std;
 
-
-    void initSdl();
-    void cleanSdl();
-    SDL_Texture *loadTexture(const string path);
-
+void initSdl();
+void cleanSdl();
+SDL_Texture *loadTexture(const string path);

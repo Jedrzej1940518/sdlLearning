@@ -8,12 +8,12 @@
 
 class GameState
 {
-    LevelType levelType{LevelType::MENU};
-    levels::Menu menu{};
-    levels::Arena arena{};
-    levels::Level *currentLevel{&menu};
+  LevelType levelType{LevelType::MENU};
+  levels::Menu menu{};
+  levels::Arena arena{};
+  levels::Level *currentLevel{&menu};
 
-  public:
-    void handleEvent(SDL_Event &event, bool &quit);
-    void render();
+public:
+  void handleEvent(SDL_Event &event, bool &quit);
+  void render();
 };

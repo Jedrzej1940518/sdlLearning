@@ -9,8 +9,8 @@ using namespace std;
 namespace rendering
 {
 
-class Button
-{
+  class Button
+  {
     string text;
     SDL_Rect position;
     SDL_Color textColor{0, 0, 0, 0};
@@ -22,5 +22,5 @@ class Button
     void renderButton();
     bool isInside(const SDL_Point &p);
     Button(string text, SDL_Rect position);
-};
+  };
 } // namespace rendering

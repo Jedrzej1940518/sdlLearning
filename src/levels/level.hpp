@@ -5,10 +5,10 @@
 
 namespace levels
 {
-class Level
-{
+  class Level
+  {
   public:
     virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool &quit) = 0;
     virtual void render() = 0;
-};
+  };
 } // namespace levels

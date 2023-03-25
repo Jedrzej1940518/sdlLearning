@@ -12,8 +12,8 @@
 namespace levels
 {
 
-class Arena : public Level
-{
+  class Arena : public Level
+  {
     using CollisionObject = rendering::CollisionObject;
 
     SDL_Texture *texture;
@@ -34,5 +34,5 @@ class Arena : public Level
   private:
     void moveViewport();
     virtual void render() override;
-};
+  };
 } // namespace levels

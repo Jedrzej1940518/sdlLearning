@@ -5,8 +5,8 @@
 
 namespace levels
 {
-class Menu : public Level
-{
+  class Menu : public Level
+  {
     rendering::Button newGameButton;
     rendering::Button quitButton;
 
@@ -16,6 +16,6 @@ class Menu : public Level
 
   private:
     virtual void render() override;
-};
+  };
 
 } // namespace levels

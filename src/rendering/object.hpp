@@ -7,8 +7,8 @@
 
 namespace rendering
 {
-class Object
-{
+  class Object
+  {
     using Body = physics::Body;
 
   protected:
@@ -31,5 +31,5 @@ class Object
     int getY();
     physics::Vector2d &getPosition();
     SDL_Rect getDstrect();
-};
+  };
 } // namespace rendering

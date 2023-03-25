@@ -8,8 +8,8 @@
 
 namespace physics
 {
-class CollisionModel
-{
+  class CollisionModel
+  {
     using CollisionObject = rendering::CollisionObject;
 
     //[rows][columns] of vector<CollisonObject*>
@@ -37,5 +37,5 @@ class CollisionModel
     void recalculateGridPosition(CollisionObject &obj);
 
     const GridParams &getGridParams();
-};
+  };
 } // namespace physics

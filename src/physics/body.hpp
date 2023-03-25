@@ -6,8 +6,8 @@
 namespace physics
 {
 
-class Body
-{
+  class Body
+  {
     uint mass;
     Vector2d speed;
     Vector2d maxSpeed;
@@ -28,5 +28,5 @@ class Body
 
     string printDirections() const;
     void printBody() const;
-};
+  };
 } // namespace physics

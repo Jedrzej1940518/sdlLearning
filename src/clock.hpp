@@ -7,7 +7,7 @@ class Clock
     uint frameRate;
     uint startTime{0};
 
-  public:
+public:
     Clock(uint framesPerSecond) : frameRate{static_cast<uint>(1000. / framesPerSecond)}
     {
     }

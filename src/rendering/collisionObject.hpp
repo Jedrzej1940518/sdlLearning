@@ -9,13 +9,13 @@
 
 namespace physics
 {
-class CollisionModel;
+  class CollisionModel;
 };
 
 namespace rendering
 {
-class CollisionObject : public Object
-{
+  class CollisionObject : public Object
+  {
     using Body = physics::Body;
     using CollisionModel = physics::CollisionModel;
 
@@ -36,5 +36,5 @@ class CollisionObject : public Object
     int getHeight() const;
     physics::GridPosition &getGridPosition();
     Body &getBody();
-};
+  };
 } // namespace rendering
