@@ -3,8 +3,8 @@
 
 namespace rendering
 {
-class Chatbox
-{
+  class Chatbox
+  {
     SDL_Texture *texture;
     SDL_Renderer *renderer;
     TTF_Font *font;
@@ -20,11 +20,13 @@ class Chatbox
 
     std::array<string, 2> lines;
 
+    bool needToRender;
+
     void renderText();
 
   public:
     void render();
     void handleEvent(SDL_Event &event, bool &debug);
     Chatbox(SDL_Renderer *renderer, TTF_Font *font, SDL_Rect dstrect);
-};
+  };
 } // namespace rendering

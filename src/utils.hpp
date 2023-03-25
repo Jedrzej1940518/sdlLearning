@@ -3,6 +3,9 @@
 #include "sdl.hpp"
 #include <iostream>
 
+#define PRINT(line) \
+    (printf("%s [%d] %s\n", __FILE__, __LINE__, line));
+
 extern const uint SCREEN_HEIGHT;
 extern const uint SCREEN_WIDTH;
 
