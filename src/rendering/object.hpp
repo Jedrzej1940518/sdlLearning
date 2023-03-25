@@ -25,7 +25,7 @@ namespace rendering
     void printPosition() const;
 
     void frameUpdate(physics::Vector2d offset);
-    void renderObject(SDL_Rect viewport);
+    virtual void renderObject(SDL_Rect viewport);
 
     int getX();
     int getY();

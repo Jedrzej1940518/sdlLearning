@@ -28,7 +28,7 @@ namespace rendering
     void collisionCheck(CollisionObject &oth);
 
     void frameUpdate(physics::CollisionModel &collisionModel);
-
+    void renderObject(SDL_Rect viewport) override;
     void printGridPosition() const;
     void printSpeed();
 

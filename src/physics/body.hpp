@@ -9,24 +9,31 @@ namespace physics
   class Body
   {
     uint mass;
+
     Vector2d speed;
-    Vector2d maxSpeed;
+    double maxSpeed;
     double acceleration;
-    std::array<bool, directionNumber> accelerationDirections;
+
+    double rotation;
+
+    bool accelerating;
 
   public:
-    Body(uint mass, Vector2d speed, Vector2d maxSpeed, double acceleration);
+    Body(uint mass, Vector2d speed, double maxSpeed, double acceleration, double rotation);
 
-    void accelerate(Direction direction);
-    void deaccelerate(Direction direction);
+    void accelerate();
+    void deaccelerate();
+
+    void rotate(double degrees);
 
     void handleColision(CollisionParams &collisionParams);
+
     void frameUpdate(CollisionParams &collisionParams);
 
     Vector2d &getSpeed();
+    double getRotation();
     uint getMass();
 
-    string printDirections() const;
     void printBody() const;
   };
 } // namespace physics

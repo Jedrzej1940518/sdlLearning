@@ -3,56 +3,32 @@
 
 namespace physics
 {
-
-    string directionToString(Direction dir)
+    double degreesToRadians(double degrees)
     {
-        switch (dir)
-        {
-        case Direction::DOWN:
-            return "Down";
-
-        case Direction::UP:
-            return "Up";
-
-        case Direction::RIGHT:
-            return "Right";
-
-        case Direction::LEFT:
-            return "Left";
-
-        case Direction::NONE:
-            return "None";
-
-        default:
-            return "";
-        }
+        return degrees * M_PI / 180.;
     }
-
-    Vector2d calculateSpeed(Vector2d speed, Vector2d maxSpeed, double acceleration, Direction accelerationDirection)
+    Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation)
     {
-        switch (accelerationDirection)
-        {
-        case Direction::DOWN:
-            speed.y = std::clamp(speed.y + acceleration, -maxSpeed.y, maxSpeed.y);
-            break;
-        case Direction::UP:
-            speed.y = std::clamp(speed.y - acceleration, -maxSpeed.y, maxSpeed.y);
-            break;
-        case Direction::RIGHT:
-            speed.x = std::clamp(speed.x + acceleration, -maxSpeed.x, maxSpeed.x);
-            break;
-        case Direction::LEFT:
-            speed.x = std::clamp(speed.x - acceleration, -maxSpeed.x, maxSpeed.x);
-            break;
-        case Direction::NONE:
-            break;
-        }
-        return speed;
+        rotation = degreesToRadians(rotation);
+        double x1 = 0;
+        double y1 = -acceleration;
+
+        Vector2d rotatedVector{cos(rotation) * x1 - sin(rotation) * y1, sin(rotation) * x1 + cos(rotation) * y1};
+        Vector2d newSpeed = speed + rotatedVector;
+
+        return clampVector(newSpeed, maxSpeed);
     }
-
-    Vector2d clampVector(const Vector2d &speed, const Vector2d &maxSpeed)
+    double vectorLenght(const Vector2d &v)
     {
-        return {std::clamp(speed.x, -maxSpeed.x, maxSpeed.x), std::clamp(speed.y, -maxSpeed.y, maxSpeed.y)};
+        return sqrt(v.x * v.x + v.y * v.y);
+    }
+    Vector2d clampVector(const Vector2d &speed, double maxSpeed)
+    {
+        double scalingFactor = maxSpeed / vectorLenght(speed);
+        if (scalingFactor > 1)
+            return speed;
+        else
+            return speed * scalingFactor;
     }
     Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset)
     {
@@ -90,23 +66,6 @@ namespace physics
         r.y = static_cast<int>(v.y);
     }
 
-    Direction getDirectionFromSdl(SDL_Keycode keyCode)
-    {
-        switch (keyCode)
-        {
-        case SDLK_UP:
-            return Direction::UP;
-        case SDLK_DOWN:
-            return Direction::DOWN;
-        case SDLK_LEFT:
-            return Direction::LEFT;
-        case SDLK_RIGHT:
-            return Direction::RIGHT;
-        default:
-            return Direction::NONE;
-        }
-    }
-
     SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b)
     {
         int x = a.x;
@@ -122,24 +81,24 @@ namespace physics
         return res;
     }
 
-    void printVector(Vector2d &v)
+    void printVector(const Vector2d &v)
     {
         printf("[%f,%f]\n", v.x, v.y);
     }
 
-    Vector2d Vector2d::operator+(const Vector2d &rhs)
+    Vector2d Vector2d::operator+(const Vector2d &rhs) const
     {
         return Vector2d{x + rhs.x, y + rhs.y};
     }
-    Vector2d Vector2d::operator-(const Vector2d &rhs)
+    Vector2d Vector2d::operator-(const Vector2d &rhs) const
     {
         return Vector2d{x - rhs.x, y - rhs.y};
     }
-    Vector2d Vector2d::operator*(double factor)
+    Vector2d Vector2d::operator*(double factor) const
     {
         return Vector2d{x * factor, y * factor};
     }
-    Vector2d Vector2d::operator-()
+    Vector2d Vector2d::operator-() const
     {
         return Vector2d{-x, -y};
     }

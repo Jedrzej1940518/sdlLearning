@@ -37,7 +37,7 @@ namespace rendering
         renderText();
     }
 
-    void Chatbox::handleEvent(SDL_Event &event, bool &debug)
+    void Chatbox::handleEvent(SDL_Event &event)
     {
         if (event.type == SDL_TEXTINPUT)
         {
@@ -45,8 +45,7 @@ namespace rendering
         }
         else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
         {
-            if (lines[0] == "debug")
-                debug = !debug;
+            interpretter.handleCommand(lines[0]);
 
             lines[1] = lines[0];
             lines[0] = "";
@@ -58,6 +57,10 @@ namespace rendering
 
             lines[0].pop_back();
         }
+    }
+    void Chatbox::setControledObject(rendering::CollisionObject *ship)
+    {
+        interpretter.setControledObject(ship);
     }
 
     Chatbox::Chatbox(SDL_Renderer *renderer, TTF_Font *font, SDL_Rect dstrect)

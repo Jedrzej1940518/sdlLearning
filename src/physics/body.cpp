@@ -6,11 +6,9 @@
 namespace physics
 {
 
-    Body::Body(uint mass, Vector2d speed, Vector2d maxSpeed, double acceleration)
-        : mass{mass}, speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}
+    Body::Body(uint mass, Vector2d speed, double maxSpeed, double acceleration, double rotation)
+        : mass{mass}, speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}, rotation{rotation}, accelerating{false}
     {
-        for (auto &b : accelerationDirections)
-            b = false;
     }
 
     void Body::handleColision(CollisionParams &cp)
@@ -25,48 +23,38 @@ namespace physics
             cp.collided = false;
         }
     }
-
     void Body::frameUpdate(CollisionParams &collisionParams)
     {
         handleColision(collisionParams);
 
-        for (int i = 0; i < directionNumber; ++i)
-        {
-            if (accelerationDirections[i])
-            {
-                Direction dir = static_cast<Direction>(i);
-                speed = calculateSpeed(speed, maxSpeed, acceleration, dir);
-            }
-        }
-    }
-    void Body::accelerate(Direction direction)
-    {
-        accelerationDirections[static_cast<int>(direction)] = true;
-    }
-    void Body::deaccelerate(Direction direction)
-    {
-        accelerationDirections[static_cast<int>(direction)] = false;
+        if (accelerating)
+            speed = calculateSpeed(speed, maxSpeed, acceleration, rotation);
     }
 
-    std::string Body::printDirections() const
+    void Body::accelerate()
     {
-        string s{"Directions "};
-        for (int i = 0; i < directionNumber; ++i)
-        {
-            s += directionToString(static_cast<Direction>(i));
-            s += ": ";
-            s += boolToString(accelerationDirections[i]);
-            s += ", ";
-        }
-        return s;
+        accelerating = true;
     }
+    void Body::deaccelerate()
+    {
+        accelerating = false;
+    }
+    void Body::rotate(double degrees)
+    {
+        rotation += degrees;
+    }
+
     void Body::printBody() const
     {
-        printf("Speed {%f, %f}, %s\n", speed.x, speed.y, printDirections().c_str());
+        printf("Speed {%f, %f}\n", speed.x, speed.y);
     }
     Vector2d &Body::getSpeed()
     {
         return speed;
+    }
+    double Body::getRotation()
+    {
+        return rotation;
     }
     uint Body::getMass()
     {
