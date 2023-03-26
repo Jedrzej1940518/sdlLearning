@@ -6,8 +6,10 @@
 namespace physics
 {
 
-    Body::Body(uint mass, Vector2d speed, double maxSpeed, double acceleration, double rotation)
-        : mass{mass}, speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}, rotation{rotation}, accelerating{false}
+    Body::Body(uint mass, Vector2d speed, double maxSpeed, double acceleration, double rotationSpeed, double rotation)
+        : mass{mass}, speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}, rotationSpeed{
+                                                                                        rotationSpeed},
+          rotation{rotation}, rotationLeft{0}, accelerating{false}
     {
     }
 
@@ -29,6 +31,12 @@ namespace physics
 
         if (accelerating)
             speed = calculateSpeed(speed, maxSpeed, acceleration, rotation);
+        if (abs(rotationLeft) > 0)
+        {
+            auto rotationTick = std::clamp<double>(rotationLeft, -rotationSpeed, rotationSpeed);
+            rotation += rotationTick;
+            rotationLeft -= rotationTick;
+        }
     }
 
     void Body::accelerate()
@@ -41,7 +49,7 @@ namespace physics
     }
     void Body::rotate(double degrees)
     {
-        rotation += degrees;
+        rotationLeft = degrees;
     }
 
     void Body::printBody() const

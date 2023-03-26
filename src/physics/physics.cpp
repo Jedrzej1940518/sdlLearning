@@ -7,6 +7,16 @@ namespace physics
     {
         return degrees * M_PI / 180.;
     }
+    double radiansToDegrees(double radians)
+    {
+        return radians / (M_PI / 180.);
+    }
+    double getVectorRotation(const Vector2d &v)
+    {
+        // ADD ĆWIARTKI LOL ;D
+        cout << radiansToDegrees(atan(v.y / v.x)) << endl;
+        return radiansToDegrees(atan(v.y / v.x));
+    }
     Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation)
     {
         rotation = degreesToRadians(rotation);

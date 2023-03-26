@@ -21,17 +21,17 @@ namespace levels
         viewport.x = 0;
         viewport.y = 0;
 
-        // collidableObjects.push_back(
-        //     {"../data/graphics/asteroids/asteroid_big02.png", "asteroid1", {5000, 5000}, {500, {0, 0}, 2, 0, 0}});
-
-        // collidableObjects.push_back(
-        //     {"../data/graphics/asteroids/asteroid2.png", "asteroid2", {5500, 5500}, {100, {0, 0}, 2, 0, 0}});
-
-        // collidableObjects.push_back(
-        //     {"../data/graphics/asteroids/asteroid3.png", "asteroid3", {4500, 4500}, {200, {0, 0}, 2, 0, 0}});
+        collidableObjects.push_back(
+            {"../data/graphics/asteroids/asteroid_big02.png", "asteroid1", {5000, 5000}, {500, {0, 0}, 2, 0, 10, 0}});
 
         collidableObjects.push_back(
-            {"../data/graphics/ships/scarab.png", "scarab", {4000, 4000}, {100, {0, 0}, 7, 0.2, 0}});
+            {"../data/graphics/asteroids/asteroid2.png", "asteroid2", {5500, 5500}, {100, {0, 0}, 2, 0, 10, 0}});
+
+        collidableObjects.push_back(
+            {"../data/graphics/asteroids/asteroid3.png", "asteroid3", {4500, 4500}, {200, {0, 0}, 2, 0, 10, 0}});
+
+        collidableObjects.push_back(
+            {"../data/graphics/ships/scarab.png", "scarab", {4000, 4000}, {100, {0, 0}, 7, 0.2, 2, 0}});
 
         controledObject = &collidableObjects.back();
         chatbox.setControledObject(controledObject);

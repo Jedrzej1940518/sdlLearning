@@ -37,7 +37,7 @@ namespace physics
         Vector2d speed;
         uint mass;
     };
-
+    double getVectorRotation(const Vector2d &v);
     double vectorLenght(const Vector2d &v);
     Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation);
     Vector2d clampVector(const Vector2d &speed, double maxSpeed);

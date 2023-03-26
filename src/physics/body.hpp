@@ -14,12 +14,14 @@ namespace physics
     double maxSpeed;
     double acceleration;
 
+    double rotationSpeed;
     double rotation;
+    double rotationLeft;
 
     bool accelerating;
 
   public:
-    Body(uint mass, Vector2d speed, double maxSpeed, double acceleration, double rotation);
+    Body(uint mass, Vector2d speed, double maxSpeed, double acceleration, double rotationSpeed, double rotation);
 
     void accelerate();
     void deaccelerate();

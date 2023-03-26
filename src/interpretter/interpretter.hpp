@@ -8,6 +8,8 @@ namespace interpretter
     {
         rendering::CollisionObject *ship;
 
+        bool rotation(const string &s);
+
     public:
         Interpretter() : ship{nullptr} {}
         void setControledObject(rendering::CollisionObject *controlledObject) { ship = controlledObject; }

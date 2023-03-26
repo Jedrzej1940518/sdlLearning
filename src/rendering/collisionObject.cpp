@@ -14,8 +14,6 @@ namespace rendering
     {
         // todo collisionModel detect collision for this obj
 
-        cout << "Frame updating\n";
-        printSpeed();
         body.frameUpdate(collisionParams);
         slowDown(body.getSpeed(), position, collisionModel.getGridParams());
 
