@@ -14,7 +14,7 @@ namespace levels
         return {x, y, w, h};
     }
 
-    Arena::Arena() : chatbox{gRenderer, gFont, getChatboxRect()}
+    Arena::Arena() : chatbox{gRenderer, getChatboxRect()}
     {
         viewport.h = SCREEN_HEIGHT;
         viewport.w = SCREEN_WIDTH;
@@ -31,7 +31,7 @@ namespace levels
             {"../data/graphics/asteroids/asteroid3.png", "asteroid3", {4500, 4500}, {200, {0, 0}, 2, 0, 10, 0}});
 
         collidableObjects.push_back(
-            {"../data/graphics/ships/scarab.png", "scarab", {4000, 4000}, {100, {0, 0}, 7, 0.2, 2, 0}});
+            {"../data/graphics/ships/scarab.png", "scarab", {4000, 4000}, {100, {0, 0}, 7, 0.03, 2, 0}});
 
         controledObject = &collidableObjects.back();
         chatbox.setControledObject(controledObject);

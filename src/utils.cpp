@@ -1,6 +1,6 @@
 #include "utils.hpp"
 
-const uint SCREEN_HEIGHT = 1000;
+const uint SCREEN_HEIGHT = 900;
 const uint SCREEN_WIDTH = 1680;
 
 const double FRAME_RATE = 1000 / 10;

@@ -2,6 +2,7 @@
 
 #include "sdl.hpp"
 #include <iostream>
+#include <array>
 
 #define PRINT(line) \
     (printf("%s [%d] %s\n", __FILE__, __LINE__, line));

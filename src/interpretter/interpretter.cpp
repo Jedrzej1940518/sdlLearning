@@ -6,10 +6,6 @@ namespace interpretter
 
     void Interpretter::handleCommand(const string &s)
     {
-        regex pattern("(rotate) ([0-9]+)");
-        string str = "rotate 90";
-        smatch match;
-
         auto &body = ship->getBody();
 
         if (s == "engage")
@@ -22,7 +18,9 @@ namespace interpretter
         }
         else if (s == "stop")
         {
-            body.rotate(-getVectorRotation(body.getSpeed()));
+            body.deaccelerate();
+            auto rotationNeeded = (getVectorRotation(body.getSpeed()) + 180.) - body.getRotation();
+            body.rotate(rotationNeeded);
         }
         else if (rotation(s))
         {
