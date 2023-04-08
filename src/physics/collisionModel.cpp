@@ -29,24 +29,24 @@ namespace physics
                 }
         cout << endl;
     }
-    void CollisionModel::collides(GridCoords &&a, GridCoords &&neigh)
+    void CollisionModel::collides(CollisionObject &obj, GridCoords &&neigh)
     {
         if (neigh.column < 0 || neigh.row < 0 || neigh.column >= columns || neigh.row >= rows)
             return;
 
-        for (auto *object : grid[a.row][a.column])
-            for (auto *neighObject : grid[neigh.row][neigh.column])
-                object->collisionCheck(*neighObject);
+        for (auto *neighObject : grid[neigh.row][neigh.column])
+            obj.collisionCheck(*neighObject);
     }
 
-    void CollisionModel::checkCollisions()
+    void CollisionModel::checkCollisions(CollisionObject &obj)
     {
+        const auto &gridPos = obj.getGridPosition();
+        int i = gridPos.row;
+        int j = gridPos.column;
 
-        for (int i = 0; i < rows; ++i)
-            for (int j = 0; j < columns; ++j)
-                for (int n = i - 1; n <= i + 1; ++n)     // check neigbours
-                    for (int m = j - 1; m <= j + 1; ++m) // so n, m should be 9 grids
-                        collides(GridCoords{i, j}, GridCoords{n, m});
+        for (int n = i - 1; n <= i + 1; ++n)     // check neigbours
+            for (int m = j - 1; m <= j + 1; ++m) // so n, m should be 9 grids
+                collides(obj, GridCoords{n, m});
     }
     GridCoords CollisionModel::calculateGridCoords(int x, int y)
     {

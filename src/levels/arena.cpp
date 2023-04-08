@@ -69,7 +69,6 @@ namespace levels
         {
             object.frameUpdate(collisionModel);
         }
-        collisionModel.checkCollisions();
 
         background.frameUpdate(controledObject->getBody().getSpeed());
         moveViewport();

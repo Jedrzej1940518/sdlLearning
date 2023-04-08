@@ -25,10 +25,10 @@ namespace physics
 
   private:
     void debugPrint(string &&s);
-    void collides(GridCoords &&a, GridCoords &&neigh);
+    void collides(CollisionObject &obj, GridCoords &&neigh);
 
   public:
-    void checkCollisions();
+    void checkCollisions(CollisionObject &obj);
     GridCoords calculateGridCoords(int x, int y);
     void remove(CollisionObject &obj);
 

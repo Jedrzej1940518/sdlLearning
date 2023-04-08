@@ -23,7 +23,7 @@ namespace rendering
         auto textH = textSurface->h;
         texture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
-        SDL_Rect dstRect = {dstrect.x + 20, dstrect.y + dstrect.h - textH * (i), textW, textH};
+        SDL_Rect dstRect = {dstrect.x + 20, dstrect.y + textH * (i), textW, textH};
 
         SDL_FreeSurface(textSurface);
         SDL_RenderCopy(renderer, texture, NULL, &dstRect);
@@ -32,15 +32,14 @@ namespace rendering
 
     void Chatbox::renderText()
     {
-        renderLine(start + current, 1);
-        for (int i = 0; i < static_cast<int>(lines.size()); ++i)
+        int i = 0;
+        for (const auto &line : lines)
         {
-            const auto &line = lines.getElemReverse();
-
-            if (line.empty())
+            ++i;
+            if (line.empty()) // todo this needed?
                 continue;
 
-            renderLine(line, i + 2);
+            renderLine(line, i);
         }
     }
 
@@ -55,30 +54,29 @@ namespace rendering
     {
         string s = "";
 
-        for (size_t i = 0; i < instructions.size(); ++i)
+        for (const auto &ins : instructions)
         {
-            string ins = instructions.getElem();
             if ((s + ins).size() > maxLineLenght)
             {
-                lines.addElem(s);
+                lines.push_back(s);
                 s = "";
             }
             s += ins + " ";
         }
-        lines.addElem(s);
+        lines.push_back(s);
     }
 
-    Carousel<string, Chatbox::maxInstructions> Chatbox::matchInstructions(const string &beggining)
+    boost::circular_buffer<string> Chatbox::matchInstructions(const string &beggining)
     {
         const string instructionList[]{"rotate", "engage", "disengage", "stop"};
-        Carousel<string, maxInstructions> c;
+        boost::circular_buffer<string> c{maxInstructions};
 
         regex pattern{"^" + beggining};
 
         for (const auto &s : instructionList)
         {
             if (std::regex_search(s, pattern))
-                c.addElem(s);
+                c.push_back(s);
         }
         return c;
     }
@@ -97,48 +95,48 @@ namespace rendering
     {
         if (event.type == SDL_TEXTINPUT)
         {
-            if (current.size() >= maxLineLenght)
+            if (lines.back().size() >= maxLineLenght)
                 return;
 
-            current += event.text.text;
+            lines.back() += event.text.text;
             handleCompositionChange();
         }
         else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
         {
-            interpretter.handleCommand(current);
-            lines.addElem(start + current);
-            current = "";
+            interpretter.handleCommand(lines.back());
+            lines.push_back(start + lines.back());
+            lines.back() = "";
             handleCompositionChange();
         }
         else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE)
         {
-            if (current.empty())
+            if (lines.back().empty())
                 return;
 
-            current.pop_back();
+            lines.back().pop_back();
             handleCompositionChange();
         }
         else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_TAB)
         {
-            if (current.empty())
+            if (lines.back().empty())
                 return;
 
             if (not listed)
             {
-                instructions = matchInstructions(current);
-                instructions.addElem(current);
+                instructions = matchInstructions(lines.back());
+                instructions.push_back(lines.back());
 
                 if (instructions.size() > 2)
                     listAllInstructions();
                 else
-                    current = instructions.getElem();
+                    lines.back() = instructions.back();
             }
             if (listed or instructions.size() == 2)
             {
                 if (instructions.empty())
                     return;
 
-                current = instructions.getElem();
+                lines.back() = instructions.back();
             }
             listed = true;
         }
@@ -178,8 +176,10 @@ namespace rendering
 
         initTextSize();
 
-        lines.addElem("Welcome Jedrzej");
-        lines.addElem(" ");
+        lines.push_back("Welcome Jedrzej");
+        lines.push_back(" 1");
+        lines.push_back(" 2");
+        lines.push_back(" 3");
     }
 
 } // namespace rendering

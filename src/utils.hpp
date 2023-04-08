@@ -4,17 +4,16 @@
 #include <iostream>
 #include <array>
 
-#define PRINT(line) \
+#define LOG(line) \
     (printf("%s [%d] %s\n", __FILE__, __LINE__, line));
 
-extern const uint SCREEN_HEIGHT;
-extern const uint SCREEN_WIDTH;
+inline const uint SCREEN_HEIGHT = 900;
+inline const uint SCREEN_WIDTH = 1680;
+inline const double FRAME_RATE = 1000 / 10;
 
-extern const double FRAME_RATE;
-
-extern SDL_Window *gWindow;
-extern SDL_Renderer *gRenderer;
-extern TTF_Font *gFont;
+inline SDL_Window *gWindow = nullptr;
+inline SDL_Renderer *gRenderer = nullptr;
+inline TTF_Font *gFont = nullptr;
 
 enum class LevelType
 {

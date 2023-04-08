@@ -33,6 +33,7 @@ namespace physics
     void frameUpdate(CollisionParams &collisionParams);
 
     Vector2d &getSpeed();
+    const Vector2d &getSpeed() const;
     double getRotation();
     uint getMass();
 

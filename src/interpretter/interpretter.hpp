@@ -4,6 +4,11 @@
 
 namespace interpretter
 {
+
+    struct Process
+    {
+        };
+
     class Interpretter
     {
         rendering::CollisionObject *ship;

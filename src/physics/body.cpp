@@ -60,6 +60,10 @@ namespace physics
     {
         return speed;
     }
+    const Vector2d &Body::getSpeed() const
+    {
+        return speed;
+    }
     double Body::getRotation()
     {
         return rotation;

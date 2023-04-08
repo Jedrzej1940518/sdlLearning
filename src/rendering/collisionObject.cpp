@@ -12,7 +12,7 @@ namespace rendering
     }
     void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
     {
-        // todo collisionModel detect collision for this obj
+        collisionModel.checkCollisions(*this);
 
         body.frameUpdate(collisionParams);
         slowDown(body.getSpeed(), position, collisionModel.getGridParams());
@@ -56,7 +56,7 @@ namespace rendering
     {
         return gridPosition;
     }
-    void CollisionObject::printSpeed()
+    void CollisionObject::printSpeed() const
     {
         printf("[%s] Speed {%f, %f}\n", id.c_str(), body.getSpeed().x, body.getSpeed().y);
     }
@@ -64,5 +64,12 @@ namespace rendering
     {
         auto &g = gridPosition;
         printf("[%s] Grid [%i][%i][%i]\n", id.c_str(), g.row, g.column, g.index);
+    }
+    void CollisionObject::printCollisionObject() const
+    {
+        Object::printPosition();
+        printSpeed();
+        printGridPosition();
+        cout << endl;
     }
 } // namespace rendering

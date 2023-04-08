@@ -1,7 +1,9 @@
-#include "../sdl.hpp"
+#pragma once
+
 #include <array>
+#include <boost/circular_buffer.hpp>
+#include "../sdl.hpp"
 #include "../interpretter/interpretter.hpp"
-#include "../carousel.hpp"
 
 namespace rendering
 {
@@ -15,13 +17,12 @@ namespace rendering
     TTF_Font *font;
     SDL_Rect dstrect;
     SDL_Rect linesRect;
-    Carousel<string, maxLines> lines;
-    Carousel<string, maxInstructions> instructions;
+    boost::circular_buffer<string> lines{maxLines};
+    boost::circular_buffer<string> instructions{maxInstructions};
 
     interpretter::Interpretter interpretter;
 
     string start{"Jedrzej$ "};
-    string current{""};
 
     int textH{0};
     SDL_Color textColor{0, 255, 0, 0};
@@ -37,7 +38,7 @@ namespace rendering
     void listAllInstructions();
     void initTextSize();
 
-    Carousel<string, maxInstructions>
+    boost::circular_buffer<string>
     matchInstructions(const string &beggining);
 
   public:
