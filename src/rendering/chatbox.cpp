@@ -11,36 +11,13 @@ namespace rendering
     {
         TTF_CloseFont(font);
     }
-
-    void Chatbox::renderLine(const string &s, int i)
+    Chatbox::Chatbox(SDL_Renderer *renderer, SDL_Rect dstrect)
+        : renderer{renderer}, font{font}, dstrect{dstrect}, lines{{dstrect.x + xLinesMargin, dstrect.y + yLinesMargin, dstrect.w - xLinesMargin, dstrect.h - yLinesMargin}, renderer}
     {
-        SDL_Surface *textSurface = TTF_RenderText_Blended(font, s.c_str(), textColor);
-
-        if (!textSurface)
-            cerr << "Error loading font for chatbox!" << endl;
-
-        auto textW = textSurface->w;
-        auto textH = textSurface->h;
-        texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-
-        SDL_Rect dstRect = {dstrect.x + 20, dstrect.y + textH * (i), textW, textH};
-
-        SDL_FreeSurface(textSurface);
-        SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-        SDL_DestroyTexture(texture);
-    }
-
-    void Chatbox::renderText()
-    {
-        int i = 0;
-        for (const auto &line : lines)
-        {
-            ++i;
-            if (line.empty()) // todo this needed?
-                continue;
-
-            renderLine(line, i);
-        }
+        string s("Welcome Jedrzej");
+        for (auto c : s)
+            lines.push_back(c);
+        lines.newLine();
     }
 
     void Chatbox::handleCompositionChange()
@@ -52,18 +29,18 @@ namespace rendering
 
     void Chatbox::listAllInstructions()
     {
-        string s = "";
+        // string s = "";
 
-        for (const auto &ins : instructions)
-        {
-            if ((s + ins).size() > maxLineLenght)
-            {
-                lines.push_back(s);
-                s = "";
-            }
-            s += ins + " ";
-        }
-        lines.push_back(s);
+        // for (const auto &ins : instructions)
+        // {
+        //     if ((s + ins).size() > maxLineLenght)
+        //     {
+        //         lines.push_back(s);
+        //         s = "";
+        //     }
+        //     s += ins + " ";
+        // }
+        // lines.push_back(s);
     }
 
     boost::circular_buffer<string> Chatbox::matchInstructions(const string &beggining)
@@ -88,7 +65,7 @@ namespace rendering
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderDrawRect(renderer, &dstrect);
 
-        renderText();
+        lines.render();
     }
 
     void Chatbox::handleEvent(SDL_Event &event)
@@ -98,88 +75,53 @@ namespace rendering
             if (lines.back().size() >= maxLineLenght)
                 return;
 
-            lines.back() += event.text.text;
+            char *c = event.text.text;
+            while (*c)
+            {
+                lines.push_back(*c);
+                ++c;
+            }
             handleCompositionChange();
         }
         else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
         {
-            interpretter.handleCommand(lines.back());
-            lines.push_back(start + lines.back());
-            lines.back() = "";
+            interpreter.handleCommand(lines.back());
+            lines.newLine();
             handleCompositionChange();
         }
         else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_BACKSPACE)
         {
-            if (lines.back().empty())
-                return;
-
-            lines.back().pop_back();
+            lines.pop_back();
             handleCompositionChange();
         }
         else if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_TAB)
         {
-            if (lines.back().empty())
-                return;
+            // if (lines.back().empty())
+            //     return;
 
-            if (not listed)
-            {
-                instructions = matchInstructions(lines.back());
-                instructions.push_back(lines.back());
+            // if (not listed)
+            // {
+            //     instructions = matchInstructions(lines.back());
+            //     instructions.push_back(lines.back());
 
-                if (instructions.size() > 2)
-                    listAllInstructions();
-                else
-                    lines.back() = instructions.back();
-            }
-            if (listed or instructions.size() == 2)
-            {
-                if (instructions.empty())
-                    return;
+            //     if (instructions.size() > 2)
+            //         listAllInstructions();
+            //     else
+            //         lines.back() = instructions.back();
+            // }
+            // if (listed or instructions.size() == 2)
+            // {
+            //     if (instructions.empty())
+            //         return;
 
-                lines.back() = instructions.back();
-            }
-            listed = true;
+            //     lines.back() = instructions.back();
+            // }
+            // listed = true;
         }
     }
     void Chatbox::setControledObject(rendering::CollisionObject *ship)
     {
-        interpretter.setControledObject(ship);
-    }
-
-    void Chatbox::initTextSize()
-    {
-        int desiredTextH = linesRect.h / (maxLines + 1);
-        textH = desiredTextH + 1;
-        int currentH = textH + 1;
-
-        do
-        {
-            --textH;
-            font = TTF_OpenFont("../data/graphics/fonts/TiltNeon-Regular.ttf", textH);
-            TTF_SizeText(font, "s", nullptr, &currentH);
-
-            if (currentH < 0 or textH < 0)
-            {
-                cerr << "Cant find right font size!\n";
-                exit(1);
-            }
-
-        } while (currentH > desiredTextH);
-    }
-
-    Chatbox::Chatbox(SDL_Renderer *renderer, SDL_Rect dstrect)
-        : renderer{renderer}, font{font}, dstrect{dstrect}
-    {
-        constexpr int xMargin = 10;
-        constexpr int yMargin = 10;
-        linesRect = {dstrect.x + xMargin, dstrect.y + yMargin, dstrect.w - xMargin, dstrect.h - yMargin};
-
-        initTextSize();
-
-        lines.push_back("Welcome Jedrzej");
-        lines.push_back(" 1");
-        lines.push_back(" 2");
-        lines.push_back(" 3");
+        interpreter.setControledObject(ship);
     }
 
 } // namespace rendering

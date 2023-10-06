@@ -12,7 +12,10 @@ set(SOURCES
     rendering/chatbox.cpp
     levels/menu.cpp
     levels/arena.cpp
-    interpretter/interpretter.cpp
+    interpreter/interpreter.cpp
+    interpreter/lines.cpp
+    interpreter/line.cpp
+    interpreter/word.cpp
 )
 
 add_executable(starships ${SOURCES})

@@ -3,7 +3,8 @@
 #include <array>
 #include <boost/circular_buffer.hpp>
 #include "../sdl.hpp"
-#include "../interpretter/interpretter.hpp"
+#include "../interpreter/interpreter.hpp"
+#include "../interpreter/lines.hpp"
 
 namespace rendering
 {
@@ -11,16 +12,19 @@ namespace rendering
   {
     static constexpr int maxLines{8};
     static constexpr int maxInstructions{8};
+    static constexpr int xLinesMargin = 10;
+    static constexpr int yLinesMargin = 10;
 
     SDL_Texture *texture;
     SDL_Renderer *renderer;
     TTF_Font *font;
     SDL_Rect dstrect;
-    SDL_Rect linesRect;
-    boost::circular_buffer<string> lines{maxLines};
+
+    interpreter::Lines lines;
+
     boost::circular_buffer<string> instructions{maxInstructions};
 
-    interpretter::Interpretter interpretter;
+    interpreter::Interpreter interpreter;
 
     string start{"Jedrzej$ "};
 

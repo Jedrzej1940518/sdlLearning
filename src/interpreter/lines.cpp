@@ -1,6 +1,6 @@
 #include "lines.hpp"
 
-namespace interpretter
+namespace interpreter
 {
     void Lines::initTextSize()
     {
@@ -32,22 +32,24 @@ namespace interpretter
     {
         lines.back().push_back(c);
     }
-    void Lines::pop()
+    void Lines::pop_back()
     {
-        lines.back().pop();
+        lines.back().pop_back();
     }
     void Lines::render()
     {
-        physics::Vector2d position{dstrect.x, dstrect.y};
-
+        int x = dstrect.x;
+        int y = dstrect.y;
+        int height;
         for (auto &line : lines)
         {
-            for (auto &word : line.getWords())
+            for (const auto &word : line.getWords())
             {
-                auto &&[w, h] = word.render(font, renderer, position);
-                position.x += w;
+                auto &&[w, h] = word.render(font, renderer, x, y);
+                x += w;
+                height = h;
             }
-            position.y += h;
+            y += height;
         }
     }
 }

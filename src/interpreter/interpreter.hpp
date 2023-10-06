@@ -2,22 +2,18 @@
 
 #include "../rendering/collisionObject.hpp"
 
-namespace interpretter
+namespace interpreter
 {
-
-    struct Process
-    {
-        };
-
-    class Interpretter
+    class Line;
+    class Interpreter
     {
         rendering::CollisionObject *ship;
 
-        bool rotation(const string &s);
+        //        bool rotation(const string &s);
 
     public:
-        Interpretter() : ship{nullptr} {}
+        Interpreter() : ship{nullptr} {}
         void setControledObject(rendering::CollisionObject *controlledObject) { ship = controlledObject; }
-        void handleCommand(const string &s);
+        void handleCommand(const Line &line);
     };
 }
