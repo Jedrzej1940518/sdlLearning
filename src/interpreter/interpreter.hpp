@@ -9,8 +9,6 @@ namespace interpreter
     {
         rendering::CollisionObject *ship;
 
-        //        bool rotation(const string &s);
-
     public:
         Interpreter() : ship{nullptr} {}
         void setControledObject(rendering::CollisionObject *controlledObject) { ship = controlledObject; }

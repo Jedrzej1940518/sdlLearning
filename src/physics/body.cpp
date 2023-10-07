@@ -5,11 +5,13 @@
 
 namespace physics
 {
+    Body::Body(Hardware hardware) : Body({0.0, 0.0}, 0.0, hardware)
+    {
+    }
 
-    Body::Body(uint mass, Vector2d speed, double maxSpeed, double acceleration, double rotationSpeed, double rotation)
-        : mass{mass}, speed{speed}, maxSpeed{maxSpeed}, acceleration{acceleration}, rotationSpeed{
-                                                                                        rotationSpeed},
-          rotation{rotation}, rotationLeft{0}, accelerating{false}
+    Body::Body(Vector2d speed, double rotation, Hardware hardware)
+        : speed{speed},
+          rotation{rotation}, hardware{hardware}, rotationLeft{0}, accelerating{false}
     {
     }
 
@@ -17,23 +19,25 @@ namespace physics
     {
         if (cp.collided)
         {
-            auto s = speed * ((static_cast<double>(mass) - cp.mass) / (static_cast<double>(mass) + cp.mass));
-            auto s2 = cp.speed * ((cp.mass * 2.) / (static_cast<double>(mass) + cp.mass));
+            auto s = speed * (((hardware.mass) - cp.mass) / (hardware.mass + cp.mass));
+            auto s2 = cp.speed * ((cp.mass * 2.) / (hardware.mass + cp.mass));
 
             speed = s + s2;
-            speed = physics::clampVector(speed, maxSpeed);
+            speed = physics::clampVector(speed, hardware.maxSpeed);
             cp.collided = false;
         }
     }
     void Body::frameUpdate(CollisionParams &collisionParams)
     {
+
         handleColision(collisionParams);
+        auto maxRotationSpeed = hardware.maxRotationSpeed;
 
         if (accelerating)
-            speed = calculateSpeed(speed, maxSpeed, acceleration, rotation);
+            speed = calculateSpeed(speed, hardware.maxSpeed, hardware.acceleration, rotation);
         if (abs(rotationLeft) > 0)
         {
-            auto rotationTick = std::clamp<double>(rotationLeft, -rotationSpeed, rotationSpeed);
+            auto rotationTick = std::clamp<double>(rotationLeft, -maxRotationSpeed, maxRotationSpeed);
             rotation += rotationTick;
             rotationLeft -= rotationTick;
         }
@@ -70,6 +74,6 @@ namespace physics
     }
     uint Body::getMass()
     {
-        return mass;
+        return hardware.mass;
     }
 } // namespace physics

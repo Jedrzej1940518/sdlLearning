@@ -6,8 +6,8 @@
 namespace rendering
 {
 
-    CollisionObject::CollisionObject(string &&texturePath, string &&id, physics::Vector2d &&position, Body &&body)
-        : Object{std::move(texturePath), std::move(position), std::move(id)}, body{body}, collisionParams{false, {0, 0}, 0}
+    CollisionObject::CollisionObject(prefabs::Prefab &prefab, Vector2d position, Vector2d speed, double rotation)
+        : Object{prefab.texturePath, position, prefab.id}, prefab{prefab}, body{speed, rotation, prefab.hardware}, collisionParams{false, {0, 0}, 0}
     {
     }
     void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)

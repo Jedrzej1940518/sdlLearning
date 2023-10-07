@@ -20,7 +20,8 @@ namespace rendering
     double parallaxFactor;
 
   public:
-    Object(string &&texturePath, physics::Vector2d &&position, string &&id = "", double parallaxFactor = 1.0);
+    Object(string &texturePath, physics::Vector2d &position, string &id, double parallaxFactor = 1.0);
+    Object(string &&texturePath, physics::Vector2d &&position, string &&id, double parallaxFactor = 1.0);
 
     void printPosition() const;
 

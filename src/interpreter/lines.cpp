@@ -49,6 +49,7 @@ namespace interpreter
                 x += w;
                 height = h;
             }
+            x = dstrect.x;
             y += height;
         }
     }

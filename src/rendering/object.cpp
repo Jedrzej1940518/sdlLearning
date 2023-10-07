@@ -5,8 +5,17 @@
 
 namespace rendering
 {
-
     Object::Object(string &&texturePath, physics::Vector2d &&position, string &&id, double parallaxFactor)
+        : position{position}, id{id}, parallaxFactor{parallaxFactor}
+    {
+        texture = loadTexture(texturePath);
+
+        SDL_QueryTexture(texture, NULL, NULL, &dstrect.w, &dstrect.h);
+
+        setPosition(dstrect, position);
+    }
+
+    Object::Object(string &texturePath, physics::Vector2d &position, string &id, double parallaxFactor)
         : position{position}, id{id}, parallaxFactor{parallaxFactor}
     {
         texture = loadTexture(texturePath);

@@ -2,26 +2,24 @@
 
 #include "physics.hpp"
 #include <array>
+#include "hardware.hpp"
 
 namespace physics
 {
 
   class Body
   {
-    uint mass;
 
     Vector2d speed;
-    double maxSpeed;
-    double acceleration;
-
-    double rotationSpeed;
     double rotation;
-    double rotationLeft;
+    Hardware hardware;
 
+    double rotationLeft;
     bool accelerating;
 
   public:
-    Body(uint mass, Vector2d speed, double maxSpeed, double acceleration, double rotationSpeed, double rotation);
+    Body(Hardware hardware);
+    Body(Vector2d speed, double rotation, Hardware hardware);
 
     void accelerate();
     void deaccelerate();

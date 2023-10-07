@@ -25,7 +25,7 @@ namespace interpreter
             auto rotationNeeded = (getVectorRotation(body.getSpeed()) + 180.) - body.getRotation();
             body.rotate(rotationNeeded);
         }
-        else if (command == "rotation")
+        else if (command == "rotate")
         {
             if (words.size() < 2)
                 return;
@@ -45,28 +45,4 @@ namespace interpreter
             body.rotate(rotationNeeded);
         }
     }
-
-    // bool Interpreter::rotation(const string &s)
-    // {
-    //     regex pattern("(rotate) *(-?[0-9]+)");
-    //     smatch match;
-
-    //     if (regex_search(s, match, pattern))
-    //     {
-    //         double degrees = 0;
-    //         try
-    //         {
-    //             degrees = stod(match[2]);
-    //         }
-    //         catch (...)
-    //         {
-    //             degrees = 0;
-    //         }
-
-    //         ship->getBody().rotate(degrees);
-    //         return true;
-    //     }
-    //     else
-    //         return false;
-    // }
 }
