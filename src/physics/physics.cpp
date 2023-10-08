@@ -13,7 +13,11 @@ namespace physics
     }
     double getVectorRotation(const Vector2d &v)
     {
-        return radiansToDegrees(atan2(v.x, -v.y));
+        return radiansToDegrees(atan2(v.x, v.y));
+    }
+    double getVectorRotationRadians(const Vector2d &v)
+    {
+        return atan2(v.x, v.y);
     }
     Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation)
     {

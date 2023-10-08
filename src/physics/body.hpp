@@ -9,7 +9,7 @@ namespace physics
 
   class Body
   {
-
+    Vector2d bounce;
     Vector2d speed;
     double rotation;
     Hardware hardware;
@@ -32,6 +32,7 @@ namespace physics
 
     Vector2d &getSpeed();
     const Vector2d &getSpeed() const;
+    Vector2d applyBounce();
     double getRotation();
     uint getMass();
 

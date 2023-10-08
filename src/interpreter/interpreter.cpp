@@ -22,7 +22,7 @@ namespace interpreter
         else if (command == "stop")
         {
             body.deaccelerate();
-            auto rotationNeeded = (getVectorRotation(body.getSpeed()) + 180.) - body.getRotation();
+            auto rotationNeeded = (getVectorRotation(body.getSpeed())) - body.getRotation();
             body.rotate(rotationNeeded);
         }
         else if (command == "rotate")

@@ -4,6 +4,7 @@
 #include "../utils.hpp"
 namespace physics
 {
+    inline constexpr double collisionBounce = 3.0;
     struct Vector2d
     {
         double x;
@@ -38,6 +39,8 @@ namespace physics
         uint mass;
     };
     double getVectorRotation(const Vector2d &v);
+    double getVectorRotationRadians(const Vector2d &v);
+
     double vectorLenght(const Vector2d &v);
     Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation);
     Vector2d clampVector(const Vector2d &speed, double maxSpeed);

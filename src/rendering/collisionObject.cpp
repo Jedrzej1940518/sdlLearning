@@ -17,7 +17,7 @@ namespace rendering
         body.frameUpdate(collisionParams);
         slowDown(body.getSpeed(), position, collisionModel.getGridParams());
 
-        Object::frameUpdate(body.getSpeed());
+        Object::frameUpdate(body.getSpeed() + body.applyBounce());
         collisionModel.recalculateGridPosition(*this);
     }
 
