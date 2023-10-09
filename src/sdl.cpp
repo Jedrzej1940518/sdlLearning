@@ -14,11 +14,6 @@ bool initSdl()
 
     TTF_Init();
 
-    if (Mix_OpenAudio(audioFrequency, MIX_DEFAULT_FORMAT, hardwareChannels, audioChunkSize) < 0)
-    {
-        cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
     success = success ? loadMedia() : success;
     return success;
 }
@@ -50,22 +45,6 @@ bool loadMedia()
         success = false;
     }
 
-    gMusic = Mix_LoadMUS("../data/music/07. Violet Sky - Infinity Space.mp3");
-
-    if (gMusic == NULL)
-    {
-        cerr << "Failed to load beat music! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
-
-    gEngineSound = Mix_LoadWAV("../data/sound/engine_loop.wav");
-
-    if (gEngineSound == NULL)
-    {
-        cerr << "Failed to load gEngineSound! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
-
     return success;
 }
 void cleanSdl()
@@ -73,10 +52,6 @@ void cleanSdl()
     SDL_DestroyRenderer(gRenderer);
     SDL_DestroyWindow(gWindow);
 
-    Mix_FreeChunk(gEngineSound);
-    Mix_FreeMusic(gMusic);
-
-    Mix_Quit();
     IMG_Quit();
     SDL_Quit();
 }

@@ -3,6 +3,7 @@ set(SOURCES
     gameState.cpp
     sdl.cpp
     utils.cpp
+    soundManager.cpp
     physics/physics.cpp
     physics/body.cpp
     physics/collisionModel.cpp

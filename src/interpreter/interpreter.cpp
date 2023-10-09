@@ -1,5 +1,6 @@
 #include "interpreter.hpp"
 #include "line.hpp"
+#include "../soundManager.hpp"
 #include <regex>
 
 namespace interpreter
@@ -10,16 +11,17 @@ namespace interpreter
         const string &command = words[0].getWord();
 
         auto &body = ship->getBody();
+        auto &sm = SoundManager::GetInstance();
 
         if (command == "engage")
         {
             body.accelerate();
-            Mix_PlayChannel(-1, gEngineSound, -1);
+            sm.playSound(Sound::ENGINE);
         }
         else if (command == "disengage")
         {
             body.deaccelerate();
-            Mix_PlayChannel(-1, gEngineSound, 0);
+            sm.pauseSound(Sound::ENGINE);
         }
         else if (command == "stop")
         {
@@ -48,11 +50,11 @@ namespace interpreter
         }
         else if (command == "music")
         {
-            Mix_PlayMusic(gMusic, -1);
+            sm.playMusic();
         }
-        else if (command == "music_stop")
+        else if (command == "music_stop" and Mix_PlayingMusic())
         {
-            Mix_PauseMusic();
+            sm.pauseMusic();
         }
     }
 }
