@@ -14,10 +14,12 @@ namespace interpreter
         if (command == "engage")
         {
             body.accelerate();
+            Mix_PlayChannel(-1, gEngineSound, -1);
         }
         else if (command == "disengage")
         {
             body.deaccelerate();
+            Mix_PlayChannel(-1, gEngineSound, 0);
         }
         else if (command == "stop")
         {
@@ -43,6 +45,14 @@ namespace interpreter
                 return;
             }
             body.rotate(rotationNeeded);
+        }
+        else if (command == "music")
+        {
+            Mix_PlayMusic(gMusic, -1);
+        }
+        else if (command == "music_stop")
+        {
+            Mix_PauseMusic();
         }
     }
 }

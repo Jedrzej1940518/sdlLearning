@@ -5,10 +5,8 @@
 int main()
 {
     constexpr uint fps{60};
+    bool quit = not initSdl(); // if init failed, quit
 
-    initSdl();
-
-    bool quit{false};
     GameState gameState{};
     Clock clock{fps};
 
