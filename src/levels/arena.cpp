@@ -5,7 +5,7 @@ namespace levels
 {
 
     using namespace physics; // todo remove this
-    SDL_Rect getChatboxRect()
+    SDL_Rect getconsoleRect()
     {
         int w = SCREEN_WIDTH / 2;
         int h = SCREEN_HEIGHT / 4;
@@ -15,7 +15,7 @@ namespace levels
         return {x, y, w, h};
     }
 
-    Arena::Arena() : chatbox{gRenderer, getChatboxRect()}
+    Arena::Arena() : console{gRenderer, getconsoleRect()}
     {
         viewport.h = SCREEN_HEIGHT;
         viewport.w = SCREEN_WIDTH;
@@ -28,7 +28,7 @@ namespace levels
         collidableObjects.push_back({prefabs::scarab, {4000, 4000}});
 
         controledObject = &collidableObjects.back();
-        chatbox.setControledObject(controledObject);
+        console.setControledObject(controledObject);
 
         for (auto &object : collidableObjects)
             collisionModel.emplace(&object);
@@ -41,7 +41,7 @@ namespace levels
             levelType = LevelType::MENU;
         }
 
-        chatbox.handleEvent(event);
+        console.handleEvent(event);
     }
     void Arena::moveViewport()
     {
@@ -78,7 +78,7 @@ namespace levels
 
         for (auto &object : collidableObjects)
             object.renderObject(viewport);
-        chatbox.render();
+        console.render();
         SDL_RenderPresent(gRenderer);
     }
 } // namespace levels

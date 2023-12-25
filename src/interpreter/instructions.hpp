@@ -10,7 +10,7 @@ using namespace std;
 namespace interpreter
 {
     inline const set<string> INSTRUCTION_LIST{string{"rotate"}, string{"engage"}, string{"disengage"}, string{"stop"}};
-    inline const string LINE_START{"Jedrzej$"};
+    inline const string LINE_START{"Jedrzej$ "};
 
     namespace colors
     {

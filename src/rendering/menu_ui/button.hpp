@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../sdl.hpp"
-#include "../utils.hpp"
+#include "../../sdl.hpp"
+#include "../../utils.hpp"
 #include <string>
 
 using namespace std;

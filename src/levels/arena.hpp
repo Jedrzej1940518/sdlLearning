@@ -2,7 +2,7 @@
 
 #include "../physics/body.hpp"
 #include "../physics/collisionModel.hpp"
-#include "../rendering/chatbox.hpp"
+#include "../rendering/arena_ui/console.hpp"
 #include "../rendering/collisionObject.hpp"
 #include "../sdl.hpp"
 #include "../utils.hpp"
@@ -18,7 +18,7 @@ namespace levels
 
     SDL_Texture *texture;
     SDL_Rect viewport;
-    rendering::Chatbox chatbox;
+    rendering::console console;
     rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {3000, 3000}, "background", 0.8};
 
     CollisionObject *controledObject;

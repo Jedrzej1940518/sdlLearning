@@ -7,10 +7,10 @@ set(SOURCES
     physics/physics.cpp
     physics/body.cpp
     physics/collisionModel.cpp
-    rendering/button.cpp
     rendering/collisionObject.cpp
     rendering/object.cpp
-    rendering/chatbox.cpp
+    rendering/arena_ui/console.cpp
+    rendering/menu_ui/button.cpp
     levels/menu.cpp
     levels/arena.cpp
     interpreter/interpreter.cpp

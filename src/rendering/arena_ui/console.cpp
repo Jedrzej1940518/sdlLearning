@@ -1,17 +1,17 @@
 
-#include "chatbox.hpp"
-#include "../utils.hpp"
+#include "console.hpp"
+#include "../../utils.hpp"
 #include <iostream>
 #include <regex>
 #include <ranges>
 
 namespace rendering
 {
-    Chatbox::~Chatbox()
+    console::~console()
     {
         TTF_CloseFont(font);
     }
-    Chatbox::Chatbox(SDL_Renderer *renderer, SDL_Rect dstrect)
+    console::console(SDL_Renderer *renderer, SDL_Rect dstrect)
         : renderer{renderer}, font{font}, dstrect{dstrect}, lines{{dstrect.x + xLinesMargin, dstrect.y + yLinesMargin, dstrect.w - xLinesMargin, dstrect.h - yLinesMargin}, renderer}
     {
         string s("Welcome Jedrzej");
@@ -20,14 +20,14 @@ namespace rendering
         lines.newLine();
     }
 
-    void Chatbox::handleCompositionChange()
+    void console::handleCompositionChange()
     {
         listed = false;
 
         instructions.clear();
     }
 
-    void Chatbox::listAllInstructions()
+    void console::listAllInstructions()
     {
         // string s = "";
 
@@ -43,7 +43,7 @@ namespace rendering
         // lines.push_back(s);
     }
 
-    boost::circular_buffer<string> Chatbox::matchInstructions(const string &beggining)
+    boost::circular_buffer<string> console::matchInstructions(const string &beggining)
     {
         const string instructionList[]{"rotate", "engage", "disengage", "stop"};
         boost::circular_buffer<string> c{maxInstructions};
@@ -58,7 +58,7 @@ namespace rendering
         return c;
     }
 
-    void Chatbox::render()
+    void console::render()
     {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderFillRect(renderer, &dstrect);
@@ -68,7 +68,7 @@ namespace rendering
         lines.render();
     }
 
-    void Chatbox::handleEvent(SDL_Event &event)
+    void console::handleEvent(SDL_Event &event)
     {
         if (event.type == SDL_TEXTINPUT)
         {
@@ -119,7 +119,7 @@ namespace rendering
             // listed = true;
         }
     }
-    void Chatbox::setControledObject(rendering::CollisionObject *ship)
+    void console::setControledObject(rendering::CollisionObject *ship)
     {
         interpreter.setControledObject(ship);
     }

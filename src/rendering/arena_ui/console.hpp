@@ -2,13 +2,13 @@
 
 #include <array>
 #include <boost/circular_buffer.hpp>
-#include "../sdl.hpp"
-#include "../interpreter/interpreter.hpp"
-#include "../interpreter/lines.hpp"
+#include "../../sdl.hpp"
+#include "../../interpreter/interpreter.hpp"
+#include "../../interpreter/lines.hpp"
 
 namespace rendering
 {
-  class Chatbox
+  class console
   {
     static constexpr int maxLines{8};
     static constexpr int maxInstructions{8};
@@ -35,12 +35,8 @@ namespace rendering
 
     bool listed{false};
 
-    void renderText();
-    void renderLine(const string &s, int i);
-
     void handleCompositionChange();
     void listAllInstructions();
-    void initTextSize();
 
     boost::circular_buffer<string>
     matchInstructions(const string &beggining);
@@ -49,7 +45,7 @@ namespace rendering
     void render();
     void handleEvent(SDL_Event &event);
     void setControledObject(rendering::CollisionObject *ship);
-    Chatbox(SDL_Renderer *renderer, SDL_Rect dstrect);
-    ~Chatbox();
+    console(SDL_Renderer *renderer, SDL_Rect dstrect);
+    ~console();
   };
 } // namespace rendering
