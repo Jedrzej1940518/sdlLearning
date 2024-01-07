@@ -12,28 +12,42 @@ namespace ships
         int indx = angle / 90.;
         inputDirections[indx] = true;
     }
+    void Ship::removeInput(physics::DIRECTION dir)
+    {
+        double angle = static_cast<double>(dir);
+        int indx = angle / 90.;
+        inputDirections[indx] = false;
+    }
 
     void Ship::rotateLeft()
     {
-        body.rotateOnce(physics::DIRECTION::left);
+        body.rotate(-360);
     }
 
     void Ship::rotateRight()
     {
-        body.rotateOnce(physics::DIRECTION::right);
+        body.rotate(360);
+    }
+    void Ship::stopRotateLeft()
+    {
+        body.rotate(0);
+    }
+
+    void Ship::stopRotateRight()
+    {
+        body.rotate(0);
     }
 
     void Ship::frameUpdate()
     {
         bool accelerateOnce = false;
-        double accelerationAngle = physics::sumDirections(inputDirections);
+
         for (int i = 0; i < 4; ++i)
         {
             accelerateOnce |= inputDirections[i];
-            inputDirections[i] = false;
         }
 
         if (accelerateOnce)
-            body.accelerateOnce(accelerationAngle);
+            body.accelerateOnce(physics::sumDirections(inputDirections));
     }
 }

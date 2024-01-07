@@ -43,8 +43,6 @@ namespace levels
         }
         if (event.type == SDL_KEYDOWN)
         {
-            LOG("event: %d", event.key.keysym.sym);
-
             switch (event.key.keysym.sym)
             {
             case SDLK_w:
@@ -64,6 +62,30 @@ namespace levels
                 break;
             case SDLK_e:
                 controledObject->rotateRight();
+                break;
+            }
+        }
+        if (event.type == SDL_KEYUP)
+        {
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_w:
+                controledObject->removeInput(physics::DIRECTION::up);
+                break;
+            case SDLK_d:
+                controledObject->removeInput(physics::DIRECTION::right);
+                break;
+            case SDLK_a:
+                controledObject->removeInput(physics::DIRECTION::left);
+                break;
+            case SDLK_s:
+                controledObject->removeInput(physics::DIRECTION::down);
+                break;
+            case SDLK_q:
+                controledObject->stopRotateLeft();
+                break;
+            case SDLK_e:
+                controledObject->stopRotateRight();
                 break;
             }
         }

@@ -67,8 +67,6 @@ namespace physics
     }
     void Body::accelerateOnce(double angle)
     {
-        LOG("angle: %lf", (double)angle);
-
         accelerating = false;
         accelerationAngle = angle;
         acceleratingOnce = true;
