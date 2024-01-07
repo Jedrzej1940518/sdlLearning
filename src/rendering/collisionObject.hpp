@@ -41,6 +41,11 @@ namespace rendering
     int getWidth() const;
     int getHeight() const;
     physics::GridPosition &getGridPosition();
+    const physics::GridPosition &getGridPosition() const;
     Body &getBody();
+    double getRotation();
+    ~CollisionObject()
+    {
+    }
   };
 } // namespace rendering

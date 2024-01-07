@@ -12,6 +12,11 @@ namespace physics
     {
         return radians * 180. / M_PI;
     }
+    Vector2d getRotatedVector(double degrees)
+    {
+        double radians = degreesToRadians(degrees); //?
+        return {-sin(radians), cos(radians)};
+    }
     double getVectorRotation(const Vector2d &v)
     {
         return radiansToDegrees(atan2(v.x, v.y));
@@ -23,10 +28,9 @@ namespace physics
     Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation)
     {
         rotation = degreesToRadians(rotation);
-        double x1 = 0;
         double y1 = -acceleration;
 
-        Vector2d rotatedVector{cos(rotation) * x1 - sin(rotation) * y1, sin(rotation) * x1 + cos(rotation) * y1};
+        Vector2d rotatedVector{-sin(rotation) * y1, cos(rotation) * y1};
         Vector2d newSpeed = speed + rotatedVector;
 
         return clampVector(newSpeed, maxSpeed);

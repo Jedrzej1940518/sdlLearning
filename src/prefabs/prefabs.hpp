@@ -24,9 +24,9 @@ namespace prefabs
 
     struct ProjectilePrefab : public Prefab
     {
-        ProjectilePrefab(Prefab prefab, double range) : Prefab{prefab}, range{range} {}
-        double range;
+        ProjectilePrefab(Prefab prefab, int lifetime) : Prefab{prefab}, lifetime{lifetime} {}
+        int lifetime;
     };
 
-    inline ProjectilePrefab shell{{"../data/graphics/projectiles/shell_small_green.png", "shell", {0, 1, 1, 1}}, 15};
+    inline ProjectilePrefab shell{{"../data/graphics/projectiles/shell_small_green.png", "shell", {0, 1, 1, 1}}, 50};
 }

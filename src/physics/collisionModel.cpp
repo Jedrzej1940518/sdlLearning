@@ -54,7 +54,7 @@ namespace physics
         int column = std::clamp(y / static_cast<int>(gridParams.cellSide), 0, columns - 1);
         return {row, column};
     }
-    void CollisionModel::remove(CollisionObject &obj)
+    void CollisionModel::remove(const CollisionObject &obj)
     {
         auto &g = obj.getGridPosition();
         auto lastIndex = static_cast<int>(grid[g.row][g.column].size()) - 1;

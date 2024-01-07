@@ -13,8 +13,7 @@ namespace rendering
     void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
     {
         // debug logs
-        printCollisionObject();
-        collisionModel.checkCollisions(*this);
+        // printCollisionObject();
 
         body.frameUpdate(collisionParams);
         slowDown(body.getSpeed(), position, collisionModel.getGridParams());
@@ -58,7 +57,15 @@ namespace rendering
     {
         return Object::getPosition();
     }
+    double CollisionObject::getRotation()
+    {
+        return body.getRotation();
+    }
     physics::GridPosition &CollisionObject::getGridPosition()
+    {
+        return gridPosition;
+    }
+    const physics::GridPosition &CollisionObject::getGridPosition() const
     {
         return gridPosition;
     }

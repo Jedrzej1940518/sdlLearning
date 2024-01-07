@@ -27,6 +27,7 @@ namespace levels
     ships::Ship *controledObject;
 
     vector<CollisionObject *> collidableObjects;
+    vector<ships::Projectile *> projectiles;
     static constexpr physics::GridParams gridParams{10000, 10000, 500};
     physics::CollisionModel collisionModel{gridParams};
 
@@ -35,6 +36,7 @@ namespace levels
     virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/) override;
 
   private:
+    void cleanupProjectiles();
     void moveViewport();
     virtual void render() override;
   };

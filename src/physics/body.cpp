@@ -48,6 +48,8 @@ namespace physics
             auto rotationTick = std::clamp<double>(rotationLeft, -maxRotationSpeed, maxRotationSpeed);
             rotation += rotationTick;
             rotationLeft -= rotationTick;
+            rotation = rotation < 0 ? rotation + 360 : rotation;
+            rotation = rotation > 360 ? rotation - 360 : rotation;
         }
 
         if (accelerating)

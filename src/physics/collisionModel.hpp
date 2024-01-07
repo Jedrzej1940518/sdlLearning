@@ -30,7 +30,7 @@ namespace physics
   public:
     void checkCollisions(CollisionObject &obj);
     GridCoords calculateGridCoords(int x, int y);
-    void remove(CollisionObject &obj);
+    void remove(const CollisionObject &obj);
 
     void emplace(CollisionObject *obj);
 

@@ -108,13 +108,31 @@ namespace levels
         setPosition(viewport, screenCenter);
     }
 
+    void Arena::cleanupProjectiles()
+    {
+        std::stable_sort(projectiles.begin(), projectiles.end(), [](const ships::Projectile *a, const ships::Projectile *b)
+                         { return a->isAlive() > b->isAlive(); });
+
+        uint iter = 0;
+        for (; iter < projectiles.size(); ++iter)
+        {
+            if (!(projectiles[iter]->isAlive()))
+                break;
+        }
+        std::for_each(projectiles.begin() + iter, projectiles.end(), [&](const ships::Projectile *a)
+                      { 
+                        collisionModel.remove(*a);
+                        delete (a); });
+        projectiles.erase(projectiles.begin() + iter, projectiles.end());
+    }
+
     void Arena::render()
     {
+        ships::Projectile *projectile = controledObject->frameUpdate();
 
-        CollisionObject *projectile = controledObject->frameUpdate();
         if (projectile)
         {
-            collidableObjects.push_back(projectile);
+            projectiles.push_back(projectile);
             collisionModel.emplace(projectile);
         }
         // delete projectiles after
@@ -127,6 +145,11 @@ namespace levels
         {
             object->frameUpdate(collisionModel);
         }
+        for (auto &projectile : projectiles)
+        {
+            projectile->frameUpdate(collisionModel);
+        }
+        cleanupProjectiles();
 
         background.frameUpdate(controledObject->getBody().getSpeed());
         moveViewport();
@@ -137,6 +160,8 @@ namespace levels
 
         for (auto &object : collidableObjects)
             object->renderObject(viewport);
+        for (auto &projectile : projectiles)
+            projectile->renderObject(viewport);
         //   console.render();
         SDL_RenderPresent(gRenderer);
     }

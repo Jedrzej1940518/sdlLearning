@@ -32,5 +32,8 @@ namespace rendering
     int getY();
     physics::Vector2d &getPosition();
     SDL_Rect getDstrect();
+    ~Object()
+    {
+        }
   };
 } // namespace rendering

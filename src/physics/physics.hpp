@@ -47,6 +47,7 @@ namespace physics
         uint mass;
     };
     double sumDirections(bool directions[4]);
+    Vector2d getRotatedVector(double radians);
     double getVectorRotation(const Vector2d &v);
     double getVectorRotationRadians(const Vector2d &v);
 
