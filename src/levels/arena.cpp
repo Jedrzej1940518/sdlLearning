@@ -63,6 +63,9 @@ namespace levels
             case SDLK_e:
                 controledObject->rotateRight();
                 break;
+            case SDLK_SPACE:
+                controledObject->shoot();
+                break;
             }
         }
         if (event.type == SDL_KEYUP)
@@ -108,11 +111,18 @@ namespace levels
     void Arena::render()
     {
 
+        CollisionObject *projectile = controledObject->frameUpdate();
+        if (projectile)
+        {
+            collidableObjects.push_back(projectile);
+            collisionModel.emplace(projectile);
+        }
+        // delete projectiles after
         for (auto &object : collidableObjects)
         {
             collisionModel.checkCollisions(*object);
         }
-        controledObject->frameUpdate();
+
         for (auto &object : collidableObjects)
         {
             object->frameUpdate(collisionModel);

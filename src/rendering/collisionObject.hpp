@@ -37,6 +37,7 @@ namespace rendering
     void printGridPosition() const;
     void printSpeed() const;
 
+    physics::Vector2d getPosition();
     int getWidth() const;
     int getHeight() const;
     physics::GridPosition &getGridPosition();

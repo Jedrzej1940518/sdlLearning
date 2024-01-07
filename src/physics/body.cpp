@@ -93,10 +93,7 @@ namespace physics
     {
         return speed;
     }
-    const Vector2d &Body::getSpeed() const
-    {
-        return speed;
-    }
+    const Vector2d &Body::getSpeed() const { return speed; }
     Vector2d Body::applyBounce()
     {
         Vector2d bounceToApply = bounce;

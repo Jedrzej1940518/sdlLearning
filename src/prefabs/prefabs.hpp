@@ -21,4 +21,12 @@ namespace prefabs
         "../data/graphics/asteroids/asteroid3.png", "asteroid3", {5, 7, 0, 300}};
     inline Prefab scarab{
         "../data/graphics/ships/scarab.png", "scarab", {3, 5, 0.2, 500}};
+
+    struct ProjectilePrefab : public Prefab
+    {
+        ProjectilePrefab(Prefab prefab, double range) : Prefab{prefab}, range{range} {}
+        double range;
+    };
+
+    inline ProjectilePrefab shell{{"../data/graphics/projectiles/shell_small_green.png", "shell", {0, 1, 1, 1}}, 15};
 }

@@ -4,7 +4,14 @@
 namespace ships
 {
     Ship::Ship(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed,
-               double rotation) : CollisionObject{prefab, position, speed, rotation} {}
+               double rotation) : CollisionObject{prefab, position, speed, rotation}
+    {
+        spawnProjectile = false;
+        for (int i = 0; i < 4; ++i)
+        {
+            inputDirections[i] = false;
+        }
+    }
 
     void Ship::addInput(physics::DIRECTION dir)
     {
@@ -17,6 +24,11 @@ namespace ships
         double angle = static_cast<double>(dir);
         int indx = angle / 90.;
         inputDirections[indx] = false;
+    }
+
+    void Ship::shoot()
+    {
+        spawnProjectile = true;
     }
 
     void Ship::rotateLeft()
@@ -38,7 +50,7 @@ namespace ships
         body.rotate(0);
     }
 
-    void Ship::frameUpdate()
+    Projectile *Ship::frameUpdate()
     {
         bool accelerateOnce = false;
 
@@ -49,5 +61,13 @@ namespace ships
 
         if (accelerateOnce)
             body.accelerateOnce(physics::sumDirections(inputDirections));
+
+        Projectile *projectile = nullptr;
+        if (spawnProjectile)
+        {
+            spawnProjectile = false;
+            projectile = new Projectile(prefabs::shell, getPosition() + physics::Vector2d{2, 2});
+        }
+        return projectile;
     }
 }

@@ -6,12 +6,21 @@
 
 namespace ships
 {
+    struct Projectile : public rendering::CollisionObject
+    {
+        Projectile(prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d speed = {0, 0}, double rotation = 0) : CollisionObject(projectilePrefab, position, speed, rotation) {}
+    };
+
     class Ship : public rendering::CollisionObject
     {
         bool inputDirections[4];
+        bool spawnProjectile;
 
     public:
         Ship(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed = {0, 0}, double rotation = 0);
+
+        void shoot();
+
         void addInput(physics::DIRECTION dir);
         void removeInput(physics::DIRECTION dir);
 
@@ -20,6 +29,6 @@ namespace ships
         void stopRotateLeft();
         void stopRotateRight();
 
-        void frameUpdate();
+        Projectile *frameUpdate();
     };
 }

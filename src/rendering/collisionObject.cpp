@@ -12,6 +12,8 @@ namespace rendering
     }
     void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
     {
+        // debug logs
+        printCollisionObject();
         collisionModel.checkCollisions(*this);
 
         body.frameUpdate(collisionParams);
@@ -51,6 +53,10 @@ namespace rendering
     CollisionObject::Body &CollisionObject::getBody()
     {
         return body;
+    }
+    physics::Vector2d CollisionObject::getPosition()
+    {
+        return Object::getPosition();
     }
     physics::GridPosition &CollisionObject::getGridPosition()
     {
