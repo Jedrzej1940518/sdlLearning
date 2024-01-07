@@ -5,6 +5,14 @@
 namespace physics
 {
     inline constexpr double collisionBounce = 3.0;
+    enum class DIRECTION
+    {
+        up = 0,
+        right = 90,
+        down = 180,
+        left = 270,
+    };
+
     struct Vector2d
     {
         double x;
@@ -38,6 +46,7 @@ namespace physics
         Vector2d speed;
         uint mass;
     };
+    double sumDirections(bool directions[4]);
     double getVectorRotation(const Vector2d &v);
     double getVectorRotationRadians(const Vector2d &v);
 

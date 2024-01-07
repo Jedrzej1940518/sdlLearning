@@ -3,6 +3,7 @@
 
 namespace physics
 {
+
     double degreesToRadians(double degrees)
     {
         return degrees * M_PI / 180.;
@@ -91,6 +92,21 @@ namespace physics
         SDL_Rect res;
         SDL_IntersectRect(&a, &b, &res);
         return res;
+    }
+    double sumDirections(bool directions[4])
+    {
+        int x = directions[1] || directions[3] ? (directions[1] && directions[3] ? 0 : (directions[1] ? -1 : 1)) : 0;
+        int y = directions[0] || directions[2] ? (directions[0] && directions[2] ? 0 : (directions[0] ? 1 : -1)) : 0;
+
+        double angleRad = atan2(y, x);
+        double angleDeg = radiansToDegrees(angleRad);
+
+        if (angleDeg < 0)
+        {
+            angleDeg += 360.0;
+        }
+
+        return angleDeg - 90; // bcs we treat north as 0 degrees, not 90 degrees like atan does
     }
 
     void printVector(const Vector2d &v)

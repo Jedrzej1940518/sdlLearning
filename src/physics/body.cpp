@@ -11,7 +11,7 @@ namespace physics
 
     Body::Body(Vector2d speed, double rotation, Hardware hardware)
         : bounce{0, 0}, speed{speed},
-          rotation{rotation}, hardware{hardware}, rotationLeft{0}, accelerating{false}
+          rotation{rotation}, hardware{hardware}, rotationLeft{0}, accelerating{false}, accelerationAngle{0}, acceleratingOnce{false}
     {
     }
 
@@ -43,23 +43,44 @@ namespace physics
         handleColision(collisionParams);
         auto maxRotationSpeed = hardware.maxRotationSpeed;
 
-        if (accelerating)
-            speed = calculateSpeed(speed, hardware.maxSpeed, hardware.acceleration, rotation);
         if (abs(rotationLeft) > 0)
         {
             auto rotationTick = std::clamp<double>(rotationLeft, -maxRotationSpeed, maxRotationSpeed);
             rotation += rotationTick;
             rotationLeft -= rotationTick;
         }
+
+        if (accelerating)
+            speed = calculateSpeed(speed, hardware.maxSpeed, hardware.acceleration, rotation);
+
+        else if (acceleratingOnce)
+        {
+            speed = calculateSpeed(speed, hardware.maxSpeed, hardware.acceleration, accelerationAngle);
+            acceleratingOnce = false;
+        }
     }
 
     void Body::accelerate()
     {
+        acceleratingOnce = false;
         accelerating = true;
     }
+    void Body::accelerateOnce(double angle)
+    {
+        LOG("angle: %lf", (double)angle);
+
+        accelerating = false;
+        accelerationAngle = angle;
+        acceleratingOnce = true;
+    }
+
     void Body::deaccelerate()
     {
         accelerating = false;
+    }
+    void Body::rotateOnce(DIRECTION rd)
+    {
+        rotationLeft = (rd == DIRECTION::right ? hardware.maxRotationSpeed : -hardware.maxRotationSpeed);
     }
     void Body::rotate(double degrees)
     {

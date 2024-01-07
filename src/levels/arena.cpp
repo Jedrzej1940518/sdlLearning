@@ -15,7 +15,7 @@ namespace levels
         return {x, y, w, h};
     }
 
-    Arena::Arena() : console{gRenderer, getconsoleRect()}
+    Arena::Arena() //: console{gRenderer, getconsoleRect()}
     {
         viewport.h = SCREEN_HEIGHT;
         viewport.w = SCREEN_WIDTH;
@@ -24,14 +24,15 @@ namespace levels
 
         // collidableObjects.push_back({prefabs::asteroidBig2, {5000, 5000}});
         // collidableObjects.push_back({prefabs::asteroid2, {5500, 5500}});
-        collidableObjects.push_back({prefabs::asteroid3, {4500, 4500}});
-        collidableObjects.push_back({prefabs::scarab, {4000, 4000}});
+        collidableObjects.push_back(new CollisionObject(prefabs::asteroid3, {4500, 4500}));
+        controledObject = new ships::Ship(prefabs::scarab, {4000, 4000});
 
-        controledObject = &collidableObjects.back();
-        console.setControledObject(controledObject);
+        collidableObjects.push_back(controledObject);
+
+        // console.setControledObject(controledObject);
 
         for (auto &object : collidableObjects)
-            collisionModel.emplace(&object);
+            collisionModel.emplace(object);
     }
 
     void Arena::handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/)
@@ -40,8 +41,34 @@ namespace levels
         {
             levelType = LevelType::MENU;
         }
+        if (event.type == SDL_KEYDOWN)
+        {
+            LOG("event: %d", event.key.keysym.sym);
 
-        console.handleEvent(event);
+            switch (event.key.keysym.sym)
+            {
+            case SDLK_w:
+                controledObject->addInput(physics::DIRECTION::up);
+                break;
+            case SDLK_d:
+                controledObject->addInput(physics::DIRECTION::right);
+                break;
+            case SDLK_a:
+                controledObject->addInput(physics::DIRECTION::left);
+                break;
+            case SDLK_s:
+                controledObject->addInput(physics::DIRECTION::down);
+                break;
+            case SDLK_q:
+                controledObject->rotateLeft();
+                break;
+            case SDLK_e:
+                controledObject->rotateRight();
+                break;
+            }
+        }
+
+        // console.handleEvent(event);
     }
     void Arena::moveViewport()
     {
@@ -61,12 +88,12 @@ namespace levels
 
         for (auto &object : collidableObjects)
         {
-            collisionModel.checkCollisions(object);
+            collisionModel.checkCollisions(*object);
         }
-
+        controledObject->frameUpdate();
         for (auto &object : collidableObjects)
         {
-            object.frameUpdate(collisionModel);
+            object->frameUpdate(collisionModel);
         }
 
         background.frameUpdate(controledObject->getBody().getSpeed());
@@ -77,8 +104,8 @@ namespace levels
         background.renderObject(viewport);
 
         for (auto &object : collidableObjects)
-            object.renderObject(viewport);
-        console.render();
+            object->renderObject(viewport);
+        //   console.render();
         SDL_RenderPresent(gRenderer);
     }
 } // namespace levels

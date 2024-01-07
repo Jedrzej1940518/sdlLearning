@@ -5,8 +5,8 @@
 #include <array>
 #include <SDL2/SDL_mixer.h>
 
-#define LOG(line) \
-    (printf("%s [%d] %s\n", __FILE__, __LINE__, line));
+#define LOG(fmt, ...) \
+    (printf("%s [%d] " fmt "\n", __FILE__, __LINE__, __VA_ARGS__));
 
 // resolution
 extern const uint SCREEN_HEIGHT;

@@ -1,13 +1,16 @@
 #pragma once
 
 #include "../physics/body.hpp"
+#include "../physics/physics.hpp"
 #include "../physics/collisionModel.hpp"
-#include "../rendering/arena_ui/console.hpp"
+// #include "../rendering/arena_ui/console.hpp"
 #include "../rendering/collisionObject.hpp"
 #include "../sdl.hpp"
 #include "../utils.hpp"
 #include "level.hpp"
 #include <vector>
+
+#include "../ships/ship.hpp"
 
 namespace levels
 {
@@ -18,12 +21,12 @@ namespace levels
 
     SDL_Texture *texture;
     SDL_Rect viewport;
-    rendering::console console;
+    //  rendering::console console;
     rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {3000, 3000}, "background", 0.8};
 
-    CollisionObject *controledObject;
+    ships::Ship *controledObject;
 
-    vector<CollisionObject> collidableObjects;
+    vector<CollisionObject *> collidableObjects;
     static constexpr physics::GridParams gridParams{10000, 10000, 500};
     physics::CollisionModel collisionModel{gridParams};
 

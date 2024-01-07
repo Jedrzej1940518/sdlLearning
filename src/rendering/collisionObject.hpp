@@ -17,6 +17,7 @@ namespace rendering
 {
   class CollisionObject : public Object
   {
+  protected:
     using Body = physics::Body;
     using CollisionModel = physics::CollisionModel;
     using Vector2d = physics::Vector2d;

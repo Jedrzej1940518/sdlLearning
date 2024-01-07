@@ -6,7 +6,6 @@
 
 namespace physics
 {
-
   class Body
   {
     Vector2d bounce;
@@ -15,16 +14,22 @@ namespace physics
     Hardware hardware;
 
     double rotationLeft;
+
     bool accelerating;
+
+    double accelerationAngle;
+    bool acceleratingOnce;
 
   public:
     Body(Hardware hardware);
     Body(Vector2d speed, double rotation, Hardware hardware);
 
     void accelerate();
+    void accelerateOnce(double angle);
     void deaccelerate();
 
     void rotate(double degrees);
+    void rotateOnce(DIRECTION rd);
 
     void handleColision(CollisionParams &collisionParams);
 
