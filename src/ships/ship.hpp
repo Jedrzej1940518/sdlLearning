@@ -26,6 +26,6 @@ namespace ships
         void stopRotateLeft();
         void stopRotateRight();
 
-        Projectile *frameUpdate();
+        Projectile *frameUpdate(CollisionModel &collisionModel);
     };
 }

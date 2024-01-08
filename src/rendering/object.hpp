@@ -34,7 +34,7 @@ namespace rendering
     SDL_Rect getDstrect();
     const string &getId() { return id; }
 
-    ~Object()
+    virtual ~Object()
     {
     }
   };

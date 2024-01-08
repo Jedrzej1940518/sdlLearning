@@ -50,7 +50,7 @@ namespace rendering
     Body &getBody();
     double getRotation();
     bool isAlive() const;
-    ~CollisionObject()
+    virtual ~CollisionObject()
     {
     }
   };

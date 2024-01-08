@@ -23,8 +23,8 @@ namespace prefabs
     inline Prefab scarab{
         "../data/graphics/ships/scarab.png", "scarab", {3, 5, 0.2, 500}, 100};
 
-    inline Prefab ememyScarab{
-        "../data/graphics/ships/scarab.png", "enemyScarab", {2, 4, 0.2, 500}, 50};
+    inline Prefab lasher{
+        "../data/graphics/ships/lasher_ff.png", "lasher", {2, 4, 0.2, 500}, 50};
 
     struct ProjectilePrefab : public Prefab
     {

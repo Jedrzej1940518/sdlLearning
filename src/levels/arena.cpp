@@ -26,14 +26,19 @@ namespace levels
         // collidableObjects.push_back({prefabs::asteroid2, {5500, 5500}});
         collidableObjects.push_back(new CollisionObject(prefabs::asteroid3, {4500, 4500}));
         controledObject = new ships::Ship(prefabs::scarab, {4000, 4000});
-        hostileShips.push_back(new ships::HostileShip(prefabs::ememyScarab, {4700, 4700}));
+        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {4700, 4700}));
+        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {3700, 3700}));
 
-        collidableObjects.push_back(controledObject);
-        collidableObjects.push_back(hostileShips.back());
-        // console.setControledObject(controledObject);
+        // collidableObjects.push_back(controledObject);
+        // collidableObjects.push_back(hostileShips.back());
+        //  console.setControledObject(controledObject);
 
         for (auto &object : collidableObjects)
             collisionModel.emplace(object);
+        for (auto &object : hostileShips)
+            collisionModel.emplace(object);
+
+        collisionModel.emplace(controledObject);
     }
 
     void Arena::handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/)
@@ -109,27 +114,23 @@ namespace levels
         setPosition(viewport, screenCenter);
     }
 
-    void Arena::cleanupProjectiles()
+    template <typename T>
+    void cleanupDeadCollidables(vector<T *> &objects, CollisionModel &collisionModel)
     {
-        std::stable_sort(projectiles.begin(), projectiles.end(), [](const ships::Projectile *a, const ships::Projectile *b)
-                         { return a->isAlive() > b->isAlive(); });
-
-        uint iter = 0;
-        for (; iter < projectiles.size(); ++iter)
+        for (uint i = 0; i < objects.size(); ++i)
         {
-            if (!(projectiles[iter]->isAlive()))
-                break;
+            if (!(objects[i]->isAlive()))
+            {
+                collisionModel.remove(*(objects[i]));
+                delete (objects[i]);
+                removeVectorElement(objects, i);
+            }
         }
-        std::for_each(projectiles.begin() + iter, projectiles.end(), [&](const ships::Projectile *a)
-                      { 
-                        collisionModel.remove(*a);
-                        delete (a); });
-        projectiles.erase(projectiles.begin() + iter, projectiles.end());
     }
 
     void Arena::render()
     {
-        ships::Projectile *projectile = controledObject->frameUpdate();
+        ships::Projectile *projectile = controledObject->frameUpdate(collisionModel);
 
         if (projectile)
         {
@@ -143,15 +144,19 @@ namespace levels
         {
             object->frameUpdate(collisionModel);
         }
-        for (auto &hostileShip : hostileShips)
-        {
-            hostileShip->frameUpdate(hostileShips, *controledObject);
-        }
         for (auto &projectile : projectiles)
         {
             projectile->frameUpdate(collisionModel);
         }
-        cleanupProjectiles();
+
+        cleanupDeadCollidables(projectiles, collisionModel);
+        cleanupDeadCollidables(collidableObjects, collisionModel);
+        cleanupDeadCollidables(hostileShips, collisionModel);
+        // determine tactic after cleanup of asteroids etc.
+        for (auto &hostileShip : hostileShips)
+        {
+            hostileShip->frameUpdate(hostileShips, collidableObjects, *controledObject, collisionModel);
+        }
 
         background.frameUpdate(controledObject->getBody().getSpeed());
         moveViewport();
@@ -162,8 +167,12 @@ namespace levels
 
         for (auto &object : collidableObjects)
             object->renderObject(viewport);
+        for (auto &object : hostileShips)
+            object->renderObject(viewport);
         for (auto &projectile : projectiles)
             projectile->renderObject(viewport);
+
+        controledObject->renderObject(viewport);
         //   console.render();
         SDL_RenderPresent(gRenderer);
     }

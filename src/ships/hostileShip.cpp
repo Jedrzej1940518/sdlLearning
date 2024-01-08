@@ -50,8 +50,12 @@ namespace ships
         tactic = dist > maxPlayerDist ? approach : disapproach;
     }
 
-    Projectile *HostileShip::frameUpdate(const vector<HostileShip *> & /*allies*/, Ship &player)
+    Projectile *HostileShip::frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player, CollisionModel &collisionModel)
     {
+        allies.size();
+        asteroids.size();
+
+        CollisionObject::frameUpdate(collisionModel);
         determineRotation(player.getPosition());
         determineSpeed(player.getPosition());
         return nullptr;

@@ -3,6 +3,7 @@
 #include "sdl.hpp"
 #include <iostream>
 #include <array>
+#include <vector>
 #include <SDL2/SDL_mixer.h>
 
 #define LOG(fmt, ...) \
@@ -26,3 +27,12 @@ enum class LevelType
 void printRectangle(SDL_Rect rectangle);
 void printPoint(SDL_Point point);
 string boolToString(bool b);
+
+// THIS IS DONE BY COPY ASSIGNMENT
+template <typename T>
+void removeVectorElement(std::vector<T> &vec, int indx)
+{
+    auto lastIndex = vec.size() - 1;
+    std::swap(vec[lastIndex], vec[indx]);
+    vec.pop_back();
+}

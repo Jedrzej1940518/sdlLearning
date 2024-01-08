@@ -50,8 +50,10 @@ namespace ships
         body.rotate(0);
     }
 
-    Projectile *Ship::frameUpdate()
+    Projectile *Ship::frameUpdate(CollisionModel &collisionModel)
     {
+        CollisionObject::frameUpdate(collisionModel);
+
         bool accelerateOnce = false;
 
         for (int i = 0; i < 4; ++i)

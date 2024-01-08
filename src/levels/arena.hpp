@@ -39,7 +39,6 @@ namespace levels
     virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/) override;
 
   private:
-    void cleanupProjectiles();
     void moveViewport();
     virtual void render() override;
   };

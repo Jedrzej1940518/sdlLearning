@@ -23,7 +23,10 @@ namespace ships
 
     public:
         HostileShip(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed = {0, 0}, double rotation = 0);
-        Projectile *frameUpdate(const vector<HostileShip *> & /*allies*/, Ship &player);
+        Projectile *frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player, CollisionModel &collisionModel);
+        virtual ~HostileShip()
+        {
+        }
 
     private:
         double determineLookAngle(physics::Vector2d playerPos);
