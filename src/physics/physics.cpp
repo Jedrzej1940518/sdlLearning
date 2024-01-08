@@ -12,6 +12,10 @@ namespace physics
     {
         return radians * 180. / M_PI;
     }
+    double normalizeDegrees(double degrees)
+    {
+        return degrees < 0 ? degrees + 360 : (degrees > 360 ? degrees - 360 : degrees);
+    }
     Vector2d getRotatedVector(double degrees)
     {
         double radians = degreesToRadians(degrees); //?
@@ -19,7 +23,7 @@ namespace physics
     }
     double getVectorRotation(const Vector2d &v)
     {
-        return radiansToDegrees(atan2(v.x, v.y));
+        return radiansToDegrees(atan2(v.y, v.x));
     }
     double getVectorRotationRadians(const Vector2d &v)
     {
@@ -116,6 +120,16 @@ namespace physics
     void printVector(const Vector2d &v)
     {
         printf("[%f,%f]\n", v.x, v.y);
+    }
+
+    double calculateDistance(const Vector2d &a, const Vector2d &b)
+    {
+        return std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2));
+    }
+    double getAngleBetweenPoints(const Vector2d &a, const Vector2d &b)
+    {
+        Vector2d c = {b.x - a.x, b.y - a.y};
+        return physics::radiansToDegrees(atan2(c.y, c.x));
     }
 
     Vector2d Vector2d::operator+(const Vector2d &rhs) const

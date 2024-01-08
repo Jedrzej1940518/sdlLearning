@@ -46,15 +46,21 @@ namespace physics
         Vector2d speed;
         uint mass;
     };
+
+    double degreesToRadians(double degrees);
+    double radiansToDegrees(double radians);
+    double normalizeDegrees(double degrees);
+
     double sumDirections(bool directions[4]);
-    Vector2d getRotatedVector(double radians);
+    Vector2d getRotatedVector(double degrees);
     double getVectorRotation(const Vector2d &v);
     double getVectorRotationRadians(const Vector2d &v);
 
     double vectorLenght(const Vector2d &v);
     Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation);
     Vector2d clampVector(const Vector2d &speed, double maxSpeed);
-
+    double calculateDistance(const Vector2d &a, const Vector2d &b);
+    double getAngleBetweenPoints(const Vector2d &a, const Vector2d &b);
     Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset);
     SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset);
 

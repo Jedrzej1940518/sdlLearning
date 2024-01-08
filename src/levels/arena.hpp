@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "../ships/ship.hpp"
+#include "../ships/hostileShip.hpp"
 
 namespace levels
 {
@@ -28,6 +29,8 @@ namespace levels
 
     vector<CollisionObject *> collidableObjects;
     vector<ships::Projectile *> projectiles;
+    vector<ships::HostileShip *> hostileShips;
+
     static constexpr physics::GridParams gridParams{10000, 10000, 500};
     physics::CollisionModel collisionModel{gridParams};
 

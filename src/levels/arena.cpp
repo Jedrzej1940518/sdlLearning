@@ -26,9 +26,10 @@ namespace levels
         // collidableObjects.push_back({prefabs::asteroid2, {5500, 5500}});
         collidableObjects.push_back(new CollisionObject(prefabs::asteroid3, {4500, 4500}));
         controledObject = new ships::Ship(prefabs::scarab, {4000, 4000});
+        hostileShips.push_back(new ships::HostileShip(prefabs::scarab, {5000, 5000}));
 
         collidableObjects.push_back(controledObject);
-
+        collidableObjects.push_back(hostileShips.back());
         // console.setControledObject(controledObject);
 
         for (auto &object : collidableObjects)
@@ -144,6 +145,10 @@ namespace levels
         for (auto &object : collidableObjects)
         {
             object->frameUpdate(collisionModel);
+        }
+        for (auto &hostileShip : hostileShips)
+        {
+            hostileShip->frameUpdate(hostileShips, *controledObject);
         }
         for (auto &projectile : projectiles)
         {

@@ -18,6 +18,7 @@ set(SOURCES
     interpreter/line.cpp
     interpreter/word.cpp
     ships/ship.cpp
+    ships/hostileShip.cpp
 )
 
 add_executable(starships ${SOURCES})
