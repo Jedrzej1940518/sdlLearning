@@ -20,7 +20,7 @@ namespace rendering
     double parallaxFactor;
 
   public:
-    Object(string &texturePath, physics::Vector2d &position, string &id, double parallaxFactor = 1.0);
+    Object(const string &texturePath, physics::Vector2d &position, const string &id, double parallaxFactor = 1.0);
     Object(string &&texturePath, physics::Vector2d &&position, string &&id, double parallaxFactor = 1.0);
 
     void printPosition() const;
@@ -32,8 +32,10 @@ namespace rendering
     int getY();
     physics::Vector2d &getPosition();
     SDL_Rect getDstrect();
+    const string &getId() { return id; }
+
     ~Object()
     {
-        }
+    }
   };
 } // namespace rendering

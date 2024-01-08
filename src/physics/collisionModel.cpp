@@ -17,9 +17,9 @@ namespace physics
         }
     }
 
-    void CollisionModel::debugPrint(string &&s)
+    void CollisionModel::debugPrint(const string &s)
     {
-        cout << s << endl;
+        cout << "----" << s << "-----" << endl;
         for (int i = 0; i < rows; ++i)
             for (int j = 0; j < columns; ++j)
                 for (auto *object : grid[i][j])
@@ -40,6 +40,7 @@ namespace physics
 
     void CollisionModel::checkCollisions(CollisionObject &obj)
     {
+        debugPrint(obj.getId());
         const auto &gridPos = obj.getGridPosition();
         int i = gridPos.row;
         int j = gridPos.column;

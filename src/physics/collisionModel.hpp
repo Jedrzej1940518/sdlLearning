@@ -24,7 +24,7 @@ namespace physics
     CollisionModel(GridParams gridParams);
 
   private:
-    void debugPrint(string &&s);
+    void debugPrint(const string &s);
     void collides(CollisionObject &obj, GridCoords &&neigh);
 
   public:

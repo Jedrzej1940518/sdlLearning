@@ -69,7 +69,6 @@ namespace ships
             Vector2d shipCenter = {getPosition().x + dstrect.w / 2, getPosition().y + dstrect.h / 2};
             Vector2d shotAngle = physics::getRotatedVector(body.getRotation());
             Vector2d shotSpawnDistance = shotAngle * -dstrect.h;
-            LOG("shotAngle [%lf, %lf]", shotAngle.x, shotAngle.y);
 
             projectile = new Projectile(prefabs::shell, shipCenter + shotSpawnDistance, shotAngle * -10 + body.getSpeed());
         }

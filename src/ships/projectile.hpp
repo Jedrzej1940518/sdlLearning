@@ -7,22 +7,18 @@
 
 namespace ships
 {
-    struct Projectile : public rendering::CollisionObject
+    class Projectile : public rendering::CollisionObject
     {
-        Projectile(prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d speed = {0, 0}, double rotation = 0) : CollisionObject(projectilePrefab, position, speed, rotation), lifetime{projectilePrefab.lifetime} {}
+        const prefabs::ProjectilePrefab &projectilePrefab;
         int lifetime;
         bool alive{true};
 
-        void frameUpdate(physics::CollisionModel &collisionModel)
-        {
-            CollisionObject::frameUpdate(collisionModel);
-            --lifetime;
-            alive = lifetime > 0;
-        };
+    public:
+        Projectile(prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d speed = {0, 0}, double rotation = 0);
+        void frameUpdate(physics::CollisionModel &collisionModel);
+        virtual void handleCollision(CollisionObject &oth);
         bool isAlive() const { return alive; }
-        virtual ~Projectile()
-        {
-        }
+        virtual ~Projectile();
     };
 
 }

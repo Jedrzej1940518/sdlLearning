@@ -22,20 +22,25 @@ namespace rendering
     using CollisionModel = physics::CollisionModel;
     using Vector2d = physics::Vector2d;
 
-    prefabs::Prefab &prefab;
+    const prefabs::Prefab &prefab;
     Body body;
     physics::CollisionParams collisionParams;
     physics::GridPosition gridPosition;
+    bool alive{true};
+    int hp;
 
   public:
-    CollisionObject(prefabs::Prefab &prefab, Vector2d position, Vector2d speed = {0, 0}, double rotation = 0);
+    CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d speed = {0, 0}, double rotation = 0);
     void collisionCheck(CollisionObject &oth);
+    virtual void handleCollision(CollisionObject &oth);
 
     void frameUpdate(physics::CollisionModel &collisionModel);
     void renderObject(SDL_Rect viewport) override;
     void printCollisionObject() const;
     void printGridPosition() const;
     void printSpeed() const;
+
+    void hit(int dmg);
 
     physics::Vector2d getPosition();
     int getWidth() const;
@@ -44,6 +49,7 @@ namespace rendering
     const physics::GridPosition &getGridPosition() const;
     Body &getBody();
     double getRotation();
+    bool isAlive() const;
     ~CollisionObject()
     {
     }

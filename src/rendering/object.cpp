@@ -15,7 +15,7 @@ namespace rendering
         setPosition(dstrect, position);
     }
 
-    Object::Object(string &texturePath, physics::Vector2d &position, string &id, double parallaxFactor)
+    Object::Object(const string &texturePath, physics::Vector2d &position, const string &id, double parallaxFactor)
         : position{position}, id{id}, parallaxFactor{parallaxFactor}
     {
         texture = loadTexture(texturePath);

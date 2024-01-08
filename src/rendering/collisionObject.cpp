@@ -6,8 +6,8 @@
 namespace rendering
 {
 
-    CollisionObject::CollisionObject(prefabs::Prefab &prefab, Vector2d position, Vector2d speed, double rotation)
-        : Object{prefab.texturePath, position, prefab.id}, prefab{prefab}, body{speed, rotation, prefab.hardware}, collisionParams{false, {0, 0}, 0}
+    CollisionObject::CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d speed, double rotation)
+        : Object{prefab.texturePath, position, prefab.id}, prefab{prefab}, body{speed, rotation, prefab.hardware}, collisionParams{false, {0, 0}, 0}, hp{prefab.hp}
     {
     }
     void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
@@ -35,10 +35,24 @@ namespace rendering
 
     void CollisionObject::collisionCheck(CollisionObject &oth)
     {
+        printf("collision check between %s and %s\n", id.c_str(), oth.id.c_str());
         if (not SDL_HasIntersection(&dstrect, &oth.dstrect) || this == &oth)
             return;
 
-        this->collisionParams = {true, oth.body.getSpeed(), oth.body.getMass()};
+        handleCollision(oth);
+    }
+
+    void CollisionObject::handleCollision(CollisionObject &oth)
+    {
+        if (oth.body.getMass())
+            collisionParams = {true, oth.body.getSpeed(), oth.body.getMass()};
+    }
+
+    void CollisionObject::hit(int dmg)
+    {
+        hp -= dmg;
+        if (hp <= 0)
+            alive = false;
     }
 
     int CollisionObject::getWidth() const
@@ -48,6 +62,10 @@ namespace rendering
     int CollisionObject::getHeight() const
     {
         return dstrect.h;
+    }
+    bool CollisionObject::isAlive() const
+    {
+        return alive;
     }
     CollisionObject::Body &CollisionObject::getBody()
     {
@@ -83,6 +101,7 @@ namespace rendering
         Object::printPosition();
         printSpeed();
         printGridPosition();
+        printf("hp %d", hp);
         cout << endl;
     }
 } // namespace rendering

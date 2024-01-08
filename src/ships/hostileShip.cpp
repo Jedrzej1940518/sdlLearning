@@ -48,8 +48,6 @@ namespace ships
 
         double dist = physics::calculateDistance(getPosition(), playerPos);
         tactic = dist > maxPlayerDist ? approach : disapproach;
-
-        printf("tactic %d, playerAngle %lf, dist %lf, acceleratingTowards %lf\n", tactic, playerShipAngle, dist, accelerationDir);
     }
 
     Projectile *HostileShip::frameUpdate(const vector<HostileShip *> & /*allies*/, Ship &player)
