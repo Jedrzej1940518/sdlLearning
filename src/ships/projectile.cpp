@@ -7,6 +7,7 @@ namespace ships
     {
         printf("Hit! Dmg = %d\n", projectilePrefab.dmg);
         oth.hit(projectilePrefab.dmg);
+        alive = false;
     }
 
     Projectile::Projectile(prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d speed, double rotation) : CollisionObject(projectilePrefab, position, speed, rotation), projectilePrefab{projectilePrefab}, lifetime{projectilePrefab.lifetime} {}
@@ -19,6 +20,6 @@ namespace ships
     {
         CollisionObject::frameUpdate(collisionModel);
         --lifetime;
-        alive = lifetime > 0;
+        alive &= lifetime > 0;
     };
 }

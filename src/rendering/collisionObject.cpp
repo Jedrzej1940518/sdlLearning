@@ -35,7 +35,6 @@ namespace rendering
 
     void CollisionObject::collisionCheck(CollisionObject &oth)
     {
-        printf("collision check between %s and %s\n", id.c_str(), oth.id.c_str());
         if (not SDL_HasIntersection(&dstrect, &oth.dstrect) || this == &oth)
             return;
 

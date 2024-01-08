@@ -33,5 +33,5 @@ namespace prefabs
         int dmg;
     };
 
-    inline ProjectilePrefab shell{{"../data/graphics/projectiles/shell_small_green.png", "shell", {0, 1, 1, 1}, 1}, 50, 10};
+    inline ProjectilePrefab shell{{"../data/graphics/projectiles/shell_small_green.png", "shell", {0, 1, 1, 0}, 1}, 50, 10};
 }

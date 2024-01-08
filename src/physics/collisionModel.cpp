@@ -29,25 +29,32 @@ namespace physics
                 }
         cout << endl;
     }
-    void CollisionModel::collides(CollisionObject &obj, GridCoords &&neigh)
+    void CollisionModel::collides(CollisionObject &obj, GridCoords &neigh)
     {
-        if (neigh.column < 0 || neigh.row < 0 || neigh.column >= columns || neigh.row >= rows)
-            return;
-
         for (auto *neighObject : grid[neigh.row][neigh.column])
             obj.collisionCheck(*neighObject);
     }
 
-    void CollisionModel::checkCollisions(CollisionObject &obj)
+    void CollisionModel::checkCollisions()
     {
-        debugPrint(obj.getId());
-        const auto &gridPos = obj.getGridPosition();
-        int i = gridPos.row;
-        int j = gridPos.column;
+        for (int r = 0; r < rows; ++r)
+            for (int c = 0; c < columns; ++c)
+                for (auto &obj : grid[r][c])
+                {
+                    const auto &gridPos = obj->getGridPosition();
+                    int i = gridPos.row;
+                    int j = gridPos.column;
 
-        for (int n = i - 1; n <= i + 1; ++n)     // check neigbours
-            for (int m = j - 1; m <= j + 1; ++m) // so n, m should be 9 grids
-                collides(obj, GridCoords{n, m});
+                    for (int n = i - 1; n <= i + 1; ++n)     // check neigbours
+                        for (int m = j - 1; m <= j + 1; ++m) // so n, m should be 9 grids
+                        {
+                            GridCoords neigh{n, m};
+                            if (neigh.column < 0 || neigh.row < 0 || neigh.column >= columns || neigh.row >= rows)
+                                continue;
+
+                            collides(*obj, neigh);
+                        }
+                }
     }
     GridCoords CollisionModel::calculateGridCoords(int x, int y)
     {

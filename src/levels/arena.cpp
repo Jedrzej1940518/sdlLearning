@@ -136,11 +136,8 @@ namespace levels
             projectiles.push_back(projectile);
             collisionModel.emplace(projectile);
         }
-        // delete projectiles after
-        for (auto &object : collidableObjects)
-        {
-            collisionModel.checkCollisions(*object);
-        }
+
+        collisionModel.checkCollisions();
 
         for (auto &object : collidableObjects)
         {
