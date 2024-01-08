@@ -13,41 +13,50 @@ namespace ships
         double angle = getRotation() - playerRotation;
         angle = angle > 360 ? angle - 360 : (angle < 0 ? angle + 360 : angle);
         playerOnLeft = angle < 180;
-        LOG("left? %u, player %lf, rotation %lf, angle %lf", playerOnLeft, playerRotation, getRotation(), angle);
         return angle;
-        // auto rotationVector = physics::getRotatedVector(rotation);
     }
-    Projectile *HostileShip::frameUpdate(const vector<HostileShip *> & /*allies*/, Ship &player)
+    void HostileShip::determineRotation(const physics::Vector2d &playerPos)
     {
-        //  constexpr double minPlayerDist = 200;
-        // constexpr double maxPlayerDist = 600;
-
-        enum Tactic
-        {
-            approach,
-            disapproach
-        };
-        // double dist = physics::calculateDistance(position, player.getPosition());
-        // Tactic tactic = dist > maxPlayerDist ? approach : disapproach;
-        // auto rotatedVector = physics::getRotatedVector(getRotation());
         double degrees = 0;
 
         if (rotationTicks <= 0)
         {
-            degrees = determineLookAngle(player.getPosition());
+            degrees = determineLookAngle(playerPos);
             body.rotate(0);
         }
         if (abs(degrees) > 15)
         {
-            // degrees = degrees > 180 ? degrees - 360 : degrees;
-            // degrees = degrees < -180 ? degrees + 360 : degrees;
-            // LOG("degrees %lf", degrees);
             rotationTicks = 5;
             body.rotate(playerOnLeft ? -abs(degrees) : abs(degrees));
         }
 
         --rotationTicks;
-        // LOG("tatctic %d distance = %lf, degrees = %lf, rv [%lf %lf]", (int)tactic, dist, degrees, rotatedVector.x, rotatedVector.y);
+    }
+
+    void HostileShip::determineSpeed(const physics::Vector2d &playerPos)
+    {
+        constexpr int maxPlayerDist = 600;
+        auto playerShipAngle = physics::normalizeDegrees(physics::getAngleBetweenPoints(getPosition(), playerPos) + 90);
+        double accelerationDir = tactic == approach ? playerShipAngle : -playerShipAngle;
+        body.accelerateOnce(accelerationDir);
+        --tacticTicks;
+
+        if (tacticTicks > 0)
+            return;
+
+        tacticTicks = 5;
+
+        double dist = physics::calculateDistance(getPosition(), playerPos);
+        tactic = dist > maxPlayerDist ? approach : disapproach;
+
+        printf("tactic %d, playerAngle %lf, dist %lf, acceleratingTowards %lf\n", tactic, playerShipAngle, dist, accelerationDir);
+    }
+
+    Projectile *HostileShip::frameUpdate(const vector<HostileShip *> & /*allies*/, Ship &player)
+    {
+        determineRotation(player.getPosition());
+        determineSpeed(player.getPosition());
         return nullptr;
     }
+
 }

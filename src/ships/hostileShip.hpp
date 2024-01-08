@@ -10,7 +10,15 @@ namespace ships
 {
     class HostileShip : public rendering::CollisionObject
     {
+        enum Tactic
+        {
+            approach,
+            disapproach
+        };
+        Tactic tactic{approach};
+
         int rotationTicks{5};
+        int tacticTicks{5};
         bool playerOnLeft{false};
 
     public:
@@ -19,5 +27,7 @@ namespace ships
 
     private:
         double determineLookAngle(physics::Vector2d playerPos);
+        void determineRotation(const physics::Vector2d &playerPos);
+        void determineSpeed(const physics::Vector2d &playerPos);
     };
 }

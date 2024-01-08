@@ -22,6 +22,9 @@ namespace prefabs
     inline Prefab scarab{
         "../data/graphics/ships/scarab.png", "scarab", {3, 5, 0.2, 500}};
 
+    inline Prefab ememyScarab{
+        "../data/graphics/ships/scarab.png", "enemyScarab", {2, 4, 0.2, 500}};
+
     struct ProjectilePrefab : public Prefab
     {
         ProjectilePrefab(Prefab prefab, int lifetime) : Prefab{prefab}, lifetime{lifetime} {}
