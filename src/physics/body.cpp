@@ -102,6 +102,10 @@ namespace physics
         bounce = {0, 0};
         return bounceToApply;
     }
+    double Body::getAccelerationAngle()
+    {
+        return accelerationAngle;
+    }
     double Body::getRotation()
     {
         return rotation;

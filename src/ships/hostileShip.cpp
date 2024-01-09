@@ -5,10 +5,28 @@ namespace ships
     HostileShip::HostileShip(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed, double rotation)
         : CollisionObject{prefab, position, speed, rotation}
     {
+        shipId = uniqueId;
+        uniqueId++;
+        encircleLeft = true;
+    }
+    void HostileShip::determineTactic(const physics::Vector2d &playerPos)
+    {
+        constexpr int minPlayerDist = 200;
+        constexpr int maxPlayerDist = 400;
+
+        --tacticTicks;
+
+        if (tacticTicks > 0)
+            return;
+
+        tacticTicks = 5;
+
+        double dist = physics::calculateDistance(getObjectCenter(), playerPos);
+        tactic = dist > maxPlayerDist ? approach : (dist < minPlayerDist ? disapproach : encircle);
     }
     double HostileShip::determineLookAngle(physics::Vector2d playerPos)
     {
-        auto translated = playerPos - getPosition();
+        auto translated = playerPos - getObjectCenter();
         double playerRotation = physics::normalizeDegrees(physics::getVectorRotation(translated) + 90);
         double angle = getRotation() - playerRotation;
         angle = angle > 360 ? angle - 360 : (angle < 0 ? angle + 360 : angle);
@@ -35,29 +53,55 @@ namespace ships
 
     void HostileShip::determineSpeed(const physics::Vector2d &playerPos)
     {
-        constexpr int maxPlayerDist = 600;
-        auto playerShipAngle = physics::normalizeDegrees(physics::getAngleBetweenPoints(getPosition(), playerPos) + 90);
-        double accelerationDir = tactic == approach ? playerShipAngle : -playerShipAngle;
+        auto playerShipAngle = physics::normalizeDegrees(physics::getAngleBetweenPoints(getObjectCenter(), playerPos) + 90);
+        double accelerationDir = 0;
+        switch (tactic)
+        {
+        case approach:
+            accelerationDir = playerShipAngle;
+            break;
+        case disapproach:
+            accelerationDir = -playerShipAngle;
+            break;
+        case encircle:
+            accelerationDir = playerShipAngle + (encircleLeft ? 90 : -90);
+            break;
+        default:
+            break;
+        }
         body.accelerateOnce(accelerationDir);
-        --tacticTicks;
-
-        if (tacticTicks > 0)
-            return;
-
-        tacticTicks = 5;
-
-        double dist = physics::calculateDistance(getPosition(), playerPos);
-        tactic = dist > maxPlayerDist ? approach : disapproach;
     }
 
+    void HostileShip::print(const physics::Vector2d &playerPos)
+    {
+        string s = "";
+        switch (tactic)
+        {
+        case approach:
+            s = "approach";
+            break;
+        case disapproach:
+            s = "disapproach";
+            break;
+        case encircle:
+            s = "encircle";
+            break;
+        default:
+            break;
+        }
+
+        printf("HS[%d] Dist %f Tactic: %s, acceleration_angle: %f, speed [%f, %f]\n", shipId, physics::calculateDistance(getObjectCenter(), playerPos), s.c_str(), body.getAccelerationAngle(), body.getSpeed().x, body.getSpeed().y);
+    }
     Projectile *HostileShip::frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player, CollisionModel &collisionModel)
     {
         allies.size();
         asteroids.size();
-
+        auto pos = player.getObjectCenter();
         CollisionObject::frameUpdate(collisionModel);
-        determineRotation(player.getPosition());
-        determineSpeed(player.getPosition());
+        determineTactic(pos);
+        // determineRotation(pos);
+        determineSpeed(pos);
+        //  print(pos);
         return nullptr;
     }
 

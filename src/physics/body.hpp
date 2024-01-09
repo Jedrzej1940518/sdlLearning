@@ -41,6 +41,7 @@ namespace physics
     Vector2d applyBounce();
     double getRotation();
     double getRotationLeft();
+    double getAccelerationAngle();
     uint getMass();
 
     void printBody() const;

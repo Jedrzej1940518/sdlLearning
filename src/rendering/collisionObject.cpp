@@ -24,10 +24,11 @@ namespace rendering
 
     void CollisionObject::renderObject(SDL_Rect viewport)
     {
+
         if (not SDL_HasIntersection(&viewport, &dstrect))
             return;
 
-        SDL_Rect src = physics::normalizedIntersection(dstrect, viewport);
+        SDL_Rect intersection = physics::normalizedIntersection(dstrect, viewport);
         SDL_Rect dest = physics::normalizedIntersection(viewport, dstrect);
 
         SDL_RenderCopyEx(gRenderer, texture, &src, &dest, body.getRotation(), NULL, SDL_FLIP_NONE);
@@ -73,6 +74,10 @@ namespace rendering
     physics::Vector2d CollisionObject::getPosition()
     {
         return Object::getPosition();
+    }
+    physics::Vector2d CollisionObject::getObjectCenter()
+    {
+        return Object::getPosition() + physics::Vector2d{getWidth() / 2., getHeight() / 2.};
     }
     double CollisionObject::getRotation()
     {

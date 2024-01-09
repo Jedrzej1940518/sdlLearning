@@ -10,8 +10,12 @@ namespace ships
 {
     class HostileShip : public rendering::CollisionObject
     {
+        inline static int uniqueId{0};
+        int shipId;
+
         enum Tactic
         {
+            encircle,
             approach,
             disapproach
         };
@@ -20,17 +24,21 @@ namespace ships
         int rotationTicks{5};
         int tacticTicks{5};
         bool playerOnLeft{false};
+        bool encircleLeft{false};
 
     public:
-        HostileShip(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed = {0, 0}, double rotation = 0);
+        HostileShip(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed = {0, 0}, double rotation = 90);
         Projectile *frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player, CollisionModel &collisionModel);
         virtual ~HostileShip()
         {
         }
 
     private:
+        void determineTactic(const physics::Vector2d &playerPos);
         double determineLookAngle(physics::Vector2d playerPos);
         void determineRotation(const physics::Vector2d &playerPos);
         void determineSpeed(const physics::Vector2d &playerPos);
+
+        void print(const physics::Vector2d &playerPos);
     };
 }

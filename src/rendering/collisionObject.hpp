@@ -43,6 +43,7 @@ namespace rendering
     void hit(int dmg);
 
     physics::Vector2d getPosition();
+    physics::Vector2d getObjectCenter();
     int getWidth() const;
     int getHeight() const;
     physics::GridPosition &getGridPosition();
