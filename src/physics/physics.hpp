@@ -44,7 +44,7 @@ namespace physics
     {
         bool collided;
         Vector2d velocity;
-        uint mass;
+        double mass;
     };
 
     double degreesToRadians(double degrees);

@@ -37,9 +37,17 @@ T getRandomNumber(T from, T to)
 {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    std::uniform_int_distribution<T> distribution(from, to);
-    T randomNum = distribution(gen);
-    return randomNum;
+
+    if constexpr (std::is_integral_v<T>)
+    {
+        std::uniform_int_distribution<T> distribution(from, to);
+        return distribution(gen);
+    }
+    else if constexpr (std::is_floating_point_v<T>)
+    {
+        std::uniform_real_distribution<T> distribution(from, to);
+        return distribution(gen);
+    }
 }
 
 // THIS IS DONE BY COPY ASSIGNMENT

@@ -42,7 +42,7 @@ namespace physics
     double getRotation() const;
     double getRotationLeft();
     double getAccelerationAngle() const;
-    uint getMass();
+    double getMass() const;
 
     void printBody() const;
   };

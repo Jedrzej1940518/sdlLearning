@@ -49,6 +49,8 @@ namespace rendering
     physics::GridPosition &getGridPosition();
     const physics::GridPosition &getGridPosition() const;
     const Body &getBody() const;
+
+    double getMass() const;
     double getRotation();
     bool isAlive() const;
     virtual ~CollisionObject()

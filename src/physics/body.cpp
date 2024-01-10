@@ -114,7 +114,7 @@ namespace physics
     {
         return rotationLeft;
     }
-    uint Body::getMass()
+    double Body::getMass() const
     {
         return hardware.mass;
     }

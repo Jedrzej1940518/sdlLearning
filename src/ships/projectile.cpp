@@ -14,6 +14,8 @@ namespace ships
     }
     void Projectile::handleCollision(CollisionObject &oth)
     {
+        if (oth.getMass() == 0)
+            return;
         oth.hit(projectilePrefab.dmg);
         alive = false;
     }

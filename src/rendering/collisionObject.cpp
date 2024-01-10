@@ -13,7 +13,7 @@ namespace rendering
     void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
     {
         // debug logs
-        // printCollisionObject();
+        //  printCollisionObject();
 
         body.frameUpdate(collisionParams);
         slowDown(body.getSpeed(), position, collisionModel.getGridParams());
@@ -83,14 +83,20 @@ namespace rendering
     void CollisionObject::handleCollision(CollisionObject &oth)
     {
         if (oth.body.getMass())
+        {
+            constexpr double collisionFactor = 2.0;
             collisionParams = {true, oth.body.getSpeed(), oth.body.getMass()};
+            auto sumSpeed = oth.body.getSpeed() - body.getSpeed();
+            auto magnitude = physics::vectorLenght(sumSpeed);
+            auto dmg = magnitude * oth.body.getMass() / body.getMass() * collisionFactor;
+            hit(dmg);
+        }
     }
 
     void CollisionObject::hit(int dmg)
     {
         hp -= dmg;
-        if (hp <= 0)
-            alive = false;
+        alive = hp > 0;
     }
 
     int CollisionObject::getWidth() const
@@ -120,6 +126,10 @@ namespace rendering
     double CollisionObject::getRotation()
     {
         return body.getRotation();
+    }
+    double CollisionObject::getMass() const
+    {
+        return body.getMass();
     }
     physics::GridPosition &CollisionObject::getGridPosition()
     {
