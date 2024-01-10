@@ -99,7 +99,7 @@ namespace ships
         auto pos = player.getObjectCenter();
         CollisionObject::frameUpdate(collisionModel);
         determineTactic(pos);
-        // determineRotation(pos);
+        determineRotation(pos);
         determineSpeed(pos);
         //  print(pos);
         return nullptr;

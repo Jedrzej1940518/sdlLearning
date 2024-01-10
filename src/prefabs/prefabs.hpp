@@ -24,7 +24,7 @@ namespace prefabs
         "../data/graphics/ships/scarab.png", "scarab", {3, 5, 0.2, 500}, 100};
 
     inline Prefab lasher{
-        "../data/graphics/ships/lasher_ff.png", "lasher", {2, 4, 0.2, 500}, 50};
+        "../data/graphics/ships/lasher_ff.png", "lasher", {1.2, 3.5, 0.2, 500}, 50};
 
     struct ProjectilePrefab : public Prefab
     {

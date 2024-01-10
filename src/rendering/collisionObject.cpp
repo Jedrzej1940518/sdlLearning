@@ -1,5 +1,5 @@
 #include "collisionObject.hpp"
-#include "../physics/collisionModel.hpp"
+#include "physics/collisionModel.hpp"
 #include "object.hpp"
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_stdinc.h>
@@ -24,14 +24,25 @@ namespace rendering
 
     void CollisionObject::renderObject(SDL_Rect viewport)
     {
-
         if (not SDL_HasIntersection(&viewport, &dstrect))
             return;
 
-        SDL_Rect intersection = physics::normalizedIntersection(dstrect, viewport);
         SDL_Rect dest = physics::normalizedIntersection(viewport, dstrect);
 
-        SDL_RenderCopyEx(gRenderer, texture, &src, &dest, body.getRotation(), NULL, SDL_FLIP_NONE);
+        // SDL_Intersect wont return -x or -y so we have to acoomodate for that
+
+        if (dest.h < dstrect.h && dest.y <= 0)
+        {
+            dest.y -= (dstrect.h - dest.h);
+        }
+        if (dest.w < dstrect.w && dest.x <= 0)
+        {
+            dest.x -= (dstrect.w - dest.w);
+        }
+        dest.h = dstrect.h;
+        dest.w = dstrect.w;
+
+        SDL_RenderCopyEx(gRenderer, texture, NULL, &dest, body.getRotation(), NULL, SDL_FLIP_NONE);
     }
 
     void CollisionObject::collisionCheck(CollisionObject &oth)
