@@ -21,6 +21,28 @@ namespace rendering
         Object::frameUpdate(body.getSpeed() + body.applyBounce());
         collisionModel.recalculateGridPosition(*this);
     }
+    void renderHPBar(SDL_Renderer *renderer, SDL_Rect dest, int currentHP, int maxHP)
+    {
+        SDL_Rect hpBar{dest};
+        hpBar.y -= 20;
+        hpBar.h = 10;
+
+        float healthPercentage = static_cast<float>(currentHP) / maxHP;
+
+        int red = static_cast<int>(255 * (1.0 - healthPercentage));
+        int green = static_cast<int>(255 * healthPercentage);
+
+        SDL_SetRenderDrawColor(renderer, red, green, 0, 255);
+
+        int hpBarWidth = static_cast<int>(hpBar.w * healthPercentage);
+
+        SDL_Rect hpBarRect = {hpBar.x, hpBar.y, hpBarWidth, hpBar.h};
+
+        SDL_RenderFillRect(renderer, &hpBarRect);
+
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderDrawRect(renderer, &hpBar);
+    }
 
     void CollisionObject::renderObject(SDL_Rect viewport)
     {
@@ -41,6 +63,11 @@ namespace rendering
         }
         dest.h = dstrect.h;
         dest.w = dstrect.w;
+
+        if (hp > 0)
+        {
+            renderHPBar(gRenderer, dest, hp, prefab.hp);
+        }
 
         SDL_RenderCopyEx(gRenderer, texture, NULL, &dest, body.getRotation(), NULL, SDL_FLIP_NONE);
     }
@@ -78,7 +105,7 @@ namespace rendering
     {
         return alive;
     }
-    CollisionObject::Body &CollisionObject::getBody()
+    const CollisionObject::Body &CollisionObject::getBody() const
     {
         return body;
     }
@@ -86,7 +113,7 @@ namespace rendering
     {
         return Object::getPosition();
     }
-    physics::Vector2d CollisionObject::getObjectCenter()
+    physics::Vector2d CollisionObject::getObjectCenter() const
     {
         return Object::getPosition() + physics::Vector2d{getWidth() / 2., getHeight() / 2.};
     }

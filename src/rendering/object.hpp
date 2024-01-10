@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../physics/body.hpp"
-#include "../sdl.hpp"
-#include "../utils.hpp"
+#include "physics/body.hpp"
+#include "sdl.hpp"
+#include "utils.hpp"
 #include <SDL2/SDL_rect.h>
 
 namespace rendering
@@ -30,7 +30,7 @@ namespace rendering
 
     int getX();
     int getY();
-    physics::Vector2d &getPosition();
+    physics::Vector2d getPosition() const;
     SDL_Rect getDstrect();
     const string &getId() { return id; }
 

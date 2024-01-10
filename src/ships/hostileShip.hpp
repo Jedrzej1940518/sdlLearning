@@ -10,7 +10,13 @@ namespace ships
 {
     class HostileShip : public rendering::CollisionObject
     {
+        inline static constexpr bool debugObject{false};
+
         inline static int uniqueId{0};
+
+        inline static constexpr int avoidanceRadius = 250;
+        inline static constexpr int maxPlayerDist = 600;
+
         int shipId;
 
         enum Tactic
@@ -32,10 +38,13 @@ namespace ships
         virtual ~HostileShip()
         {
         }
+        void renderObject(SDL_Rect viewport) override;
 
     private:
-        void determineTactic(const physics::Vector2d &playerPos);
         double determineLookAngle(physics::Vector2d playerPos);
+
+        bool avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player);
+        void determineTactic(const physics::Vector2d &playerPos);
         void determineRotation(const physics::Vector2d &playerPos);
         void determineSpeed(const physics::Vector2d &playerPos);
 

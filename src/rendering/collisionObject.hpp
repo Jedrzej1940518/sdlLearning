@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../physics/body.hpp"
-#include "../physics/physics.hpp"
-#include "../sdl.hpp"
-#include "../utils.hpp"
+#include "physics/body.hpp"
+#include "physics/physics.hpp"
+#include "sdl.hpp"
+#include "utils.hpp"
 #include "object.hpp"
-#include "../prefabs/prefabs.hpp"
+#include "prefabs/prefabs.hpp"
 #include <SDL2/SDL_rect.h>
 
 namespace physics
@@ -43,12 +43,12 @@ namespace rendering
     void hit(int dmg);
 
     physics::Vector2d getPosition();
-    physics::Vector2d getObjectCenter();
+    physics::Vector2d getObjectCenter() const;
     int getWidth() const;
     int getHeight() const;
     physics::GridPosition &getGridPosition();
     const physics::GridPosition &getGridPosition() const;
-    Body &getBody();
+    const Body &getBody() const;
     double getRotation();
     bool isAlive() const;
     virtual ~CollisionObject()

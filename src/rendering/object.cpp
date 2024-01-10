@@ -50,7 +50,7 @@ namespace rendering
     {
         return dstrect.y;
     }
-    physics::Vector2d &Object::getPosition()
+    physics::Vector2d Object::getPosition() const
     {
         return position;
     }

@@ -27,8 +27,8 @@ namespace levels
         collidableObjects.push_back(new CollisionObject(prefabs::asteroid3, {4500, 4500}));
         controledObject = new ships::Ship(prefabs::scarab, {4000, 4000});
         hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {4700, 4700}));
-        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {3700, 3700}));
-
+        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {3700, 3750}));
+        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {3400, 3300}));
         // collidableObjects.push_back(controledObject);
         // collidableObjects.push_back(hostileShips.back());
         //  console.setControledObject(controledObject);

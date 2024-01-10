@@ -1,5 +1,7 @@
 #include "hostileShip.hpp"
 
+#include <SDL2/SDL2_gfxPrimitives.h>
+
 namespace ships
 {
     HostileShip::HostileShip(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed, double rotation)
@@ -7,12 +9,10 @@ namespace ships
     {
         shipId = uniqueId;
         uniqueId++;
-        encircleLeft = true;
+        encircleLeft = uniqueId % 2;
     }
     void HostileShip::determineTactic(const physics::Vector2d &playerPos)
     {
-        constexpr int minPlayerDist = 200;
-        constexpr int maxPlayerDist = 400;
 
         --tacticTicks;
 
@@ -22,7 +22,7 @@ namespace ships
         tacticTicks = 5;
 
         double dist = physics::calculateDistance(getObjectCenter(), playerPos);
-        tactic = dist > maxPlayerDist ? approach : (dist < minPlayerDist ? disapproach : encircle);
+        tactic = dist > maxPlayerDist ? approach : (dist < avoidanceRadius ? disapproach : encircle);
     }
     double HostileShip::determineLookAngle(physics::Vector2d playerPos)
     {
@@ -42,7 +42,7 @@ namespace ships
             degrees = determineLookAngle(playerPos);
             body.rotate(0);
         }
-        if (abs(degrees) > 15)
+        if (abs(degrees) > 3)
         {
             rotationTicks = 5;
             body.rotate(playerOnLeft ? -abs(degrees) : abs(degrees));
@@ -92,6 +92,68 @@ namespace ships
 
         printf("HS[%d] Dist %f Tactic: %s, acceleration_angle: %f, speed [%f, %f]\n", shipId, physics::calculateDistance(getObjectCenter(), playerPos), s.c_str(), body.getAccelerationAngle(), body.getSpeed().x, body.getSpeed().y);
     }
+
+    bool HostileShip::avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player)
+    {
+        bool collisonImminent{false};
+        physics::Vector2d avoidanceVector = {0, 0};
+        auto pos = getObjectCenter();
+
+        auto avoidPosition = [&](physics::Vector2d position)
+        {
+            float dist = physics::calculateDistance(pos, position);
+
+            if (dist < avoidanceRadius)
+            {
+                collisonImminent = true;
+                avoidanceVector.x += pos.x - position.x;
+                avoidanceVector.y += pos.y - position.y;
+            }
+        };
+        auto avoidPositions = [&]<typename Collidable>(vector<Collidable *> objects)
+        {
+            for (auto *object : objects)
+            {
+                if (object == this)
+                    continue;
+                avoidPosition(object->getObjectCenter());
+            };
+        };
+        avoidPosition(player.getObjectCenter());
+        avoidPositions(allies);
+        avoidPositions(asteroids);
+
+        if (not collisonImminent)
+            return false;
+
+        avoidanceVector = physics::clampVector(avoidanceVector, 1.0);
+        double avoidanceAngle = physics::getVectorRotation(avoidanceVector);
+        body.accelerateOnce(avoidanceAngle);
+
+        return collisonImminent;
+    }
+
+    void HostileShip::renderObject(SDL_Rect viewport)
+    {
+        CollisionObject::renderObject(viewport);
+        if (debugObject)
+        {
+            auto pos = getObjectCenter() - physics::Vector2d{(double)viewport.x, (double)viewport.y};
+            Uint32 color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 0);
+            ellipseColor(gRenderer, pos.x, pos.y, maxPlayerDist, maxPlayerDist, color);
+
+            color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 0, 0);
+            ellipseColor(gRenderer, pos.x, pos.y, avoidanceRadius, avoidanceRadius, color);
+
+            color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 0, 255);
+            lineColor(gRenderer, pos.x, pos.y, pos.x + body.getSpeed().x * 50, pos.y + body.getSpeed().y * 50, color);
+
+            auto accelerationVector = physics::getRotatedVector(getBody().getAccelerationAngle() - 180);
+            color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 255);
+            lineColor(gRenderer, pos.x, pos.y, pos.x + accelerationVector.x * 50, pos.y + accelerationVector.y * 50, color);
+        }
+    }
+
     Projectile *HostileShip::frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player, CollisionModel &collisionModel)
     {
         allies.size();
@@ -100,9 +162,12 @@ namespace ships
         CollisionObject::frameUpdate(collisionModel);
         determineTactic(pos);
         determineRotation(pos);
-        determineSpeed(pos);
-        //  print(pos);
+        if (not avoidCollision(allies, asteroids, player))
+            determineSpeed(pos);
+
+        if (debugObject)
+            print(pos);
+
         return nullptr;
     }
-
 }

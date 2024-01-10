@@ -67,12 +67,8 @@ namespace ships
         Projectile *projectile = nullptr;
         if (spawnProjectile)
         {
+            projectile = Projectile::spawnProjectile(prefabs::shell, *this);
             spawnProjectile = false;
-            Vector2d shipCenter = {getPosition().x + dstrect.w / 2, getPosition().y + dstrect.h / 2};
-            Vector2d shotAngle = physics::getRotatedVector(body.getRotation());
-            Vector2d shotSpawnDistance = shotAngle * -dstrect.h;
-
-            projectile = new Projectile(prefabs::shell, shipCenter + shotSpawnDistance, shotAngle * -10 + body.getSpeed());
         }
 
         return projectile;
