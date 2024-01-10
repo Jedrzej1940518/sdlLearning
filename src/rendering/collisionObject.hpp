@@ -30,7 +30,7 @@ namespace rendering
     int hp;
 
   public:
-    CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d speed = {0, 0}, double rotation = 0);
+    CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d velocity = {0, 0}, double rotation = 0);
     void collisionCheck(CollisionObject &oth);
     virtual void handleCollision(CollisionObject &oth);
 

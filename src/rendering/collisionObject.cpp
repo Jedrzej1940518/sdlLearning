@@ -6,8 +6,8 @@
 namespace rendering
 {
 
-    CollisionObject::CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d speed, double rotation)
-        : Object{prefab.texturePath, position, prefab.id}, prefab{prefab}, body{speed, rotation, prefab.hardware}, collisionParams{false, {0, 0}, 0}, hp{prefab.hp}
+    CollisionObject::CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d velocity, double rotation)
+        : Object{prefab.texturePath, position, prefab.id}, prefab{prefab}, body{velocity, rotation, prefab.hardware}, collisionParams{false, {0, 0}, 0}, hp{prefab.hp}
     {
     }
     void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
@@ -131,7 +131,7 @@ namespace rendering
     }
     void CollisionObject::printSpeed() const
     {
-        printf("[%s] Speed {%f, %f}\n", id.c_str(), body.getSpeed().x, body.getSpeed().y);
+        printf("[%s] Velocity {%f, %f}\n", id.c_str(), body.getSpeed().x, body.getSpeed().y);
     }
     void CollisionObject::printGridPosition() const
     {

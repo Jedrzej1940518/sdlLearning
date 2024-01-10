@@ -4,8 +4,8 @@
 
 namespace ships
 {
-    HostileShip::HostileShip(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed, double rotation)
-        : CollisionObject{prefab, position, speed, rotation}
+    HostileShip::HostileShip(const prefabs::Prefab &prefab, const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity, double rotation)
+        : CollisionObject{prefab, position, velocity, rotation}, projectilePrefab{projectilePrefab}
     {
         shipId = uniqueId;
         uniqueId++;
@@ -24,22 +24,27 @@ namespace ships
         double dist = physics::calculateDistance(getObjectCenter(), playerPos);
         tactic = dist > maxPlayerDist ? approach : (dist < avoidanceRadius ? disapproach : encircle);
     }
-    double HostileShip::determineLookAngle(physics::Vector2d playerPos)
+    double HostileShip::determineLookAngle(const Ship &player)
     {
-        auto translated = playerPos - getObjectCenter();
-        double playerRotation = physics::normalizeDegrees(physics::getVectorRotation(translated) + 90);
+        physics::Vector2d playerPos = player.getObjectCenter();
+        physics::Vector2d translated = playerPos - getObjectCenter();
+
+        int ticks = physics::calculateTicks(translated, projectilePrefab.hardware.maxVelocity);
+        physics::Vector2d predictedPos = physics::predictPosition(translated, player.getBody().getSpeed(), ticks);
+
+        double playerRotation = physics::normalizeDegrees(physics::getVectorRotation(predictedPos) + 90);
         double angle = getRotation() - playerRotation;
         angle = angle > 360 ? angle - 360 : (angle < 0 ? angle + 360 : angle);
         playerOnLeft = angle < 180;
         return angle;
     }
-    void HostileShip::determineRotation(const physics::Vector2d &playerPos)
+    void HostileShip::determineRotation(const Ship &player)
     {
         double degrees = 0;
 
         if (rotationTicks <= 0)
         {
-            degrees = determineLookAngle(playerPos);
+            degrees = determineLookAngle(player);
             body.rotate(0);
         }
         if (abs(degrees) > 3)
@@ -90,10 +95,10 @@ namespace ships
             break;
         }
 
-        printf("HS[%d] Dist %f Tactic: %s, acceleration_angle: %f, speed [%f, %f]\n", shipId, physics::calculateDistance(getObjectCenter(), playerPos), s.c_str(), body.getAccelerationAngle(), body.getSpeed().x, body.getSpeed().y);
+        printf("HS[%d] Dist %f Tactic: %s, acceleration_angle: %f, velocity [%f, %f]\n", shipId, physics::calculateDistance(getObjectCenter(), playerPos), s.c_str(), body.getAccelerationAngle(), body.getSpeed().x, body.getSpeed().y);
     }
 
-    bool HostileShip::avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player)
+    bool HostileShip::avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const Ship &player)
     {
         bool collisonImminent{false};
         physics::Vector2d avoidanceVector = {0, 0};
@@ -154,20 +159,38 @@ namespace ships
         }
     }
 
-    Projectile *HostileShip::frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, Ship &player, CollisionModel &collisionModel)
+    Projectile *HostileShip::shoot(const physics::Vector2d &playerPos)
     {
-        allies.size();
-        asteroids.size();
+        reloadTicks = std::max(reloadTicks - 1, 0);
+        Projectile *p = nullptr;
+        if (reloadTicks > 0)
+            return p;
+
+        auto dist = physics::calculateDistance(playerPos, getObjectCenter());
+        auto maxRange = projectilePrefab.lifetime * projectilePrefab.hardware.maxVelocity;
+
+        if (dist < maxRange && (abs(body.getRotationLeft()) < 15 || abs(body.getRotationLeft()) > 345))
+        {
+            p = Projectile::spawnProjectile(projectilePrefab, *this);
+            reloadTicks = projectilePrefab.reload;
+        }
+        return p;
+    }
+    Projectile *HostileShip::frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const Ship &player, CollisionModel &collisionModel)
+    {
         auto pos = player.getObjectCenter();
         CollisionObject::frameUpdate(collisionModel);
         determineTactic(pos);
-        determineRotation(pos);
+        determineRotation(player);
+
         if (not avoidCollision(allies, asteroids, player))
             determineSpeed(pos);
+
+        Projectile *p = shoot(pos);
 
         if (debugObject)
             print(pos);
 
-        return nullptr;
+        return p;
     }
 }

@@ -12,9 +12,10 @@ namespace ships
     {
         bool inputDirections[4];
         bool spawnProjectile;
+        int shellReload{0};
 
     public:
-        Ship(prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d speed = {0, 0}, double rotation = 0);
+        Ship(const prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d velocity = {0, 0}, double rotation = 0);
 
         void shoot();
 
@@ -26,6 +27,8 @@ namespace ships
         void stopRotateLeft();
         void stopRotateRight();
 
+        void renderReload(SDL_Rect viewport);
+        void renderObject(SDL_Rect viewport) override;
         Projectile *frameUpdate(CollisionModel &collisionModel);
     };
 }

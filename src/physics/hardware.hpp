@@ -5,7 +5,7 @@ namespace physics
     struct Hardware
     {
         double maxRotationSpeed;
-        double maxSpeed;
+        double maxVelocity;
         double acceleration;
         double mass;
     };

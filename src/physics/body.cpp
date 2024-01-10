@@ -9,8 +9,8 @@ namespace physics
     {
     }
 
-    Body::Body(Vector2d speed, double rotation, Hardware hardware)
-        : bounce{0, 0}, speed{speed},
+    Body::Body(Vector2d velocity, double rotation, Hardware hardware)
+        : bounce{0, 0}, velocity{velocity},
           rotation{rotation}, hardware{hardware}, rotationLeft{0}, accelerating{false}, accelerationAngle{0}, acceleratingOnce{false}
     {
     }
@@ -19,20 +19,20 @@ namespace physics
     {
         if (cp.collided)
         {
-            bounce = {-speed.x * 2, -speed.y * 2};
-            double v1 = physics::vectorLenght(speed);
-            double v2 = physics::vectorLenght(cp.speed);
+            bounce = {-velocity.x * 2, -velocity.y * 2};
+            double v1 = physics::vectorLenght(velocity);
+            double v2 = physics::vectorLenght(cp.velocity);
             double m1 = hardware.mass;
             double m2 = cp.mass * 1;
-            double theta1 = physics::getVectorRotationRadians(speed);
-            double theta2 = physics::getVectorRotationRadians(cp.speed);
+            double theta1 = physics::getVectorRotationRadians(velocity);
+            double theta2 = physics::getVectorRotationRadians(cp.velocity);
             double phi = theta1 > theta2 ? theta1 - theta2 : theta2 - theta1;
 
             double v1x = ((v1 * cos(theta1 - phi) * (m1 - m2) + 2 * m2 * v2 * cos(theta2 - phi)) / (m1 + m2)) * cos(phi) + v1 * sin(theta1 - phi) * cos(phi + M_PI / 2.);
             double v1y = ((v1 * cos(theta1 - phi) * (m1 - m2) + 2 * m2 * v2 * cos(theta2 - phi)) / (m1 + m2)) * sin(phi) + v1 * sin(theta1 - phi) * sin(phi + M_PI / 2.);
             Vector2d newSpeed{v1x, v1y};
             rotationLeft = getVectorRotation(newSpeed);
-            speed = physics::clampVector(newSpeed, hardware.maxSpeed);
+            velocity = physics::clampVector(newSpeed, hardware.maxVelocity);
             accelerating = false;
             cp.collided = false;
         }
@@ -53,11 +53,11 @@ namespace physics
         }
 
         if (accelerating)
-            speed = calculateSpeed(speed, hardware.maxSpeed, hardware.acceleration, rotation);
+            velocity = calculateSpeed(velocity, hardware.maxVelocity, hardware.acceleration, rotation);
 
         else if (acceleratingOnce)
         {
-            speed = calculateSpeed(speed, hardware.maxSpeed, hardware.acceleration, accelerationAngle);
+            velocity = calculateSpeed(velocity, hardware.maxVelocity, hardware.acceleration, accelerationAngle);
             acceleratingOnce = false;
         }
     }
@@ -89,13 +89,13 @@ namespace physics
 
     void Body::printBody() const
     {
-        printf("Speed {%f, %f}\n", speed.x, speed.y);
+        printf("Velocity {%f, %f}\n", velocity.x, velocity.y);
     }
     Vector2d &Body::getSpeed()
     {
-        return speed;
+        return velocity;
     }
-    const Vector2d &Body::getSpeed() const { return speed; }
+    const Vector2d &Body::getSpeed() const { return velocity; }
     Vector2d Body::applyBounce()
     {
         Vector2d bounceToApply = bounce;

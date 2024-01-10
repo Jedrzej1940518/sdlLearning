@@ -29,28 +29,37 @@ namespace physics
     {
         return atan2(v.x, v.y);
     }
-    Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation)
+    Vector2d calculateSpeed(const Vector2d &velocity, double maxVelocity, double acceleration, double rotation)
     {
         rotation = degreesToRadians(rotation);
         double y1 = -acceleration;
 
         Vector2d rotatedVector{-sin(rotation) * y1, cos(rotation) * y1};
-        Vector2d newSpeed = speed + rotatedVector;
+        Vector2d newSpeed = velocity + rotatedVector;
 
-        return clampVector(newSpeed, maxSpeed);
+        return clampVector(newSpeed, maxVelocity);
     }
     double vectorLenght(const Vector2d &v)
     {
         return sqrt(v.x * v.x + v.y * v.y);
     }
-    Vector2d clampVector(const Vector2d &speed, double maxSpeed)
+    Vector2d clampVector(const Vector2d &velocity, double maxVelocity)
     {
-        double scalingFactor = maxSpeed / vectorLenght(speed);
+        double scalingFactor = maxVelocity / vectorLenght(velocity);
         if (scalingFactor > 1)
-            return speed;
+            return velocity;
         else
-            return speed * scalingFactor;
+            return velocity * scalingFactor;
     }
+    Vector2d predictPosition(const Vector2d &pos, const Vector2d &velocity, int ticks)
+    {
+        return pos + velocity * ticks;
+    }
+    int calculateTicks(const Vector2d &offset, double velocity)
+    {
+        return vectorLenght(offset) / velocity;
+    }
+
     Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset)
     {
         return {oldPosition.x + offset.x, oldPosition.y + offset.y};
@@ -61,18 +70,18 @@ namespace physics
         return {static_cast<int>(oldPosition.x + offset.x), static_cast<int>(oldPosition.y + offset.y)};
     }
 
-    void slowDown(Vector2d &speed, Vector2d &position, const GridParams &gridParams)
+    void slowDown(Vector2d &velocity, Vector2d &position, const GridParams &gridParams)
     {
         constexpr auto slowDownDistance = 200;
         if (position.x < slowDownDistance)
-            speed.x = 1;
+            velocity.x = 1;
         else if (position.x > gridParams.mapWidth - slowDownDistance)
-            speed.x = -1;
+            velocity.x = -1;
 
         if (position.y < slowDownDistance)
-            speed.y = 1;
+            velocity.y = 1;
         else if (position.y > gridParams.mapHeight - slowDownDistance)
-            speed.y = -1;
+            velocity.y = -1;
     }
 
     void setPosition(SDL_Rect &r, const SDL_Point &p)

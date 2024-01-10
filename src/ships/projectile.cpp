@@ -5,19 +5,20 @@ namespace ships
 
     Projectile *Projectile::spawnProjectile(const prefabs::ProjectilePrefab &projectilePrefab, const CollisionObject &shooter)
     {
-        Vector2d shotAngle = physics::getRotatedVector(shooter.getBody().getRotation());
+        int scatter = getRandomNumber(-projectilePrefab.scatterAngle, projectilePrefab.scatterAngle);
+        Vector2d shotAngle = physics::getRotatedVector(shooter.getBody().getRotation() + scatter);
         Vector2d shotSpawnDistance = shotAngle * -shooter.getHeight();
+        Vector2d shotVelocity = shotAngle * -projectilePrefab.hardware.maxVelocity; // + shooter.getBody().getSpeed();
 
-        return new Projectile(projectilePrefab, shooter.getObjectCenter() + shotSpawnDistance, shotAngle * -10 + shooter.getBody().getSpeed());
+        return new Projectile(projectilePrefab, shooter.getObjectCenter() + shotSpawnDistance, shotVelocity);
     }
     void Projectile::handleCollision(CollisionObject &oth)
     {
-        printf("Hit! Dmg = %d\n", projectilePrefab.dmg);
         oth.hit(projectilePrefab.dmg);
         alive = false;
     }
 
-    Projectile::Projectile(const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d speed, double rotation) : CollisionObject(projectilePrefab, position, speed, rotation), projectilePrefab{projectilePrefab}, lifetime{projectilePrefab.lifetime}
+    Projectile::Projectile(const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity, double rotation) : CollisionObject(projectilePrefab, position, velocity, rotation), projectilePrefab{projectilePrefab}, lifetime{projectilePrefab.lifetime}
     {
         hp = 0;
     }

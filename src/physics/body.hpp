@@ -10,7 +10,7 @@ namespace physics
   {
   protected:
     Vector2d bounce;
-    Vector2d speed;
+    Vector2d velocity;
     double rotation;
     Hardware hardware;
 
@@ -23,7 +23,7 @@ namespace physics
 
   public:
     Body(Hardware hardware);
-    Body(Vector2d speed, double rotation, Hardware hardware);
+    Body(Vector2d velocity, double rotation, Hardware hardware);
 
     void accelerate();
     void accelerateOnce(double angle);

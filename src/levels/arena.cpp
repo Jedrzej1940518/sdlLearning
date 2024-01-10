@@ -22,16 +22,15 @@ namespace levels
         viewport.x = 0;
         viewport.y = 0;
 
-        // collidableObjects.push_back({prefabs::asteroidBig2, {5000, 5000}});
-        // collidableObjects.push_back({prefabs::asteroid2, {5500, 5500}});
-        collidableObjects.push_back(new CollisionObject(prefabs::asteroid3, {4500, 4500}));
+        // collidableObjects.push_back(new CollisionObject{prefabs::asteroidBig2, {5000, 5000}});
+        // collidableObjects.push_back(new CollisionObject{prefabs::asteroid2, {5500, 5500}});
+        // collidableObjects.push_back(new CollisionObject(prefabs::asteroid3, {4500, 4500}));
+
+        // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {4700, 4700}));
+        // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3400, 3300}));
+        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3700, 3750}));
+
         controledObject = new ships::Ship(prefabs::scarab, {4000, 4000});
-        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {4700, 4700}));
-        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {3700, 3750}));
-        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, {3400, 3300}));
-        // collidableObjects.push_back(controledObject);
-        // collidableObjects.push_back(hostileShips.back());
-        //  console.setControledObject(controledObject);
 
         for (auto &object : collidableObjects)
             collisionModel.emplace(object);
@@ -155,7 +154,12 @@ namespace levels
         // determine tactic after cleanup of asteroids etc.
         for (auto &hostileShip : hostileShips)
         {
-            hostileShip->frameUpdate(hostileShips, collidableObjects, *controledObject, collisionModel);
+            ships::Projectile *p = hostileShip->frameUpdate(hostileShips, collidableObjects, *controledObject, collisionModel);
+            if (p)
+            {
+                projectiles.push_back(p);
+                collisionModel.emplace(p);
+            }
         }
 
         background.frameUpdate(controledObject->getBody().getSpeed());

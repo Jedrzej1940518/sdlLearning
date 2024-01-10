@@ -1,10 +1,13 @@
 #pragma once
 
 #include "sdl.hpp"
+#include "physics/physics.hpp"
+
+#include <SDL2/SDL_mixer.h>
 #include <iostream>
 #include <array>
 #include <vector>
-#include <SDL2/SDL_mixer.h>
+#include <random>
 
 #define LOG(fmt, ...) \
     (printf("%s [%d] " fmt "\n", __FILE__, __LINE__, __VA_ARGS__));
@@ -26,7 +29,18 @@ enum class LevelType
 
 void printRectangle(SDL_Rect rectangle);
 void printPoint(SDL_Point point);
+
 string boolToString(bool b);
+
+template <typename T>
+T getRandomNumber(T from, T to)
+{
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<T> distribution(from, to);
+    T randomNum = distribution(gen);
+    return randomNum;
+}
 
 // THIS IS DONE BY COPY ASSIGNMENT
 template <typename T>

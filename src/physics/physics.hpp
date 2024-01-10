@@ -43,7 +43,7 @@ namespace physics
     struct CollisionParams
     {
         bool collided;
-        Vector2d speed;
+        Vector2d velocity;
         uint mass;
     };
 
@@ -56,15 +56,17 @@ namespace physics
     double getVectorRotation(const Vector2d &v);
     double getVectorRotationRadians(const Vector2d &v);
 
+    Vector2d predictPosition(const Vector2d &pos, const Vector2d &velocity, int ticks);
+    int calculateTicks(const Vector2d &offset, double velocity);
     double vectorLenght(const Vector2d &v);
-    Vector2d calculateSpeed(const Vector2d &speed, double maxSpeed, double acceleration, double rotation);
-    Vector2d clampVector(const Vector2d &speed, double maxSpeed);
+    Vector2d calculateSpeed(const Vector2d &velocity, double maxVelocity, double acceleration, double rotation);
+    Vector2d clampVector(const Vector2d &velocity, double maxVelocity);
     double calculateDistance(const Vector2d &a, const Vector2d &b);
     double getAngleBetweenPoints(const Vector2d &a, const Vector2d &b);
     Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset);
     SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset);
 
-    void slowDown(Vector2d &speed, Vector2d &position, const GridParams &gridParams);
+    void slowDown(Vector2d &velocity, Vector2d &position, const GridParams &gridParams);
 
     SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b);
 
