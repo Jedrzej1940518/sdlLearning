@@ -15,6 +15,51 @@ namespace levels
         return {x, y, w, h};
     }
 
+    void Arena::populateArenaWithAsteroids(int x, int y)
+    {
+
+        auto collisionPresent = []<typename Collidable>(CollisionObject *obj, vector<Collidable *> othObjects)
+        {
+            SDL_Rect a = obj->getDstrect();
+            for (const auto &object : othObjects)
+            {
+                SDL_Rect b = object->getDstrect();
+
+                if (SDL_HasIntersection(&a, &b))
+                    return true;
+            }
+            return false;
+        };
+        SDL_Rect playerRect = controledObject->getDstrect();
+
+        for (int i = 0; i < 20;)
+        {
+            int p = getRandomNumber(0, 100);
+            const prefabs::Prefab &prefab = p > 75 ? prefabs::asteroidBig2 : (p > 40 ? prefabs::asteroid2 : prefabs::asteroid3);
+
+            double xx = x + getRandomNumber(-1200, +1200);
+            double yy = y + getRandomNumber(-1200, +1200);
+
+            double velX = getRandomNumber<double>(-2.5, 2.5);
+            double velY = getRandomNumber<double>(-2.5, 2.5);
+
+            CollisionObject *obj = new CollisionObject{prefab, {xx, yy}, {velX, velY}};
+            SDL_Rect b = obj->getDstrect();
+            b = physics::expandRectangle(b, 100);
+
+            bool playerCollision = SDL_HasIntersection(&playerRect, &b);
+
+            if (collisionPresent(obj, collidableObjects) || collisionPresent(obj, hostileShips) || playerCollision)
+            {
+                printf("Collision was present, rolling new obj\n");
+                delete (obj);
+                continue;
+            }
+            collidableObjects.push_back(obj);
+            ++i;
+        }
+    }
+
     Arena::Arena() //: console{gRenderer, getconsoleRect()}
     {
         viewport.h = SCREEN_HEIGHT;
@@ -25,25 +70,14 @@ namespace levels
         double x = 4000;
         double y = 4000;
 
-        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {4700, 4700}));
-        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3400, 3300}));
+        hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {4700, 4700}));
+        hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {3400, 3300}));
+        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3550, 3750}));
         hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3700, 3750}));
+        hostileShips.push_back(new ships::HostileShip(prefabs::hammerhead, prefabs::hammerheadShell, {4200, 3550}));
 
         controledObject = new ships::Ship(prefabs::scarab, {x, y});
-
-        for (int i = 0; i < 20; ++i)
-        {
-            int p = getRandomNumber(0, 100);
-            const prefabs::Prefab &prefab = p > 75 ? prefabs::asteroidBig2 : (p > 40 ? prefabs::asteroid2 : prefabs::asteroid3);
-
-            double xx = x + getRandomNumber(-1000, +1000);
-            double yy = y + getRandomNumber(-1000, +1000);
-
-            double velX = getRandomNumber<double>(-3.5, 3.5);
-            double velY = getRandomNumber<double>(-3.5, 3.5);
-
-            collidableObjects.push_back(new CollisionObject{prefab, {xx, yy}, {velX, velY}});
-        }
+        populateArenaWithAsteroids(x, y);
 
         for (auto &object : collidableObjects)
             collisionModel.emplace(object);

@@ -7,11 +7,12 @@ namespace ships
     Projectile *Projectile::spawnProjectile(const prefabs::ProjectilePrefab &projectilePrefab, const CollisionObject &shooter)
     {
         int scatter = getRandomNumber(-projectilePrefab.scatterAngle, projectilePrefab.scatterAngle);
-        Vector2d shotAngle = physics::getRotatedVector(shooter.getBody().getRotation() + scatter);
-        Vector2d shotSpawnDistance = shotAngle * -shooter.getHeight();
-        Vector2d shotVelocity = shotAngle * -projectilePrefab.hardware.maxVelocity; // + shooter.getBody().getSpeed();
+        double shotAngle = shooter.getBody().getRotation() + scatter;
+        Vector2d shotVector = physics::getRotatedVector(shotAngle);
+        Vector2d shotSpawnDistance = shotVector * -shooter.getHeight();
+        Vector2d shotVelocity = shotVector * -projectilePrefab.hardware.maxVelocity; // + shooter.getBody().getSpeed();
 
-        return new Projectile(projectilePrefab, shooter.getObjectCenter() + shotSpawnDistance, shotVelocity);
+        return new Projectile(projectilePrefab, shooter.getObjectCenter() + shotSpawnDistance, shotVelocity, shotAngle);
     }
     void Projectile::handleCollision(CollisionObject &oth)
     {

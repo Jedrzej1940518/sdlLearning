@@ -10,6 +10,8 @@ namespace ships
         shipId = uniqueId;
         uniqueId++;
         encircleLeft = uniqueId % 2;
+        avoidanceRadius = 250;
+        avoidanceRadius += radius;
     }
     void HostileShip::determineTactic(const physics::Vector2d &playerPos)
     {
@@ -19,7 +21,7 @@ namespace ships
         if (tacticTicks > 0)
             return;
 
-        tacticTicks = 5;
+        tacticTicks = 1;
 
         double dist = physics::calculateDistance(getObjectCenter(), playerPos);
         tactic = dist > maxPlayerDist ? approach : (dist < avoidanceRadius ? disapproach : encircle);
@@ -49,7 +51,7 @@ namespace ships
         }
         if (abs(degrees) > 3)
         {
-            rotationTicks = 5;
+            rotationTicks = 1;
             body.rotate(playerOnLeft ? -abs(degrees) : abs(degrees));
         }
 
@@ -104,9 +106,9 @@ namespace ships
         physics::Vector2d avoidanceVector = {0, 0};
         auto pos = getObjectCenter();
 
-        auto avoidPosition = [&](physics::Vector2d position)
+        auto avoidPosition = [&](physics::Vector2d position, int othObjRadius)
         {
-            float dist = physics::calculateDistance(pos, position);
+            float dist = physics::calculateDistance(pos, position) - othObjRadius;
 
             if (dist < avoidanceRadius)
             {
@@ -121,10 +123,10 @@ namespace ships
             {
                 if (object == this)
                     continue;
-                avoidPosition(object->getObjectCenter());
+                avoidPosition(object->getObjectCenter(), object->getRadius());
             };
         };
-        avoidPosition(player.getObjectCenter());
+        avoidPosition(player.getObjectCenter(), player.getRadius());
         avoidPositions(allies);
         avoidPositions(asteroids);
 
@@ -135,28 +137,33 @@ namespace ships
         double avoidanceAngle = physics::getVectorRotation(avoidanceVector);
         body.accelerateOnce(avoidanceAngle);
 
+        printf("colliding\n");
         return collisonImminent;
     }
+    void HostileShip::debugRender(SDL_Rect viewport)
+    {
+        auto pos = getObjectCenter() - physics::Vector2d{(double)viewport.x, (double)viewport.y};
+        Uint32 color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 0);
+        ellipseColor(gRenderer, pos.x, pos.y, maxPlayerDist, maxPlayerDist, color);
 
+        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 0, 0);
+        ellipseColor(gRenderer, pos.x, pos.y, avoidanceRadius, avoidanceRadius, color);
+
+        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 0, 255);
+        lineColor(gRenderer, pos.x, pos.y, pos.x + body.getSpeed().x * 50, pos.y + body.getSpeed().y * 50, color);
+
+        auto accelerationVector = physics::getRotatedVector(getBody().getAccelerationAngle() - 180);
+        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 255);
+        lineColor(gRenderer, pos.x, pos.y, pos.x + accelerationVector.x * 50, pos.y + accelerationVector.y * 50, color);
+
+        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 255, 0);
+        ellipseColor(gRenderer, pos.x, pos.y, radius, radius, color);
+    }
     void HostileShip::renderObject(SDL_Rect viewport)
     {
         CollisionObject::renderObject(viewport);
         if (debugObject)
-        {
-            auto pos = getObjectCenter() - physics::Vector2d{(double)viewport.x, (double)viewport.y};
-            Uint32 color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 0);
-            ellipseColor(gRenderer, pos.x, pos.y, maxPlayerDist, maxPlayerDist, color);
-
-            color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 0, 0);
-            ellipseColor(gRenderer, pos.x, pos.y, avoidanceRadius, avoidanceRadius, color);
-
-            color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 0, 255);
-            lineColor(gRenderer, pos.x, pos.y, pos.x + body.getSpeed().x * 50, pos.y + body.getSpeed().y * 50, color);
-
-            auto accelerationVector = physics::getRotatedVector(getBody().getAccelerationAngle() - 180);
-            color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 255);
-            lineColor(gRenderer, pos.x, pos.y, pos.x + accelerationVector.x * 50, pos.y + accelerationVector.y * 50, color);
-        }
+            debugRender(viewport);
     }
 
     Projectile *HostileShip::shoot(const physics::Vector2d &playerPos)

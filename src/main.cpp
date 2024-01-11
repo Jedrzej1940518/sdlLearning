@@ -11,7 +11,7 @@ int main()
     Clock clock{FRAME_RATE};
 
     SDL_Event event;
-    SoundManager::GetInstance(); // init
+
     while (not quit)
     {
         clock.tick();

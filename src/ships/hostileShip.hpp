@@ -10,11 +10,9 @@ namespace ships
 {
     class HostileShip : public rendering::CollisionObject
     {
-        inline static constexpr bool debugObject{false};
-
         inline static int uniqueId{0};
 
-        inline static constexpr int avoidanceRadius = 250;
+        int avoidanceRadius;
         inline static constexpr int maxPlayerDist = 600;
 
         int shipId;
@@ -53,6 +51,7 @@ namespace ships
 
         Projectile *shoot(const physics::Vector2d &playerPos);
 
+        void debugRender(SDL_Rect viewport);
         void print(const physics::Vector2d &playerPos);
     };
 }

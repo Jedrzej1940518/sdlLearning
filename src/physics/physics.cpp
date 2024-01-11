@@ -69,6 +69,10 @@ namespace physics
     {
         return {static_cast<int>(oldPosition.x + offset.x), static_cast<int>(oldPosition.y + offset.y)};
     }
+    SDL_Rect expandRectangle(const SDL_Rect &rect, int n)
+    {
+        return SDL_Rect{rect.x - n, rect.y - n, rect.w + n, rect.h + n};
+    }
 
     void slowDown(Vector2d &velocity, Vector2d &position, const GridParams &gridParams)
     {

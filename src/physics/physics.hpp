@@ -66,6 +66,8 @@ namespace physics
     Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset);
     SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset);
 
+    SDL_Rect expandRectangle(const SDL_Rect &rect, int n);
+
     void slowDown(Vector2d &velocity, Vector2d &position, const GridParams &gridParams);
 
     SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b);

@@ -40,6 +40,7 @@ namespace levels
 
   private:
     void moveViewport();
+    void populateArenaWithAsteroids(int x, int y);
     virtual void render() override;
   };
 } // namespace levels

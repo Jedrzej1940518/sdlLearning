@@ -11,6 +11,7 @@ namespace rendering
     CollisionObject::CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d velocity, double rotation)
         : Object{prefab.texturePath, position, prefab.id}, prefab{prefab}, body{velocity, rotation, prefab.hardware}, collisionParams{false, {0, 0}, 0}, hp{prefab.hp}
     {
+        radius = std::max(getWidth(), getHeight()) / 2;
     }
     void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
     {
@@ -109,6 +110,10 @@ namespace rendering
     int CollisionObject::getHeight() const
     {
         return dstrect.h;
+    }
+    int CollisionObject::getRadius() const
+    {
+        return radius;
     }
     bool CollisionObject::isAlive() const
     {

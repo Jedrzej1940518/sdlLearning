@@ -28,6 +28,9 @@ namespace rendering
     physics::GridPosition gridPosition;
     bool alive{true};
     int hp;
+    int radius;
+
+    inline static constexpr bool debugObject{true};
 
   public:
     CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d velocity = {0, 0}, double rotation = 0);
@@ -36,6 +39,7 @@ namespace rendering
 
     void frameUpdate(physics::CollisionModel &collisionModel);
     void renderObject(SDL_Rect viewport) override;
+
     void printCollisionObject() const;
     void printGridPosition() const;
     void printSpeed() const;
@@ -46,6 +50,7 @@ namespace rendering
     physics::Vector2d getObjectCenter() const;
     int getWidth() const;
     int getHeight() const;
+    int getRadius() const;
     physics::GridPosition &getGridPosition();
     const physics::GridPosition &getGridPosition() const;
     const Body &getBody() const;
