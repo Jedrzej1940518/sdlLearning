@@ -40,6 +40,7 @@ namespace rendering
 
     virtual ~Object()
     {
+      SDL_DestroyTexture(texture);
     }
   };
 } // namespace rendering

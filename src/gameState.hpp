@@ -10,10 +10,10 @@ class GameState
 {
   LevelType levelType{LevelType::MENU};
   levels::Menu menu{};
-  levels::Arena arena{};
+  levels::Arena *arena{new levels ::Arena()};
   levels::Level *currentLevel{&menu};
 
 public:
-  void handleEvent(SDL_Event &event, bool &quit);
+  void handleEvent(SDL_Event &event, bool &quit, bool &newGame);
   void render();
 };

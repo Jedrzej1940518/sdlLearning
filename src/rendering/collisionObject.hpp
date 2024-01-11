@@ -30,7 +30,7 @@ namespace rendering
     int hp;
     int radius;
 
-    inline static constexpr bool debugObject{true};
+    inline static constexpr bool debugObject{false};
 
   public:
     CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d velocity = {0, 0}, double rotation = 0);
@@ -39,6 +39,7 @@ namespace rendering
 
     void frameUpdate(physics::CollisionModel &collisionModel);
     void renderObject(SDL_Rect viewport) override;
+    void debugRender(SDL_Rect viewport);
 
     void printCollisionObject() const;
     void printGridPosition() const;

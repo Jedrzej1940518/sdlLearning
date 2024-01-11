@@ -36,7 +36,8 @@ namespace levels
 
   public:
     Arena();
-    virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/) override;
+    virtual ~Arena();
+    virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/, bool & /**/) override;
 
   private:
     void moveViewport();

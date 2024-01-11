@@ -135,9 +135,8 @@ namespace ships
 
         avoidanceVector = physics::clampVector(avoidanceVector, 1.0);
         double avoidanceAngle = physics::getVectorRotation(avoidanceVector);
-        body.accelerateOnce(avoidanceAngle);
+        body.accelerateOnce(avoidanceAngle + 90);
 
-        printf("colliding\n");
         return collisonImminent;
     }
     void HostileShip::debugRender(SDL_Rect viewport)
@@ -148,16 +147,6 @@ namespace ships
 
         color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 0, 0);
         ellipseColor(gRenderer, pos.x, pos.y, avoidanceRadius, avoidanceRadius, color);
-
-        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 0, 255);
-        lineColor(gRenderer, pos.x, pos.y, pos.x + body.getSpeed().x * 50, pos.y + body.getSpeed().y * 50, color);
-
-        auto accelerationVector = physics::getRotatedVector(getBody().getAccelerationAngle() - 180);
-        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 255);
-        lineColor(gRenderer, pos.x, pos.y, pos.x + accelerationVector.x * 50, pos.y + accelerationVector.y * 50, color);
-
-        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 255, 0);
-        ellipseColor(gRenderer, pos.x, pos.y, radius, radius, color);
     }
     void HostileShip::renderObject(SDL_Rect viewport)
     {

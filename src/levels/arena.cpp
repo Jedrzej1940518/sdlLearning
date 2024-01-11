@@ -32,7 +32,7 @@ namespace levels
         };
         SDL_Rect playerRect = controledObject->getDstrect();
 
-        for (int i = 0; i < 20;)
+        for (int i = 0; i < 10;)
         {
             int p = getRandomNumber(0, 100);
             const prefabs::Prefab &prefab = p > 75 ? prefabs::asteroidBig2 : (p > 40 ? prefabs::asteroid2 : prefabs::asteroid3);
@@ -71,9 +71,9 @@ namespace levels
         double y = 4000;
 
         hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {4700, 4700}));
-        hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {3400, 3300}));
+        // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {3400, 3300}));
         hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3550, 3750}));
-        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3700, 3750}));
+        // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3700, 3750}));
         hostileShips.push_back(new ships::HostileShip(prefabs::hammerhead, prefabs::hammerheadShell, {4200, 3550}));
 
         controledObject = new ships::Ship(prefabs::scarab, {x, y});
@@ -87,7 +87,7 @@ namespace levels
         collisionModel.emplace(controledObject);
     }
 
-    void Arena::handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/)
+    void Arena::handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/, bool & /**/)
     {
         if ((event.type == SDL_KEYDOWN) && (event.key.keysym.sym == SDLK_ESCAPE))
         {
@@ -226,5 +226,18 @@ namespace levels
         controledObject->renderObject(viewport);
         //   console.render();
         SDL_RenderPresent(gRenderer);
+    }
+    Arena::~Arena()
+    {
+        SDL_DestroyTexture(texture);
+
+        delete (controledObject);
+
+        for (auto *obj : projectiles)
+            delete (obj);
+        for (auto *obj : hostileShips)
+            delete (obj);
+        for (auto *obj : collidableObjects)
+            delete (obj);
     }
 } // namespace levels

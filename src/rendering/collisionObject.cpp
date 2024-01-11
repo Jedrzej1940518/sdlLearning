@@ -5,6 +5,8 @@
 #include <SDL2/SDL_stdinc.h>
 #include <soundManager.hpp>
 
+#include <SDL2/SDL2_gfxPrimitives.h>
+
 namespace rendering
 {
 
@@ -47,6 +49,20 @@ namespace rendering
         SDL_RenderDrawRect(renderer, &hpBar);
     }
 
+    void CollisionObject::debugRender(SDL_Rect viewport)
+    {
+        auto pos = getObjectCenter() - physics::Vector2d{(double)viewport.x, (double)viewport.y};
+        auto color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 0, 255);
+        lineColor(gRenderer, pos.x, pos.y, pos.x + body.getSpeed().x * 50, pos.y + body.getSpeed().y * 50, color);
+
+        auto accelerationVector = physics::getRotatedVector(getBody().getAccelerationAngle() - 180);
+        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 255);
+        lineColor(gRenderer, pos.x, pos.y, pos.x + accelerationVector.x * 50, pos.y + accelerationVector.y * 50, color);
+
+        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 255, 0);
+        ellipseColor(gRenderer, pos.x, pos.y, radius, radius, color);
+    }
+
     void CollisionObject::renderObject(SDL_Rect viewport)
     {
         if (not SDL_HasIntersection(&viewport, &dstrect))
@@ -73,6 +89,9 @@ namespace rendering
         }
 
         SDL_RenderCopyEx(gRenderer, texture, NULL, &dest, body.getRotation(), NULL, SDL_FLIP_NONE);
+
+        if (debugObject)
+            debugRender(viewport);
     }
 
     void CollisionObject::collisionCheck(CollisionObject &oth)
