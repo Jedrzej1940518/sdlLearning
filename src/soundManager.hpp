@@ -6,6 +6,10 @@
 enum class Sound
 {
     ENGINE = 1,
+    PLAYER_WEAPON,
+    SHELL_HIT_SMALL,
+    SHELL_HIT_BIG,
+    COLLISION
 };
 
 // singleton
@@ -18,11 +22,17 @@ private:
     constexpr static int audioChunkSize = 2048;
 
     inline static Mix_Music *music = nullptr;
+
     inline static Mix_Chunk *engineSound = nullptr;
+    inline static Mix_Chunk *playerWeaponSound = nullptr;
+    inline static Mix_Chunk *shellHitSmallSound = nullptr;
+    inline static Mix_Chunk *shellHitBigSound = nullptr;
+    inline static Mix_Chunk *collisionSound = nullptr;
 
     SoundManager();
     ~SoundManager();
-    inline static std::map<Sound, int> soundChannel;
+
+    inline static std::map<Sound, Mix_Chunk *> chunkPtr;
     static constexpr int fadeMs = 300;
     bool loadData();
     bool initAudio();
@@ -34,7 +44,6 @@ public:
     void pauseMusic();
 
     void playSound(Sound sound);
-    void pauseSound(Sound sound);
 
     SoundManager(SoundManager &other) = delete;
     void operator=(const SoundManager &) = delete;

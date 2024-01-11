@@ -5,11 +5,17 @@ SoundManager::SoundManager()
 {
     initAudio();
     loadData();
+
+    // reserving channel 0 for engine
+    Mix_ReserveChannels(1);
+
+    printf("sound channels %d\n", Mix_AllocateChannels(32));
     Mix_Volume(-1, 20);
 }
 SoundManager::~SoundManager()
 {
     Mix_FreeChunk(engineSound);
+    Mix_FreeChunk(playerWeaponSound);
     Mix_FreeMusic(music);
 
     Mix_Quit();
@@ -42,25 +48,21 @@ void SoundManager::pauseMusic()
 
 void SoundManager::playSound(Sound sound)
 {
-    bool musicNotPlaying = soundChannel.count(sound) == 0 or soundChannel[sound] == -1;
+    constexpr int engineChannel = 0;
 
-    if (musicNotPlaying)
+    // for engine we dont want to play it if it was already playing
+    if (sound == Sound::ENGINE && Mix_Playing(engineChannel))
+        return;
+
+    int channel = sound == Sound::ENGINE ? engineChannel : -1;
+    auto res = Mix_PlayChannel(channel, chunkPtr[sound], 0);
+
+    if (res == -1)
     {
-        soundChannel[sound] = Mix_FadeInChannel(-1, engineSound, -1, fadeMs);
-    }
-    if (soundChannel[sound] == -1)
-    {
-        cerr << "Unable to find channel for " << static_cast<int>(sound) << endl;
+        cerr << "Unable to play on channel " << channel << " for " << static_cast<int>(sound) << " " << Mix_GetError() << endl;
     }
 }
-void SoundManager::pauseSound(Sound sound)
-{
-    if (Mix_FadeOutChannel(soundChannel[sound], fadeMs) == -1)
-    {
-        cerr << "Error halting channel " << static_cast<int>(sound) << endl;
-    }
-    soundChannel[sound] = -1;
-}
+
 bool SoundManager::initAudio()
 {
     bool success = true;
@@ -83,12 +85,51 @@ bool SoundManager::loadData()
         success = false;
     }
 
-    engineSound = Mix_LoadWAV("../data/sound/engine_loop.wav");
+    engineSound = Mix_LoadWAV("../data/sound/engine_03_hitek_01_frigate.ogg");
 
     if (engineSound == nullptr)
     {
         cerr << "Failed to load gEngineSound! SDL_mixer Error: " << Mix_GetError() << endl;
         success = false;
     }
+    playerWeaponSound = Mix_LoadWAV("../data/sound/hephaestus_fire_01.ogg");
+
+    if (playerWeaponSound == nullptr)
+    {
+        cerr << "Failed to load playerWeaponSound! SDL_mixer Error: " << Mix_GetError() << endl;
+        success = false;
+    }
+    shellHitSmallSound = Mix_LoadWAV("../data/sound/gun_hit_light_01.ogg");
+
+    if (shellHitSmallSound == nullptr)
+    {
+        cerr << "Failed to load shellHitSmallSound! SDL_mixer Error: " << Mix_GetError() << endl;
+        success = false;
+    }
+
+    shellHitBigSound = Mix_LoadWAV("../data/sound/gun_hit_heavy_03.ogg");
+
+    if (shellHitBigSound == nullptr)
+    {
+        cerr << "Failed to load shellHitBigSound! SDL_mixer Error: " << Mix_GetError() << endl;
+        success = false;
+    }
+
+    collisionSound = Mix_LoadWAV("../data/sound/collision_asteroid_vs_asteroid_01.ogg");
+
+    if (collisionSound == nullptr)
+    {
+        cerr << "Failed to load collisionSound! SDL_mixer Error: " << Mix_GetError() << endl;
+        success = false;
+    }
+
+    // shellHitBigSound=
+
+    chunkPtr[Sound::PLAYER_WEAPON] = playerWeaponSound;
+    chunkPtr[Sound::ENGINE] = engineSound;
+    chunkPtr[Sound::SHELL_HIT_SMALL] = shellHitSmallSound;
+    chunkPtr[Sound::SHELL_HIT_BIG] = shellHitBigSound;
+    chunkPtr[Sound::COLLISION] = collisionSound;
+
     return success;
 }

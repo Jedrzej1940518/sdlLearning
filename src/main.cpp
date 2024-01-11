@@ -1,6 +1,7 @@
 #include "clock.hpp"
 #include "gameState.hpp"
 #include "sdl.hpp"
+#include "soundManager.hpp"
 
 int main()
 {
@@ -10,7 +11,7 @@ int main()
     Clock clock{FRAME_RATE};
 
     SDL_Event event;
-
+    SoundManager::GetInstance(); // init
     while (not quit)
     {
         clock.tick();

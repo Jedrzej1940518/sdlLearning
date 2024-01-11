@@ -1,5 +1,6 @@
 
 #include "ship.hpp"
+#include "soundManager.hpp"
 
 namespace ships
 {
@@ -29,7 +30,10 @@ namespace ships
     void Ship::shoot()
     {
         if (shellReload <= 0)
+        {
             spawnProjectile = true;
+            soundsToPlay.insert(Sound::PLAYER_WEAPON);
+        }
     }
 
     void Ship::rotateLeft()
@@ -53,7 +57,6 @@ namespace ships
 
     void Ship::renderReload(SDL_Rect viewport)
     {
-
         // ship rect
         SDL_Rect reloadRect{viewport.w / 2 - getWidth() / 2, viewport.h / 2 - getHeight() / 2, getWidth(), getHeight()};
         reloadRect.y += getHeight() + 10;
@@ -99,6 +102,9 @@ namespace ships
             shellReload = prefabs::scarabShell.reload;
             spawnProjectile = false;
         }
+
+        if (accelerateOnce || abs(body.getRotationLeft()) > 0)
+            soundsToPlay.insert(Sound::ENGINE);
 
         return projectile;
     }

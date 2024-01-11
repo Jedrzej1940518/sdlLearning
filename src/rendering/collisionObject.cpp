@@ -3,6 +3,8 @@
 #include "object.hpp"
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_stdinc.h>
+#include <soundManager.hpp>
+
 namespace rendering
 {
 
@@ -48,7 +50,7 @@ namespace rendering
     {
         if (not SDL_HasIntersection(&viewport, &dstrect))
             return;
-
+        playSounds();
         SDL_Rect dest = physics::normalizedIntersection(viewport, dstrect);
 
         // SDL_Intersect wont return -x or -y so we have to acoomodate for that
@@ -84,6 +86,7 @@ namespace rendering
     {
         if (oth.body.getMass())
         {
+            soundsToPlay.insert(Sound::COLLISION);
             constexpr double collisionFactor = 2.0;
             collisionParams = {true, oth.body.getSpeed(), oth.body.getMass()};
             auto sumSpeed = oth.body.getSpeed() - body.getSpeed();

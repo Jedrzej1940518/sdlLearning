@@ -30,12 +30,18 @@ namespace rendering
         position = calculatePosition(position, offset * parallaxFactor);
         setPosition(dstrect, position);
     }
-
+    void Object::playSounds()
+    {
+        auto &sm = SoundManager::GetInstance();
+        for (auto sound : soundsToPlay)
+            sm.playSound(sound);
+        soundsToPlay.clear();
+    }
     void Object::renderObject(SDL_Rect viewport)
     {
         if (not SDL_HasIntersection(&viewport, &dstrect))
             return;
-
+        playSounds();
         SDL_Rect src = physics::normalizedIntersection(dstrect, viewport);
         SDL_Rect dest = physics::normalizedIntersection(viewport, dstrect);
 

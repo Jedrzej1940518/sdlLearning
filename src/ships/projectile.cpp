@@ -1,4 +1,5 @@
 #include "projectile.hpp"
+#include "soundManager.hpp"
 
 namespace ships
 {
@@ -16,6 +17,9 @@ namespace ships
     {
         if (oth.getMass() == 0)
             return;
+        auto sound = projectilePrefab.dmg > 6 ? Sound::SHELL_HIT_BIG : Sound::SHELL_HIT_SMALL;
+        soundsToPlay.insert(sound);
+        playSounds();
         oth.hit(projectilePrefab.dmg);
         alive = false;
     }

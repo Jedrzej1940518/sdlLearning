@@ -3,6 +3,8 @@
 #include "physics/body.hpp"
 #include "sdl.hpp"
 #include "utils.hpp"
+#include "soundManager.hpp"
+#include <unordered_set>
 #include <SDL2/SDL_rect.h>
 
 namespace rendering
@@ -18,6 +20,7 @@ namespace rendering
     physics::Vector2d position;
     string id;
     double parallaxFactor;
+    std::unordered_set<Sound> soundsToPlay;
 
   public:
     Object(const string &texturePath, physics::Vector2d &position, const string &id, double parallaxFactor = 1.0);
@@ -26,6 +29,7 @@ namespace rendering
     void printPosition() const;
 
     void frameUpdate(physics::Vector2d offset);
+    void playSounds();
     virtual void renderObject(SDL_Rect viewport);
 
     int getX();
