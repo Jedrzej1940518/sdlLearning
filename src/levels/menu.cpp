@@ -6,7 +6,8 @@ namespace levels
 {
     Menu::Menu() : continueButton{"Continue", {buttonX, buttonY, buttonW, buttonH}},
                    newGameButton{"New Game", {buttonX, buttonY + buttonH + 10, buttonW, buttonH}},
-                   quitButton{"Quit", {buttonX, buttonY + buttonH * 2 + 10 * 2, buttonW, buttonH}}
+                   quitButton{"Quit", {buttonX, buttonY + buttonH * 2 + 10 * 2, buttonW, buttonH}},
+                   title{"Starships", {buttonX - buttonW, buttonY - 6 * buttonH, 3 * buttonW, 3 * buttonH}, SDL_Color{255, 255, 0, 255}}
     {
     }
 
@@ -18,6 +19,7 @@ namespace levels
             SDL_GetMouseState(&p.x, &p.y);
             if (continueButton.isInside(p))
             {
+                SoundManager::GetInstance().switchSound();
                 levelType = LevelType::ARENA;
             }
             else if (quitButton.isInside(p))
@@ -26,6 +28,7 @@ namespace levels
             }
             else if (newGameButton.isInside(p))
             {
+                SoundManager::GetInstance().switchSound();
                 levelType = LevelType::ARENA;
                 newGame = true;
             }
@@ -38,6 +41,7 @@ namespace levels
         SDL_RenderClear(gRenderer);
         SDL_Rect fakeViewport{3000, 3000, (int)SCREEN_WIDTH, (int)SCREEN_HEIGHT};
         background.renderObject(fakeViewport);
+        title.renderText();
         continueButton.renderButton();
         newGameButton.renderButton();
         quitButton.renderButton();

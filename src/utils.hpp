@@ -20,11 +20,14 @@ extern const uint FRAME_RATE;
 inline SDL_Window *gWindow = nullptr;
 inline SDL_Renderer *gRenderer = nullptr;
 inline TTF_Font *gFont = nullptr;
+inline TTF_Font *gBigFont = nullptr;
 
 enum class LevelType
 {
     MENU,
-    ARENA
+    ARENA,
+    GAME_OVER,
+    GAME_WON
 };
 
 void printRectangle(SDL_Rect rectangle);

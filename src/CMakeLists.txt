@@ -9,9 +9,11 @@ set(SOURCES
     physics/collisionModel.cpp
     rendering/collisionObject.cpp
     rendering/object.cpp
+    rendering/text.cpp
     rendering/menu_ui/button.cpp
     levels/menu.cpp
     levels/arena.cpp
+    levels/gameOver.cpp
     ships/ship.cpp
     ships/hostileShip.cpp
     ships/projectile.cpp

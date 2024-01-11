@@ -45,6 +45,11 @@ void SoundManager::pauseMusic()
         Mix_FadeOutMusic(fadeMs);
     }
 }
+void SoundManager::switchSound()
+{
+    sound = !sound;
+    Mix_Volume(-1, sound ? 20 : 0);
+}
 
 void SoundManager::playSound(Sound sound)
 {

@@ -23,7 +23,7 @@ namespace levels
     SDL_Texture *texture;
     SDL_Rect viewport;
     //  rendering::console console;
-    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {3000, 3000}, "background", 0.4};
+    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {3000, 3000}, "background", 1};
 
     ships::Ship *controledObject;
 

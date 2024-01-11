@@ -29,6 +29,8 @@ private:
     inline static Mix_Chunk *shellHitBigSound = nullptr;
     inline static Mix_Chunk *collisionSound = nullptr;
 
+    bool sound{false};
+
     SoundManager();
     ~SoundManager();
 
@@ -44,6 +46,7 @@ public:
     void pauseMusic();
 
     void playSound(Sound sound);
+    void switchSound();
 
     SoundManager(SoundManager &other) = delete;
     void operator=(const SoundManager &) = delete;

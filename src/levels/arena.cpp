@@ -89,11 +89,48 @@ namespace levels
 
     void Arena::handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/, bool & /**/)
     {
-        if ((event.type == SDL_KEYDOWN) && (event.key.keysym.sym == SDLK_ESCAPE))
+        if (not controledObject->isAlive())
         {
+            SoundManager::GetInstance().switchSound();
+            levelType = LevelType::GAME_OVER;
+        }
+        else if (hostileShips.empty())
+        {
+            SoundManager::GetInstance().switchSound();
+            levelType = LevelType::GAME_WON;
+        }
+        else if ((event.type == SDL_KEYDOWN) && (event.key.keysym.sym == SDLK_ESCAPE))
+        {
+            SoundManager::GetInstance().switchSound();
             levelType = LevelType::MENU;
         }
-        if (event.type == SDL_KEYDOWN)
+
+        SDL_Point p;
+        SDL_GetMouseState(&p.x, &p.y);
+        physics::Vector2d mousePtr{(double)p.x - SCREEN_WIDTH / 2, (double)p.y - SCREEN_HEIGHT / 2};
+        double angle = physics::normalizeDegrees(physics::getVectorRotation(mousePtr) + 90);
+        angle -= controledObject->getRotation();
+        angle = angle > 360 ? angle - 360 : (angle < 0 ? angle + 360 : angle);
+
+        if (abs(angle - 360) > 3 && angle > 180)
+        {
+            controledObject->stopRotateRight();
+            controledObject->rotateLeft();
+        }
+        else if (abs(angle - 360) > 3 && angle < 180)
+        {
+            controledObject->stopRotateLeft();
+            controledObject->rotateRight();
+        }
+        else
+        {
+            controledObject->stopRotateRight();
+            controledObject->stopRotateLeft();
+        }
+        if (event.type == SDL_MOUSEBUTTONDOWN)
+            controledObject->shoot();
+
+        else if (event.type == SDL_KEYDOWN)
         {
             switch (event.key.keysym.sym)
             {
@@ -108,15 +145,6 @@ namespace levels
                 break;
             case SDLK_s:
                 controledObject->addInput(physics::DIRECTION::down);
-                break;
-            case SDLK_q:
-                controledObject->rotateLeft();
-                break;
-            case SDLK_e:
-                controledObject->rotateRight();
-                break;
-            case SDLK_SPACE:
-                controledObject->shoot();
                 break;
             }
         }
@@ -136,16 +164,8 @@ namespace levels
             case SDLK_s:
                 controledObject->removeInput(physics::DIRECTION::down);
                 break;
-            case SDLK_q:
-                controledObject->stopRotateLeft();
-                break;
-            case SDLK_e:
-                controledObject->stopRotateRight();
-                break;
             }
         }
-
-        // console.handleEvent(event);
     }
     void Arena::moveViewport()
     {

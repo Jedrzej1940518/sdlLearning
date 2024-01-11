@@ -2,6 +2,7 @@
 #include "gameState.hpp"
 #include "levels/arena.hpp"
 #include "levels/menu.hpp"
+#include "soundManager.hpp"
 
 void GameState::handleEvent(SDL_Event &event, bool &quit, bool &newGame)
 {
@@ -18,6 +19,12 @@ void GameState::handleEvent(SDL_Event &event, bool &quit, bool &newGame)
         break;
     case LevelType::ARENA:
         currentLevel = arena;
+        break;
+    case LevelType::GAME_OVER:
+        currentLevel = &gameLost;
+        break;
+    case LevelType::GAME_WON:
+        currentLevel = &gameWon;
         break;
     }
     if (!currentLevel)

@@ -45,6 +45,14 @@ bool loadMedia()
         success = false;
     }
 
+    gBigFont = TTF_OpenFont("../data/graphics/fonts/TiltNeon-Regular.ttf", 120);
+
+    if (gBigFont == nullptr)
+    {
+        cerr << "Error creating a font!" << endl;
+        success = false;
+    }
+
     return success;
 }
 void cleanSdl()

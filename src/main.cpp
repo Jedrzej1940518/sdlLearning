@@ -15,10 +15,11 @@ int main()
     while (not quit)
     {
         clock.tick();
-        while (SDL_PollEvent(&event))
+        do
         {
             gameState.handleEvent(event, quit, newGame);
-        }
+        } while (SDL_PollEvent(&event));
+
         gameState.render();
         clock.tock();
     }
