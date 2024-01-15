@@ -1,7 +1,9 @@
 #pragma once
 
-#include <map>
-
+#include <unordered_map>
+#include <unordered_set>
+#include <string>
+#include <SFML/Audio.hpp>
 
 enum class Sound
 {
@@ -17,36 +19,40 @@ enum class Sound
 class SoundManager
 {
 private:
-    constexpr static int audioFrequency = 44100;
-    constexpr static int hardwareChannels = 2;
-    constexpr static int audioChunkSize = 2048;
+    inline static std::set<Sound> uniqueSoundSet{Sound::ENGINE};
 
-    // inline static Mix_Music *music = nullptr;
+    inline static std::string music = "";
+    inline static std::string engineSound = "";
+    inline static std::string playerWeaponSound = "";
+    inline static std::string shellHitSmallSound = "";
+    inline static std::string shellHitBigSound = "";
+    inline static std::string collisionSound = "";
 
-    // inline static Mix_Chunk *engineSound = nullptr;
-    // inline static Mix_Chunk *playerWeaponSound = nullptr;
-    // inline static Mix_Chunk *shellHitSmallSound = nullptr;
-    // inline static Mix_Chunk *shellHitBigSound = nullptr;
-    // inline static Mix_Chunk *collisionSound = nullptr;
+    inline static std::unordered_map<Sound, std::string> soundPaths;
+    inline static std::unordered_map<Sound, sf::SoundBuffer> soundBuffers;
 
-    bool sound{false};
+    inline static std::list<sf::Sound> sounds;
+    inline static std::unordered_map<Sound, sf::Sound> uniqueSounds;
+
+    bool soundOn{false};
 
     SoundManager();
     ~SoundManager();
 
-    // inline static std::map<Sound, Mix_Chunk *> chunkPtr;
-    static constexpr int fadeMs = 300;
-    bool loadData();
-    bool initAudio();
+    void initUniqueSounds();
+    void loadData();
 
 public:
     static SoundManager &GetInstance();
 
-    void playMusic();
-    void pauseMusic();
-
     void playSound(Sound sound);
+    void cleanupDeadSounds();
+
     void switchSound();
+    void clearSounds();
+
+    void playUniqueSound(Sound sound);
+    void pauseUniqueSound(Sound sound);
 
     SoundManager(SoundManager &other) = delete;
     void operator=(const SoundManager &) = delete;

@@ -2,7 +2,6 @@ cmake_minimum_required(VERSION 3.0)
 
 project(starships VERSION 1.0)
 
-
 set(CMAKE_CXX_STANDARD 20)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
@@ -35,10 +34,12 @@ target_compile_options(starships PRIVATE)
 find_package(SDL2 REQUIRED CONFIG)
 find_package(SDL2_image REQUIRED CONFIG)
 find_package(SDL2_ttf REQUIRED CONFIG)
+find_package(SFML REQUIRED CONFIG)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_image::SDL2_image-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_ttf::SDL2_ttf)
 target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-audio)
 
 #target_link_libraries(starships PRIVATE ${CONAN_LIBS})#SDL2 SDL2_image SDL2_ttf SDL2_mixer SDL2_gfx)
 

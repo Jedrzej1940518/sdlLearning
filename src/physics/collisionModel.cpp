@@ -24,7 +24,7 @@ namespace physics
             for (int j = 0; j < columns; ++j)
                 for (auto *object : grid[i][j])
                 {
-                    printf("[%i][%i][%li] ", i, j, grid[i][i].size());
+                    printf("[%i][%i][%zi] ", i, j, grid[i][i].size());
                     object->printGridPosition();
                 }
         cout << endl;

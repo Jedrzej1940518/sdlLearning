@@ -5,7 +5,7 @@
 #include <SDL2/SDL_stdinc.h>
 #include <soundManager.hpp>
 
-//#include <SDL2/SDL2_gfxPrimitives.h>
+// #include <SDL2/SDL2_gfxPrimitives.h>
 
 namespace rendering
 {
@@ -112,7 +112,7 @@ namespace rendering
             auto sumSpeed = oth.body.getSpeed() - body.getSpeed();
             auto magnitude = physics::vectorLenght(sumSpeed);
             auto dmg = magnitude * oth.body.getMass() / body.getMass() * collisionFactor;
-            hit(dmg);
+            hit((int)dmg);
         }
     }
 

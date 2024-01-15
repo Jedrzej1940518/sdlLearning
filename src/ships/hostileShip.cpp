@@ -108,7 +108,7 @@ namespace ships
 
         auto avoidPosition = [&](physics::Vector2d position, int othObjRadius)
         {
-            float dist = physics::calculateDistance(pos, position) - othObjRadius;
+            double dist = physics::calculateDistance(pos, position) - othObjRadius;
 
             if (dist < avoidanceRadius)
             {
