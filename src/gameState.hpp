@@ -4,7 +4,7 @@
 #include "levels/level.hpp"
 #include "levels/menu.hpp"
 #include "levels/gameOver.hpp"
-#include "sdl.hpp"
+#include "mySdl.hpp"
 #include "utils.hpp"
 
 class GameState

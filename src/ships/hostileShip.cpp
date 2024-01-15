@@ -1,6 +1,6 @@
 #include "hostileShip.hpp"
 
-#include <SDL2/SDL2_gfxPrimitives.h>
+// #include <SDL2/SDL2_gfxPrimitives.h>
 
 namespace ships
 {
@@ -141,12 +141,12 @@ namespace ships
     }
     void HostileShip::debugRender(SDL_Rect viewport)
     {
-        auto pos = getObjectCenter() - physics::Vector2d{(double)viewport.x, (double)viewport.y};
-        Uint32 color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 0);
-        ellipseColor(gRenderer, pos.x, pos.y, maxPlayerDist, maxPlayerDist, color);
+        // auto pos = getObjectCenter() - physics::Vector2d{(double)viewport.x, (double)viewport.y};
+        // Uint32 color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 0);
+        // ellipseColor(gRenderer, pos.x, pos.y, maxPlayerDist, maxPlayerDist, color);
 
-        color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 0, 0);
-        ellipseColor(gRenderer, pos.x, pos.y, avoidanceRadius, avoidanceRadius, color);
+        // color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 0, 0);
+        // ellipseColor(gRenderer, pos.x, pos.y, avoidanceRadius, avoidanceRadius, color);
     }
     void HostileShip::renderObject(SDL_Rect viewport)
     {

@@ -1,0 +1,9 @@
+{
+    "version": 4,
+    "vendor": {
+        "conan": {}
+    },
+    "include": [
+        "C:\\Users\\Dudek\\Desktop\\Studia\\programowanie grafiki komputerowej rok 4\\sdlLearning\\build\\generators\\CMakePresets.json"
+    ]
+}

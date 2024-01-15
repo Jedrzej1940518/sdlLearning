@@ -1,9 +1,9 @@
 #include "clock.hpp"
 #include "gameState.hpp"
-#include "sdl.hpp"
+#include "mySdl.hpp"
 #include "soundManager.hpp"
 
-int main()
+int main(int argc,char** argv)
 {
     bool quit = not initSdl(); // if init failed, quit
     bool newGame = false;
@@ -24,4 +24,5 @@ int main()
         clock.tock();
     }
     cleanSdl();
+    return 1;
 }

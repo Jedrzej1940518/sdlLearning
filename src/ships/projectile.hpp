@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../rendering/collisionObject.hpp"
-#include "../physics/physics.hpp"
-#include "../physics/collisionModel.hpp"
-#include "../prefabs/prefabs.hpp"
+#include "rendering/collisionObject.hpp"
+#include "physics/physics.hpp"
+#include "physics/collisionModel.hpp"
+#include "prefabs/prefabs.hpp"
 
 namespace ships
 {

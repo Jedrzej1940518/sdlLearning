@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../sdl.hpp"
-#include "../utils.hpp"
+#include "mySdl.hpp"
+#include "utils.hpp"
 namespace physics
 {
     inline constexpr double collisionBounce = 3.0;

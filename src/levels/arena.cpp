@@ -1,5 +1,5 @@
 #include "arena.hpp"
-#include "../prefabs/prefabs.hpp"
+#include "prefabs/prefabs.hpp"
 
 namespace levels
 {
@@ -183,7 +183,7 @@ namespace levels
     template <typename T>
     void cleanupDeadCollidables(vector<T *> &objects, CollisionModel &collisionModel)
     {
-        for (uint i = 0; i < objects.size(); ++i)
+        for (unsigned int i = 0; i < objects.size(); ++i)
         {
             if (!(objects[i]->isAlive()))
             {
