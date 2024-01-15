@@ -20,7 +20,7 @@ namespace levels
   {
     using CollisionObject = rendering::CollisionObject;
 
-    SDL_Texture *texture;
+   // SDL_Texture *texture;
     SDL_Rect viewport;
     //  rendering::console console;
     rendering::Object background{getDataPath("data/graphics/backgrounds/background3.jpg").c_str(), {3000, 3000}, "background", 1};

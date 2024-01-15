@@ -233,7 +233,7 @@ namespace levels
         moveViewport();
 
         SDL_RenderClear(gRenderer);
-        SDL_RenderCopy(gRenderer, texture, NULL, NULL);
+       // SDL_RenderCopy(gRenderer, texture, NULL, NULL);
         background.renderObject(viewport);
 
         for (auto &object : collidableObjects)
@@ -249,7 +249,7 @@ namespace levels
     }
     Arena::~Arena()
     {
-        SDL_DestroyTexture(texture);
+       // SDL_DestroyTexture(texture);
 
         delete (controledObject);
 
