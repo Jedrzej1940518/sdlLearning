@@ -10,7 +10,7 @@ namespace levels
     {
     }
 
-    void GameOver::handleEvent(SDL_Event &event, LevelType &levelType, bool &quit, bool &newGame)
+    void GameOver::handleEvents(SDL_Event &event, LevelType &levelType, bool &quit, bool &newGame)
     {
         if (event.type == SDL_MOUSEBUTTONDOWN)
         {

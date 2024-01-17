@@ -17,17 +17,17 @@ namespace physics
         }
     }
 
-    void CollisionModel::debugPrint(const string &s)
+    void CollisionModel::debugPrint(const std::string &s)
     {
-        cout << "----" << s << "-----" << endl;
+        std::cout << "----" << s << "-----" << std::endl;
         for (int i = 0; i < rows; ++i)
             for (int j = 0; j < columns; ++j)
                 for (auto *object : grid[i][j])
                 {
-                    printf("[%i][%i][%zi] ", i, j, grid[i][i].size());
+                    printf("[%i][%i][%zi] ", i, j, grid[i][j].size());
                     object->printGridPosition();
                 }
-        cout << endl;
+        std::cout << std::endl;
     }
     void CollisionModel::collides(CollisionObject &obj, GridCoords &neigh)
     {
@@ -56,48 +56,51 @@ namespace physics
                         }
                 }
     }
-    GridCoords CollisionModel::calculateGridCoords(int x, int y)
+    GridCoords CollisionModel::calculateGridCoords(const sf::Vector2f &v)
     {
-        int row = std::clamp(x / static_cast<int>(gridParams.cellSide), 0, rows - 1);
-        int column = std::clamp(y / static_cast<int>(gridParams.cellSide), 0, columns - 1);
+        int row = std::clamp(static_cast<int>(v.x) / gridParams.cellSide, 0, rows - 1);
+        int column = std::clamp(static_cast<int>(v.y) / gridParams.cellSide, 0, columns - 1);
         return {row, column};
     }
     void CollisionModel::remove(const CollisionObject &obj)
     {
         auto &g = obj.getGridPosition();
-        auto lastIndex = static_cast<int>(grid[g.row][g.column].size()) - 1;
         auto &vec = grid[g.row][g.column];
 
-        vec[lastIndex]->getGridPosition().index = g.index;
-        std::swap(vec[lastIndex], vec[g.index]);
-
-        grid[g.row][g.column].pop_back();
+        removeVectorElement(vec, g.index);
     }
 
-    void CollisionModel::emplace(CollisionObject *obj)
+    void CollisionModel::emplace(CollisionObject &obj)
     {
-        auto gp = calculateGridCoords(obj->getX(), obj->getY());
-        int column = gp.column;
-        int row = gp.row;
+        auto g = calculateGridCoords(obj.getCenter());
+        int column = g.column;
+        int row = g.row;
 
-        grid[row][column].push_back(obj);
+        grid[row][column].push_back(&obj);
         int indx = static_cast<int>(grid[row][column].size()) - 1;
-        obj->getGridPosition() = {row, column, indx};
+        obj.setGridPosition({row, column, indx});
     }
 
-    void CollisionModel::recalculateGridPosition(CollisionObject &obj)
+    void CollisionModel::recalculateGridPositions()
     {
-        auto gp = calculateGridCoords(obj.getX(), obj.getY());
-        int column = gp.column;
-        int row = gp.row;
+        for (int r = 0; r < rows; ++r)
+            for (int c = 0; c < columns; ++c)
+                for (int i = 0; i < grid[r][c].size(); ++i)
+                {
+                    auto *obj = grid[r][c][i];
+                    auto gp = calculateGridCoords(obj->getCenter());
+                    int column = gp.column;
+                    int row = gp.row;
 
-        auto &g = obj.getGridPosition();
+                    auto &g = obj->getGridPosition();
 
-        if (g.column != column || g.row != row)
-        {
-            remove(obj);
-            emplace(&obj);
-        }
+                    if (g.column != column || g.row != row)
+                    {
+                        remove(*obj);
+                        emplace(*obj);
+                        continue;
+                    }
+                }
     }
 
     const GridParams &CollisionModel::getGridParams()

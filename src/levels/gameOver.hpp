@@ -23,7 +23,7 @@ namespace levels
     public:
         GameOver(string &&title);
         virtual ~GameOver() {}
-        virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool &quit, bool &newGame) override;
+        virtual void handleEvents(SDL_Event &event, LevelType &levelType, bool &quit, bool &newGame) override;
 
     private:
         virtual void render() override;

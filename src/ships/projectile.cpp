@@ -10,7 +10,7 @@ namespace ships
         double shotAngle = shooter.getBody().getRotation() + scatter;
         Vector2d shotVector = physics::getRotatedVector(shotAngle);
         Vector2d shotSpawnDistance = shotVector * -shooter.getHeight();
-        Vector2d shotVelocity = shotVector * -projectilePrefab.hardware.maxVelocity; // + shooter.getBody().getSpeed();
+        Vector2d shotVelocity = shotVector * -projectilePrefab.hardware.maxVelocity; // + shooter.getBody().getVelocity();
 
         return new Projectile(projectilePrefab, shooter.getObjectCenter() + shotSpawnDistance, shotVelocity, shotAngle);
     }
@@ -25,7 +25,7 @@ namespace ships
         alive = false;
     }
 
-    Projectile::Projectile(const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity, double rotation) : CollisionObject(projectilePrefab, position, velocity, rotation), projectilePrefab{projectilePrefab}, lifetime{projectilePrefab.lifetime}
+    Projectile::Projectile(const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity, float rotation) : CollisionObject(projectilePrefab, position, velocity, rotation), projectilePrefab{projectilePrefab}, lifetime{projectilePrefab.lifetime}
     {
         hp = 0;
     }

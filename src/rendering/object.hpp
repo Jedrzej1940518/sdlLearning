@@ -1,46 +1,49 @@
 #pragma once
 
-#include "physics/body.hpp"
-#include "mySdl.hpp"
 #include "utils.hpp"
-#include "soundManager.hpp"
+#include "prefabs/prefabs.hpp"
+#include "physics/body.hpp"
+// #include "soundManager.hpp"
+
 #include <unordered_set>
-#include <SDL2/SDL_rect.h>
+
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Drawable.hpp>
 
 namespace rendering
 {
-  class Object
+  class Object : public sf::Drawable
   {
-    using Body = physics::Body;
 
   protected:
-    SDL_Texture *texture;
+    sf::Texture texture;
+    sf::Sprite sprite;
+    physics::Body body;
 
-    SDL_Rect dstrect;
-    physics::Vector2d position;
-    string id;
+    std::string id;
     double parallaxFactor;
-    std::unordered_set<Sound> soundsToPlay;
+    // std::unordered_set<Sound> soundsToPlay;
 
   public:
-    Object(const string &texturePath, physics::Vector2d &position, const string &id, double parallaxFactor = 1.0);
-    Object(string &&texturePath, physics::Vector2d &&position, string &&id, double parallaxFactor = 1.0);
+    Object(const prefabs::Prefab &prefab, sf::Vector2f absolutePosition = {0, 0}, double parallaxFactor = 1.0);
+
+    const sf::Sprite &getSprite() const;
 
     void printPosition() const;
 
-    void frameUpdate(physics::Vector2d offset);
-    void playSounds();
-    virtual void renderObject(SDL_Rect viewport);
+    virtual void frameUpdate();
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-    int getX();
-    int getY();
-    physics::Vector2d getPosition() const;
-    SDL_Rect getDstrect();
-    const string &getId() { return id; }
+    void playSounds();
+    sf::Vector2f getVelocity() const { return body.getVelocity(); }
+    // virtual void renderObject();
+
+    const std::string &getId() const { return id; }
 
     virtual ~Object()
     {
-      SDL_DestroyTexture(texture);
     }
   };
 } // namespace rendering

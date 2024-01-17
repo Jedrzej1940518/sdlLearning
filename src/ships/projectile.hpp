@@ -14,7 +14,7 @@ namespace ships
         int lifetime;
 
     public:
-        Projectile(const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity = {0, 0}, double rotation = 0);
+        Projectile(const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity = {0, 0}, float rotation = 0);
         static Projectile *spawnProjectile(const prefabs::ProjectilePrefab &projectilePrefab, const CollisionObject &shooter);
         void frameUpdate(physics::CollisionModel &collisionModel);
         virtual void handleCollision(CollisionObject &oth);

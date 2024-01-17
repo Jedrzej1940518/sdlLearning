@@ -2,9 +2,11 @@
 
 #include "rendering/collisionObject.hpp"
 #include "physics/physics.hpp"
-#include "physics/collisionModel.hpp"
+// #include "physics/collisionModel.hpp"
 #include "prefabs/prefabs.hpp"
-#include "projectile.hpp"
+// #include "projectile.hpp"
+
+#include <SFML/Window/Event.hpp>
 
 namespace ships
 {
@@ -14,21 +16,23 @@ namespace ships
         bool spawnProjectile;
         int shellReload{0};
 
+        void handleInput(physics::DIRECTION dir, bool pressed);
+
     public:
-        Ship(const prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d velocity = {0, 0}, double rotation = 0);
+        Ship(const prefabs::Prefab &prefab, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
 
         void shoot();
+        void handleEvents(const sf::Event &event);
 
-        void addInput(physics::DIRECTION dir);
-        void removeInput(physics::DIRECTION dir);
+        // void rotateLeft();
+        // void rotateRight();
+        // void stopRotateLeft();
+        // void stopRotateRight();
 
-        void rotateLeft();
-        void rotateRight();
-        void stopRotateLeft();
-        void stopRotateRight();
+        void frameUpdate();
 
-        void renderReload(SDL_Rect viewport);
-        void renderObject(SDL_Rect viewport) override;
-        Projectile *frameUpdate(CollisionModel &collisionModel);
+        // void renderReload(SDL_Rect viewport);
+        // void renderObject(SDL_Rect viewport) override;
+        // Projectile *frameUpdate(CollisionModel &collisionModel);
     };
 }

@@ -33,7 +33,7 @@ namespace ships
         const prefabs::ProjectilePrefab &projectilePrefab;
 
     public:
-        HostileShip(const prefabs::Prefab &prefab, const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity = {0, 0}, double rotation = 90);
+        HostileShip(const prefabs::Prefab &prefab, const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity = {0, 0}, float rotation = 90);
         Projectile *frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const Ship &player, CollisionModel &collisionModel);
         virtual ~HostileShip()
         {

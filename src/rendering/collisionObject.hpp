@@ -1,64 +1,66 @@
 #pragma once
 
-#include "physics/body.hpp"
-#include "physics/physics.hpp"
-#include "mySdl.hpp"
 #include "utils.hpp"
 #include "object.hpp"
+#include "physics/body.hpp"
+#include "physics/physics.hpp"
 #include "prefabs/prefabs.hpp"
-#include <SDL2/SDL_rect.h>
 
-namespace physics
-{
-  class CollisionModel;
-};
+#include <memory>
+
+#include <SFML/Graphics/Shape.hpp>
 
 namespace rendering
 {
   class CollisionObject : public Object
   {
-  protected:
-    using Body = physics::Body;
-    using CollisionModel = physics::CollisionModel;
-    using Vector2d = physics::Vector2d;
+    // debugging
+    inline static bool debugObject{true};
+    std::vector<std::unique_ptr<sf::Shape>> debugShapes;
+    physics::CollisionParams cpCopy;
 
+  protected:
     const prefabs::Prefab &prefab;
-    Body body;
     physics::CollisionParams collisionParams;
     physics::GridPosition gridPosition;
+    physics::Circle collisionCircle;
+
     bool alive{true};
     int hp;
-    int radius;
-
-    inline static constexpr bool debugObject{false};
 
   public:
-    CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d velocity = {0, 0}, double rotation = 0);
-    void collisionCheck(CollisionObject &oth);
-    virtual void handleCollision(CollisionObject &oth);
+    CollisionObject(const prefabs::Prefab &prefab, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
+    void collisionCheck(const CollisionObject &oth);
+    virtual void handleCollision(const CollisionObject &oth);
 
-    void frameUpdate(physics::CollisionModel &collisionModel);
-    void renderObject(SDL_Rect viewport) override;
-    void debugRender(SDL_Rect viewport);
+    void frameUpdate() override;
+    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-    void printCollisionObject() const;
+    const std::vector<std::unique_ptr<sf::Shape>> &getDebugShapes() const { return debugShapes; };
+
+    // void renderObject(SDL_Rect viewport) override;
+    // void debugRender(SDL_Rect viewport);
+
+    // void printCollisionObject() const;
     void printGridPosition() const;
-    void printSpeed() const;
+    // void printSpeed() const;
 
-    void hit(int dmg);
+    // void hit(int dmg);
 
-    physics::Vector2d getPosition();
-    physics::Vector2d getObjectCenter() const;
-    int getWidth() const;
-    int getHeight() const;
-    int getRadius() const;
-    physics::GridPosition &getGridPosition();
+    // sf::Vector2f getPosition();
+    // sf::Vector2f getObjectCenter() const;
+    // int getWidth() const;
+    // int getHeight() const;
+    // int getRadius() const;
+    void setGridPosition(physics::GridPosition gP);
     const physics::GridPosition &getGridPosition() const;
-    const Body &getBody() const;
+    // const Body &getBody() const;
+    const physics::Circle &getCollisionCircle() const;
+    const sf::Vector2f &getCenter() const;
 
-    double getMass() const;
-    double getRotation();
-    bool isAlive() const;
+    // double getMass() const;
+    // double getRotation();
+    // bool isAlive() const;
     virtual ~CollisionObject()
     {
     }

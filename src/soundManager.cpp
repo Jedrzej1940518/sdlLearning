@@ -36,7 +36,7 @@ void SoundManager::clearSounds()
 
 void SoundManager::switchSound()
 {
-    static vector<Sound> uniqueSoundsSwitched;
+    static std::vector<Sound> uniqueSoundsSwitched;
     soundOn = !soundOn;
 
     for (auto &sfSound : sounds)
@@ -100,7 +100,7 @@ void SoundManager::loadData()
         sf::SoundBuffer buffer;
 
         if (!buffer.loadFromFile(soundPaths[sound]))
-            cerr << "Error loading sound from a file! path: " << soundPaths[sound] << endl;
+            std::cerr << "Error loading sound from a file! path: " << soundPaths[sound] << std::endl;
 
         soundBuffers[sound] = buffer;
     }

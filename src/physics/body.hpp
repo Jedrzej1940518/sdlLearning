@@ -2,47 +2,44 @@
 
 #include "physics.hpp"
 #include <array>
-#include "hardware.hpp"
+#include <SFML/System/Vector2.hpp>
 
 namespace physics
 {
   class Body
   {
   protected:
-    Vector2d bounce;
-    Vector2d velocity;
-    double rotation;
-    Hardware hardware;
+    sf::Vector2f bounce;
+    sf::Vector2f velocity;
+    float rotation;
 
-    double rotationLeft;
-
-    bool accelerating;
-
-    double accelerationAngle;
+    float rotationLeft;
+    float accelerationAngle;
     bool acceleratingOnce;
 
+    float maxRotationSpeed;
+    float maxVelocity;
+    float acceleration;
+    float mass;
+
   public:
-    Body(Hardware hardware);
-    Body(Vector2d velocity, double rotation, Hardware hardware);
+    Body(float maxRotationSpeed, float maxVelocity, float acceleration, float mass);
+    Body(sf::Vector2f velocity, float rotation, float maxRotationSpeed, float maxVelocity, float acceleration, float mass);
 
-    void accelerate();
-    void accelerateOnce(double angle);
-    void deaccelerate();
-
-    void rotate(double degrees);
+    void accelerateOnce(float angle);
     void rotateOnce(DIRECTION rd);
+    sf::Vector2f consumeBounce();
+    void consumeCollision(CollisionParams &collisionParams);
+    void frameUpdate();
 
-    void handleColision(CollisionParams &collisionParams);
+    void setVelocity(sf::Vector2f v);
+    void setRotation(float r);
 
-    void frameUpdate(CollisionParams &collisionParams);
-
-    Vector2d &getSpeed();
-    const Vector2d &getSpeed() const;
-    Vector2d applyBounce();
+    const sf::Vector2f &getVelocity() const;
     double getRotation() const;
     double getRotationLeft();
     double getAccelerationAngle() const;
-    double getMass() const;
+    float getMass() const;
 
     void printBody() const;
   };

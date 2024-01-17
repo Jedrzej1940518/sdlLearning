@@ -4,7 +4,7 @@
 
 namespace ships
 {
-    HostileShip::HostileShip(const prefabs::Prefab &prefab, const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity, double rotation)
+    HostileShip::HostileShip(const prefabs::Prefab &prefab, const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity, float rotation)
         : CollisionObject{prefab, position, velocity, rotation}, projectilePrefab{projectilePrefab}
     {
         shipId = uniqueId;
@@ -23,7 +23,7 @@ namespace ships
 
         tacticTicks = 1;
 
-        double dist = physics::calculateDistance(getObjectCenter(), playerPos);
+        double dist = physics::distance(getObjectCenter(), playerPos);
         tactic = dist > maxPlayerDist ? approach : (dist < avoidanceRadius ? disapproach : encircle);
     }
     double HostileShip::determineLookAngle(const Ship &player)
@@ -32,10 +32,10 @@ namespace ships
         physics::Vector2d translated = playerPos - getObjectCenter();
 
         int ticks = physics::calculateTicks(translated, projectilePrefab.hardware.maxVelocity);
-        physics::Vector2d predictedPos = physics::predictPosition(translated, player.getBody().getSpeed(), ticks);
+        physics::Vector2d predictedPos = physics::predictPosition(translated, player.getBody().getVelocity(), ticks);
 
         double playerRotation = physics::normalizeDegrees(physics::getVectorRotation(predictedPos) + 90);
-        double angle = getRotation() - playerRotation;
+        float angle = getRotation() - playerRotation;
         angle = angle > 360 ? angle - 360 : (angle < 0 ? angle + 360 : angle);
         playerOnLeft = angle < 180;
         return angle;
@@ -97,7 +97,7 @@ namespace ships
             break;
         }
 
-        printf("HS[%d] Dist %f Tactic: %s, acceleration_angle: %f, velocity [%f, %f]\n", shipId, physics::calculateDistance(getObjectCenter(), playerPos), s.c_str(), body.getAccelerationAngle(), body.getSpeed().x, body.getSpeed().y);
+        printf("HS[%d] Dist %f Tactic: %s, acceleration_angle: %f, velocity [%f, %f]\n", shipId, physics::distance(getObjectCenter(), playerPos), s.c_str(), body.getAccelerationAngle(), body.getVelocity().x, body.getVelocity().y);
     }
 
     bool HostileShip::avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const Ship &player)
@@ -108,7 +108,7 @@ namespace ships
 
         auto avoidPosition = [&](physics::Vector2d position, int othObjRadius)
         {
-            double dist = physics::calculateDistance(pos, position) - othObjRadius;
+            double dist = physics::distance(pos, position) - othObjRadius;
 
             if (dist < avoidanceRadius)
             {
@@ -162,7 +162,7 @@ namespace ships
         if (reloadTicks > 0)
             return p;
 
-        auto dist = physics::calculateDistance(playerPos, getObjectCenter());
+        auto dist = physics::distance(playerPos, getObjectCenter());
         auto maxRange = projectilePrefab.lifetime * projectilePrefab.hardware.maxVelocity;
 
         if (dist < maxRange && (abs(body.getRotationLeft()) < 15 || abs(body.getRotationLeft()) > 345))

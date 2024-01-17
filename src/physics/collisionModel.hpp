@@ -13,7 +13,7 @@ namespace physics
     using CollisionObject = rendering::CollisionObject;
 
     //[rows][columns] of vector<CollisonObject*>
-    using Grid = vector<vector<vector<CollisionObject *>>>;
+    using Grid = std::vector<std::vector<std::vector<CollisionObject *>>>; // todo use smart ptr here probably
 
     GridParams gridParams;
     int rows;
@@ -24,17 +24,19 @@ namespace physics
     CollisionModel(GridParams gridParams);
 
   private:
-    void debugPrint(const string &s);
+    void debugPrint(const std::string &s);
     void collides(CollisionObject &obj, GridCoords &neigh);
 
   public:
+    void frameUpdate();
+
     void checkCollisions();
-    GridCoords calculateGridCoords(int x, int y);
+    void recalculateGridPositions();
+
+    GridCoords calculateGridCoords(const sf::Vector2f &v);
+
     void remove(const CollisionObject &obj);
-
-    void emplace(CollisionObject *obj);
-
-    void recalculateGridPosition(CollisionObject &obj);
+    void emplace(CollisionObject &obj);
 
     const GridParams &getGridParams();
   };
