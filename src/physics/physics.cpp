@@ -59,21 +59,6 @@ namespace physics
         return static_cast<int>(vectorLenght(offset) / velocity);
     }
 
-    void slowDown(sf::Vector2f &velocity, sf::Vector2f &position, const GridParams &gridParams)
-    {
-        // constexpr auto slowDownDistance = 200;
-        // if (position.x < slowDownDistance)
-        //     velocity.x = 1;
-        // else if (position.x > gridParams.mapWidth - slowDownDistance)
-        //     velocity.x = -1;
-
-        // if (position.y < slowDownDistance)
-        //     velocity.y = 1;
-        // else if (position.y > gridParams.mapHeight - slowDownDistance)
-        //     velocity.y = -1;
-        LOG("0");
-    }
-
     float sumDirections(bool directions[4])
     {
         sf::Vector2f summedVector{0, 0};

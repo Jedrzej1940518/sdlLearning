@@ -4,23 +4,6 @@
 
 namespace physics
 {
-    struct GridCoords
-    {
-        int row;
-        int column;
-    };
-    struct GridPosition
-    {
-        int row;
-        int column;
-        int index;
-    };
-    struct GridParams
-    {
-        int mapWidth;
-        int mapHeight;
-        int cellSide;
-    };
     struct CollisionParams
     {
         bool collided;
@@ -36,12 +19,6 @@ namespace physics
     {
         sf::Vector2f position;
         float radius;
-    };
-
-    struct CollisionModelAttributes
-    {
-        GridPosition gridPosition;
-        Circle collisionCircle;
     };
 
 }

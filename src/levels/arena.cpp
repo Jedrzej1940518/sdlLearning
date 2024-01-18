@@ -64,7 +64,7 @@ namespace levels
         controledObject = player;
 
         for (auto &object : collidables)
-            collisionModel.emplace(*object); // weird that i use shared_ptr and normal ptr?
+            collisionModel.add(object);
 
         // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {4700, 4700}));
         // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {3400, 3300}));
@@ -90,11 +90,25 @@ namespace levels
 
     void Arena::cleanupDeadObjects()
     {
+        auto isDead = [](const auto &obj)
+        {
+            auto deadCheckable = std::dynamic_pointer_cast<DeadCheckable>(obj);
+            return deadCheckable && (not deadCheckable->isAlive());
+        };
+        auto cleanupVector = [&isDead]<typename Vec>(Vec &vec)
+        {
+            vec.erase(std::remove_if(vec.begin(), vec.end(), isDead), vec.end());
+        };
+        cleanupVector(drawables);
+        cleanupVector(collidables);
+        cleanupVector(frameUpdateables);
+        cleanupVector(shooters);
+        // debugPrint();
     }
 
     void Arena::frameUpdate()
     {
-        collisionModel.inputCollisions();
+        collisionModel.updateCollisions();
 
         for (auto &obj : frameUpdateables)
             obj->frameUpdate();
@@ -105,13 +119,11 @@ namespace levels
 
             if (proj != nullptr)
             {
-                collisionModel.emplace(*proj);
+                collisionModel.add(proj);
                 frameUpdateables.push_back(proj);
                 drawables.push_back(proj);
             }
         }
-
-        collisionModel.frameUpdate();
         cleanupDeadObjects();
 
         sf::View v = window.getView();
@@ -134,69 +146,28 @@ namespace levels
         draw();
 
         window.display();
-
-        // ships::Projectile *projectile = controledObject->frameUpdate(collisionModel);
-
-        // if (projectile)
-        // {
-        //     projectiles.push_back(projectile);
-        //     collisionModel.emplace(projectile);
-        // }
-
-        // collisionModel.inputCollisions();
-
-        // for (auto &object : collidableObjects)
-        // {
-        //     object->frameUpdate(collisionModel);
-        // }
-        // for (auto &projectile : projectiles)
-        // {
-        //     projectile->frameUpdate(collisionModel);
-        // }
-
-        // cleanupDeadCollidables(projectiles, collisionModel);
-        // cleanupDeadCollidables(collidableObjects, collisionModel);
-        // cleanupDeadCollidables(hostileShips, collisionModel);
-        // // determine tactic after cleanup of asteroids etc.
-        // for (auto &hostileShip : hostileShips)
-        // {
-        //     ships::Projectile *p = hostileShip->frameUpdate(hostileShips, collidableObjects, *controledObject, collisionModel);
-        //     if (p)
-        //     {
-        //         projectiles.push_back(p);
-        //         collisionModel.emplace(p);
-        //     }
-        // }
-
-        // background.frameUpdate(controledObject->getBody().getVelocity());
-        // moveViewport();
-
-        // SDL_RenderClear(gRenderer);
-        // // SDL_RenderCopy(gRenderer, texture, NULL, NULL);
-        // background.renderObject(viewport);
-
-        // for (auto &object : collidableObjects)
-        //     object->renderObject(viewport);
-        // for (auto &object : hostileShips)
-        //     object->renderObject(viewport);
-        // for (auto &projectile : projectiles)
-        //     projectile->renderObject(viewport);
-
-        // controledObject->renderObject(viewport);
-        // //   console.render();
-        // SDL_RenderPresent(gRenderer);
     }
     Arena::~Arena()
     {
-        // SDL_DestroyTexture(texture);
+    }
 
-        // delete (controledObject);
+    void Arena::debugPrint()
+    {
+        printf("drawables %zd, collidables %zd, frameUpd %zd, shooters %zd\n", drawables.size(), collidables.size(), frameUpdateables.size(), shooters.size());
+        printf("\n----Arena----\n");
+        for (auto &obj : drawables)
+        {
+            auto proj = std::dynamic_pointer_cast<ships::Projectile>(obj);
+            std::string s = "";
+            if (proj)
+                s = proj->getId();
 
-        // for (auto *obj : projectiles)
-        //     delete (obj);
-        // for (auto *obj : hostileShips)
-        //     delete (obj);
-        // for (auto *obj : collidableObjects)
-        //     delete (obj);
+            auto collid = std::dynamic_pointer_cast<rendering::CollisionObject>(obj);
+            if (collid)
+                s = collid->getId();
+            if (s != "")
+                printf("[%s]\n", s.c_str());
+        }
+        std::cout << std::endl;
     }
 } // namespace levels

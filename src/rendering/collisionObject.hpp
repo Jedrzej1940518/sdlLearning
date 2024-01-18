@@ -12,17 +12,14 @@
 
 namespace rendering
 {
-  class CollisionObject : public Object
+  class CollisionObject : public Object, public DeadCheckable
   {
     inline static bool debugObject{true};
 
   protected:
     std::vector<std::unique_ptr<sf::Shape>> shapesToDraw;
-
     physics::CollisionParams collisionParams;
-    physics::GridPosition gridPosition;
 
-    bool alive{true};
     const int maxHp;
     int hp;
 
@@ -32,7 +29,6 @@ namespace rendering
   public:
     CollisionObject(const prefabs::CollidablePrefab &prefab, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
 
-    bool collisionHappening(const physics::Circle &colliisonCircle);
     void handleCollision(const CollisionObject &oth);
 
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
@@ -41,15 +37,12 @@ namespace rendering
     void hit(int dmg);
 
     // setters
-    void setGridPosition(physics::GridPosition gp) { gridPosition = gp; };
 
     // getters
     const physics::Circle getCollisionCircle() const { return physics::Circle{getCenter(), spriteRadius}; };
-    const physics::GridPosition &getGridPosition() const { return gridPosition; }
     const sf::Vector2f &getCenter() const { return body.getPosition(); };
 
     float getMass() const { return body.getMass(); };
-    bool isAlive() const { return alive; };
 
     virtual ~CollisionObject() {}
   };

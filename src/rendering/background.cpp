@@ -11,6 +11,7 @@ namespace rendering
         ++objects;
 
         texture.loadFromFile(prefab.texturePath); // TODO optimize to share texture between prefabs probably
+        texture.setSmooth(true);
         sprite.setTexture(texture);
         sprite.setPosition(position);
     }

@@ -1,50 +1,28 @@
 #pragma once
 
+#include "physics.hpp"
 #include "rendering/collisionObject.hpp"
 #include "ships/projectile.hpp"
 
-#include "physics.hpp"
-#include <cstdint>
-#include <sys/types.h>
 #include <vector>
+#include <memory>
 
 namespace physics
 {
+  // SweepAndPrune algorithm
   class CollisionModel
   {
-    using CollisionObject = rendering::CollisionObject;
-    using Projectile = ships::Projectile;
-
-    //[rows][columns] of std::list<CollisonObject*>
-    using CollisionObjectGrid = std::vector<std::vector<std::vector<CollisionObject *>>>; // todo use smart ptr here probably
-                                                                                          // also switch to anything else please
-    using ProjectilesGrid = std::vector<std::vector<std::vector<Projectile *>>>;
-
-    GridParams gridParams;
-    int rows;
-    int columns;
-
-    CollisionObjectGrid grid;
-    ProjectilesGrid pGrid;
+    std::vector<std::shared_ptr<rendering::CollisionObject>> collidables;
+    std::vector<std::shared_ptr<ships::Projectile>> projectiles;
 
   public:
-    CollisionModel(GridParams gridParams);
+    CollisionModel(){};
+    void add(const std::shared_ptr<rendering::CollisionObject> &collisionObject) { collidables.push_back(collisionObject); };
+    void add(const std::shared_ptr<ships::Projectile> &projectile) { projectiles.push_back(projectile); };
 
-  private:
-    void debugPrint(const std::string &s);
-    void collides(CollisionObject &obj, GridCoords &neigh);
-
-  public:
-    void inputCollisions();
-    void frameUpdate();
-
-    GridCoords calculateGridCoords(const sf::Vector2f &v);
-
-    void emplace(CollisionObject &obj);
-    void emplace(Projectile &proj);
-    void remove(const CollisionObject &obj);
-    void remove(const Projectile &proj);
-
-    const GridParams &getGridParams();
+    // calls handleCollision on every collidable A that collides with collidable B
+    // and for every projectile A that collides wit collidable B
+    // also automaticly removes dead elements
+    void updateCollisions();
   };
 } // namespace physics

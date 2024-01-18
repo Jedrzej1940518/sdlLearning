@@ -15,6 +15,7 @@ namespace rendering
         body.setRotation(rotation);
 
         texture.loadFromFile(prefab.texturePath); // TODO optimize
+        texture.setSmooth(true);
         sprite.setTexture(texture);
         spriteRadius = getSpriteRadius(sprite);
 

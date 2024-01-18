@@ -26,13 +26,11 @@ namespace levels
 
     std::vector<std::shared_ptr<rendering::CollisionObject>> collidables;
 
-    std::vector<std::shared_ptr<ships::Projectile>> projectiles;
     std::vector<std::shared_ptr<ships::Ship>> shooters;
 
     std::shared_ptr<ships::PlayerShip> controledObject;
 
-    static constexpr physics::GridParams gridParams{10000, 10000, 500};
-    physics::CollisionModel collisionModel{gridParams};
+    physics::CollisionModel collisionModel{};
 
   public:
     Arena(sf::RenderWindow &window, LevelType &level);
@@ -46,5 +44,8 @@ namespace levels
     void frameUpdate();
     void draw();
     virtual void render() override;
+
+    // debug
+    void debugPrint();
   };
 } // namespace levels

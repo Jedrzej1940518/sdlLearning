@@ -26,9 +26,6 @@ namespace ships
 
         shellReload = prefab.reload;
 
-        printf("angle %f shooter pos %f %f, offset %f %f, sum %f %f, shotAngle %f, shotVelocity %f %f\n", angle,
-               shooterPos.x, shooterPos.y, weaponPositionOffset.x, weaponPositionOffset.y, shotSpawnPoint.x, shotSpawnPoint.y, shotAngle, shotVelocity.x, shotVelocity.y);
-
         return std::make_shared<Projectile>(prefab, shotSpawnPoint, shotVelocity, shotAngle);
     }
 };

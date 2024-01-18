@@ -25,6 +25,7 @@ namespace ships
         ++projectiles;
 
         texture.loadFromFile(prefab.texturePath); // TODO optimize
+        texture.setSmooth(true);
         sprite.setTexture(texture);
         spriteRadius = getSpriteRadius(sprite);
         sprite.setOrigin({spriteRadius, spriteRadius});

@@ -44,7 +44,7 @@ namespace rendering
         shapesToDraw.push_back(std::make_unique<sf::RectangleShape>(sf::Vector2{spriteRadius * 2, hpBarH}));
         auto &hpBarOutline = shapesToDraw.back();
         hpBarOutline->setPosition(sprite.getPosition());
-        hpBarOutline->move({-spriteRadius, spriteRadius + 20.f});
+        hpBarOutline->move({-spriteRadius, -spriteRadius - 20.f});
         hpBarOutline->setFillColor(sf::Color::Transparent);
         hpBarOutline->setOutlineColor(sf::Color::Black);
         hpBarOutline->setOutlineThickness(outlineThickness);
@@ -52,7 +52,7 @@ namespace rendering
         shapesToDraw.push_back(std::make_unique<sf::RectangleShape>(sf::Vector2{spriteRadius * 2, hpBarH}));
         auto &hpBar = shapesToDraw.back();
         hpBar->setPosition(sprite.getPosition());
-        hpBar->move({-spriteRadius, spriteRadius + 20.f});
+        hpBar->move({-spriteRadius, -spriteRadius - 20.f});
 
         float healthPercentage = static_cast<float>(hp) / maxHp;
 
@@ -88,11 +88,6 @@ namespace rendering
 
         for (auto &shape : shapesToDraw)
             target.draw(*shape, states);
-    }
-
-    bool CollisionObject::collisionHappening(const physics::Circle &colliisonCircle)
-    {
-        return physics::collisionHappening(getCollisionCircle(), colliisonCircle);
     }
 
     void CollisionObject::handleCollision(const CollisionObject &oth)

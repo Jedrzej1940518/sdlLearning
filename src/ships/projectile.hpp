@@ -1,6 +1,8 @@
 #pragma once
 
 #include "frameUpdateable.hpp"
+#include "deadCheckable.hpp"
+
 #include "prefabs/prefabs.hpp"
 #include "rendering/collisionObject.hpp"
 
@@ -8,14 +10,12 @@
 
 namespace ships
 {
-    class Projectile : public FrameUpdateable, public sf::Drawable
+    class Projectile : public sf::Drawable, public FrameUpdateable, public DeadCheckable
     {
         sf::Texture texture;
         sf::Sprite sprite;
         std::string id;
         float spriteRadius;
-
-        physics::GridPosition gridPosition;
 
         sf::Vector2f position;
         sf::Vector2f velocity;
@@ -26,8 +26,6 @@ namespace ships
         int reload;
         float scatterAngle;
 
-        bool alive{true};
-
     public:
         Projectile(const prefabs::ProjectilePrefab &prefab, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
 
@@ -37,12 +35,11 @@ namespace ships
         void handleCollision(rendering::CollisionObject &oth);
 
         // setters
-        void setGridPosition(physics::GridPosition gp) { gridPosition = gp; };
+
         // getters
         physics::Circle getCollisionCircle() const { return physics::Circle{getCenter(), spriteRadius}; };
-        const physics::GridPosition &getGridPosition() const { return gridPosition; }
         const sf::Vector2f &getCenter() const { return sprite.getPosition(); };
-        bool isAlive() { return alive; }
+        const std::string &getId() const { return id; }
 
         virtual ~Projectile();
     };

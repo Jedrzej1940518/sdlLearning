@@ -33,7 +33,4 @@ namespace physics
 
     bool collisionHappening(const Circle &a, const Circle &b);
 
-    void slowDown(sf::Vector2f &velocity, sf::Vector2f &position, const GridParams &gridParams);
-    void printVector(const sf::Vector2f &v);
-
 } // namespace physics
