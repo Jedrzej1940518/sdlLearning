@@ -14,36 +14,35 @@
 
 namespace rendering
 {
-  class Object : public sf::Drawable
+  class Object : public FrameUpdateable, public sf::Drawable
   {
 
   protected:
+    std::string id;
+
     sf::Texture texture;
     sf::Sprite sprite;
+    float spriteRadius;
+
     physics::Body body;
 
-    std::string id;
-    double parallaxFactor;
     // std::unordered_set<Sound> soundsToPlay;
 
   public:
-    Object(const prefabs::Prefab &prefab, sf::Vector2f absolutePosition = {0, 0}, double parallaxFactor = 1.0);
+    Object(const prefabs::ObjectPrefab &prefab, sf::Vector2f position = {0, 0}, sf::Vector2f velocity = {0, 0}, float rotation = 0);
 
-    const sf::Sprite &getSprite() const;
-
-    void printPosition() const;
-
-    virtual void frameUpdate();
+    void frameUpdate() override;
     void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
 
-    void playSounds();
-    sf::Vector2f getVelocity() const { return body.getVelocity(); }
-    // virtual void renderObject();
+    // void playSounds();
 
+    // getters
+    const sf::Sprite &getSprite() const { return sprite; };
     const std::string &getId() const { return id; }
+    const sf::Vector2f &getVelocity() const { return body.getVelocity(); }
 
-    virtual ~Object()
-    {
-    }
+    // our sprites are by default facing NORTH which is -90. So object with rotation 0 is facing -90 in cartesian coordinates.
+    float getRotationCartesian() const { return physics::normalizeDegrees(body.getRotation() - 90); }
+    virtual ~Object() {}
   };
 } // namespace rendering

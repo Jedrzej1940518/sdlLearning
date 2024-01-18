@@ -3,6 +3,7 @@
 #include "level.hpp"
 
 #include "rendering/button.hpp"
+#include "rendering/background.hpp"
 #include "rendering/object.hpp"
 
 #include <SFML/Graphics/Font.hpp>
@@ -22,7 +23,7 @@ namespace levels
     sf::Font font;
     std::vector<rendering::Button *> buttons;
 
-    rendering::Object background{prefabs::background};
+    rendering::Background background{prefabs::background};
 
   public:
     Menu(sf::RenderWindow &window, LevelType &level);

@@ -1,15 +1,17 @@
 #pragma once
 
 #include "physics.hpp"
+#include "frameUpdateable.hpp"
+
 #include <array>
+
 #include <SFML/System/Vector2.hpp>
 
 namespace physics
 {
-  class Body
+  class Body : public FrameUpdateable
   {
-  protected:
-    sf::Vector2f bounce;
+    sf::Vector2f position;
     sf::Vector2f velocity;
     float rotation;
 
@@ -19,28 +21,29 @@ namespace physics
 
     float maxRotationSpeed;
     float maxVelocity;
-    float acceleration;
+    float maxAcceleration;
     float mass;
 
   public:
-    Body(float maxRotationSpeed, float maxVelocity, float acceleration, float mass);
-    Body(sf::Vector2f velocity, float rotation, float maxRotationSpeed, float maxVelocity, float acceleration, float mass);
+    Body(float maxRotationSpeed, float maxVelocity, float maxAcceleration, float mass);
+
+    void frameUpdate() override;
 
     void accelerateOnce(float angle);
-    void rotateOnce(DIRECTION rd);
-    sf::Vector2f consumeBounce();
-    void consumeCollision(CollisionParams &collisionParams);
-    void frameUpdate();
+    void rotateOnce(float degrees);
+    void applyCollision(const CollisionParams &cp);
 
-    void setVelocity(sf::Vector2f v);
-    void setRotation(float r);
+    // setters
+    void setPosition(sf::Vector2f p) { position = p; }
+    void setVelocity(sf::Vector2f v) { velocity = v; }
+    void setRotation(float r) { rotation = r; }
 
-    const sf::Vector2f &getVelocity() const;
-    double getRotation() const;
-    double getRotationLeft();
-    double getAccelerationAngle() const;
-    float getMass() const;
-
-    void printBody() const;
+    // getters
+    const sf::Vector2f &getVelocity() const { return velocity; }
+    const sf::Vector2f &getPosition() const { return position; }
+    float getRotation() const { return rotation; }
+    float getRotationLeft() { return rotationLeft; }
+    float getAccelerationAngle() const { return accelerationAngle; }
+    float getMass() const { return mass; }
   };
 } // namespace physics

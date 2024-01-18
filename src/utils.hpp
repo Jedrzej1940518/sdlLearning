@@ -17,13 +17,14 @@
 
 namespace globals
 {
-    static inline sf::Color Grey{200, 200, 200, 200};
+    static inline sf::Color GREY{200, 200, 200, 200};
 }
 
 namespace constants
 {
-    static inline constexpr float collisionDamageFactor = 2.0f;
-    static inline constexpr float collisionBounce = 0.1f;
+    static inline constexpr float COLLISION_DAMAGE_FACTOR = 2.0f;
+    static inline constexpr float COLLISION_BOUNCE = 0.1f;
+    static inline constexpr float CARTESIAN_TO_SFML_ANGLE = 90.f;
 }
 
 #define LOG(fmt, ...) \
@@ -34,9 +35,16 @@ extern const unsigned int SCREEN_HEIGHT;
 extern const unsigned int SCREEN_WIDTH;
 extern const unsigned int FRAME_RATE;
 
+namespace sf
+{
+    class Sprite;
+}
+
 std::string boolToString(bool b);
 std::string getDataPath(std::string dataPath);
+
 std::vector<sf::ConvexShape> getVectorShapes(const sf::Vector2f &vector, const sf::Vector2f &center, sf::Color color);
+float getSpriteRadius(const sf::Sprite &sprite);
 
 template <typename T>
 T getRandomNumber(T from, T to)

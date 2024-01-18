@@ -1,10 +1,10 @@
 #include "physics.hpp"
+
 #include <algorithm>
 #include <cmath>
 
 namespace physics
 {
-
     float degreesToRadians(float degrees)
     {
         return static_cast<float>(degrees * M_PI / 180.);
@@ -15,7 +15,8 @@ namespace physics
     }
     float normalizeDegrees(float degrees)
     {
-        return degrees < 0 ? degrees + 360 : (degrees > 360 ? degrees - 360 : degrees);
+        degrees = fmod(degrees, 360.0f);
+        return degrees > 180.f ? degrees - 360 : degrees;
     }
 
     sf::Vector2f getRotatedVector(float degrees)
@@ -30,9 +31,9 @@ namespace physics
         float degrees = radiansToDegrees(atan2(v.y, v.x));
         return degrees;
     }
-    sf::Vector2f calculateSpeed(const sf::Vector2f &velocity, float maxVelocity, float acceleration, float accelerationAngle)
+    sf::Vector2f calculateSpeed(const sf::Vector2f &velocity, float maxVelocity, float maxAcceleration, float accelerationAngle)
     {
-        sf::Vector2f newSpeed = velocity + getRotatedVector(accelerationAngle) * acceleration;
+        sf::Vector2f newSpeed = velocity + getRotatedVector(accelerationAngle) * maxAcceleration;
         newSpeed = clampVector(newSpeed, maxVelocity);
 
         return newSpeed;
@@ -98,13 +99,5 @@ namespace physics
     {
         auto dist = distance(a.position, b.position);
         return dist < a.radius + b.radius;
-    }
-
-    float getAngleBetweenPoints(const sf::Vector2f &a, const sf::Vector2f &b)
-    {
-        LOG("0");
-        return 0;
-        // sf::Vector2f c = {b.x - a.x, b.y - a.y};
-        // return physics::radiansToDegrees(atan2(c.y, c.x));
     }
 } // namespace physics

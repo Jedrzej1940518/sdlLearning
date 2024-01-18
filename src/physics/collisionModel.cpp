@@ -1,6 +1,24 @@
 #include "collisionModel.hpp"
+
 namespace physics
 {
+    template <typename Collidable, typename Grid>
+    void t_emplace(GridCoords g, Collidable &obj, Grid &grid)
+    {
+        int row = g.row;
+        int column = g.column;
+
+        grid[row][column].push_back(&obj);
+        int indx = static_cast<int>(grid[row][column].size()) - 1;
+        obj.setGridPosition({row, column, indx});
+    }
+
+    template <typename Grid>
+    void t_remove(GridPosition g, Grid &grid)
+    {
+        auto &vec = grid[g.row][g.column];
+        removeVectorElement(vec, g.index);
+    }
 
     CollisionModel::CollisionModel(GridParams gridParams)
         : gridParams{gridParams}, rows{gridParams.mapHeight / gridParams.cellSide + 1}, columns{gridParams.mapWidth /
@@ -10,9 +28,11 @@ namespace physics
         for (int i = 0; i < rows; ++i)
         {
             grid.push_back({});
+            pGrid.push_back({});
             for (int j = 0; j < columns; ++j)
             {
                 grid[i].push_back({});
+                pGrid[i].push_back({});
             }
         }
     }
@@ -24,19 +44,25 @@ namespace physics
             for (int j = 0; j < columns; ++j)
                 for (auto *object : grid[i][j])
                 {
-                    printf("[%i][%i][%zi] ", i, j, grid[i][j].size());
-                    object->printGridPosition();
+                    auto gp = object->getGridPosition();
+                    printf("[%i][%i] objects [%zi] | %s [%i][%i][%i]\n", i, j, grid[i][j].size(), object->getId().c_str(), gp.row, gp.column, gp.index);
                 }
         std::cout << std::endl;
     }
     void CollisionModel::collides(CollisionObject &obj, GridCoords &neigh)
     {
         for (auto *neighObject : grid[neigh.row][neigh.column])
-            obj.collisionCheck(*neighObject);
+            if (neighObject != &obj && obj.collisionHappening(neighObject->getCollisionCircle()))
+                obj.handleCollision(*neighObject);
+
+        for (auto *neightProjectile : pGrid[neigh.row][neigh.column])
+            if (obj.collisionHappening(neightProjectile->getCollisionCircle()))
+                neightProjectile->handleCollision(obj);
     }
 
-    void CollisionModel::checkCollisions()
+    void CollisionModel::inputCollisions()
     {
+        // debugPrint("debugging");
         for (int r = 0; r < rows; ++r)
             for (int c = 0; c < columns; ++c)
                 for (auto &obj : grid[r][c])
@@ -62,50 +88,51 @@ namespace physics
         int column = std::clamp(static_cast<int>(v.y) / gridParams.cellSide, 0, columns - 1);
         return {row, column};
     }
-    void CollisionModel::remove(const CollisionObject &obj)
+
+    // recalculates objects in grid and deletes dead objects
+    void CollisionModel::frameUpdate()
     {
-        auto &g = obj.getGridPosition();
-        auto &vec = grid[g.row][g.column];
+        auto moveObjectsInGrid = [&]<typename Vec>(Vec &vec)
+        {
+        for (int i = 0; i < vec.size(); ++i)
+        {
+            auto *obj = vec[i];
+            if(not obj->isAlive()) {
+                remove(*obj);
+                continue;
+            }
 
-        removeVectorElement(vec, g.index);
-    }
+            auto gp = calculateGridCoords(obj->getCenter());
+            int column = gp.column;
+            int row = gp.row;
 
-    void CollisionModel::emplace(CollisionObject &obj)
-    {
-        auto g = calculateGridCoords(obj.getCenter());
-        int column = g.column;
-        int row = g.row;
+            auto &g = obj->getGridPosition();
 
-        grid[row][column].push_back(&obj);
-        int indx = static_cast<int>(grid[row][column].size()) - 1;
-        obj.setGridPosition({row, column, indx});
-    }
+            if (g.column != column || g.row != row)
+            {
+                remove(*obj);
+                emplace(*obj);
+                continue;
+            }
+        } };
 
-    void CollisionModel::recalculateGridPositions()
-    {
         for (int r = 0; r < rows; ++r)
             for (int c = 0; c < columns; ++c)
-                for (int i = 0; i < grid[r][c].size(); ++i)
-                {
-                    auto *obj = grid[r][c][i];
-                    auto gp = calculateGridCoords(obj->getCenter());
-                    int column = gp.column;
-                    int row = gp.row;
-
-                    auto &g = obj->getGridPosition();
-
-                    if (g.column != column || g.row != row)
-                    {
-                        remove(*obj);
-                        emplace(*obj);
-                        continue;
-                    }
-                }
+            {
+                moveObjectsInGrid(grid[r][c]);
+                moveObjectsInGrid(pGrid[r][c]);
+            }
     }
 
     const GridParams &CollisionModel::getGridParams()
     {
         return gridParams;
     }
+
+    void CollisionModel::remove(const CollisionObject &obj) { t_remove(obj.getGridPosition(), grid); };
+    void CollisionModel::emplace(CollisionObject &obj) { t_emplace(calculateGridCoords(obj.getCenter()), obj, grid); };
+
+    void CollisionModel::remove(const Projectile &proj) { t_remove(proj.getGridPosition(), pGrid); };
+    void CollisionModel::emplace(Projectile &proj) { t_emplace(calculateGridCoords(proj.getCenter()), proj, pGrid); };
 
 } // namespace physics

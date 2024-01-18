@@ -3,7 +3,7 @@
 #include "physics/physics.hpp"
 #include "physics/collisionModel.hpp"
 #include "prefabs/prefabs.hpp"
-#include "ship.hpp"
+#include "PlayerShip.hpp"
 #include "projectile.hpp"
 
 namespace ships
@@ -34,7 +34,7 @@ namespace ships
 
     public:
         HostileShip(const prefabs::Prefab &prefab, const prefabs::ProjectilePrefab &projectilePrefab, physics::Vector2d position, physics::Vector2d velocity = {0, 0}, float rotation = 90);
-        Projectile *frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const Ship &player, CollisionModel &collisionModel);
+        Projectile *frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const PlayerShip &player, CollisionModel &collisionModel);
         virtual ~HostileShip()
         {
         }
@@ -43,11 +43,11 @@ namespace ships
     private:
         void determineTactic(const physics::Vector2d &playerPos);
 
-        bool avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const Ship &player);
+        bool avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const PlayerShip &player);
         void determineSpeed(const physics::Vector2d &playerPos);
 
-        double determineLookAngle(const Ship &player);
-        void determineRotation(const Ship &player);
+        double determineLookAngle(const PlayerShip &player);
+        void determineRotation(const PlayerShip &player);
 
         Projectile *shoot(const physics::Vector2d &playerPos);
 

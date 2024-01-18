@@ -26,7 +26,7 @@ namespace ships
         double dist = physics::distance(getObjectCenter(), playerPos);
         tactic = dist > maxPlayerDist ? approach : (dist < avoidanceRadius ? disapproach : encircle);
     }
-    double HostileShip::determineLookAngle(const Ship &player)
+    double HostileShip::determineLookAngle(const PlayerShip &player)
     {
         physics::Vector2d playerPos = player.getObjectCenter();
         physics::Vector2d translated = playerPos - getObjectCenter();
@@ -40,7 +40,7 @@ namespace ships
         playerOnLeft = angle < 180;
         return angle;
     }
-    void HostileShip::determineRotation(const Ship &player)
+    void HostileShip::determineRotation(const PlayerShip &player)
     {
         double degrees = 0;
 
@@ -100,7 +100,7 @@ namespace ships
         printf("HS[%d] Dist %f Tactic: %s, acceleration_angle: %f, velocity [%f, %f]\n", shipId, physics::distance(getObjectCenter(), playerPos), s.c_str(), body.getAccelerationAngle(), body.getVelocity().x, body.getVelocity().y);
     }
 
-    bool HostileShip::avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const Ship &player)
+    bool HostileShip::avoidCollision(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const PlayerShip &player)
     {
         bool collisonImminent{false};
         physics::Vector2d avoidanceVector = {0, 0};
@@ -172,7 +172,7 @@ namespace ships
         }
         return p;
     }
-    Projectile *HostileShip::frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const Ship &player, CollisionModel &collisionModel)
+    Projectile *HostileShip::frameUpdate(const vector<HostileShip *> &allies, const vector<CollisionObject *> &asteroids, const PlayerShip &player, CollisionModel &collisionModel)
     {
         auto pos = player.getObjectCenter();
         CollisionObject::frameUpdate(collisionModel);

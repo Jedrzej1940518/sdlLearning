@@ -4,59 +4,40 @@
 
 namespace rendering
 {
-    Object::Object(const prefabs::Prefab &prefab, sf::Vector2f absolutePosition, double parallaxFactor) : parallaxFactor{parallaxFactor}, body{prefab.maxRotationSpeed, prefab.maxVelocity, prefab.acceleration, prefab.mass}, id{prefab.id}
+    Object::Object(const prefabs::ObjectPrefab &prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation) : body{prefab.maxRotationSpeed, prefab.maxVelocity, prefab.maxAcceleration, prefab.mass}, id{prefab.id}
     {
         static int objects{0};
         id = id + "_" + std::to_string(objects);
         ++objects;
 
+        body.setPosition(position);
+        body.setVelocity(velocity);
+        body.setRotation(rotation);
+
         texture.loadFromFile(prefab.texturePath); // TODO optimize
         sprite.setTexture(texture);
-        sprite.setPosition(absolutePosition);
-    }
+        spriteRadius = getSpriteRadius(sprite);
 
-    const sf::Sprite &Object::getSprite() const
-    {
-        return sprite;
+        sprite.setOrigin({spriteRadius, spriteRadius});
+        sprite.setPosition(position);
     }
-
-    // Object::Object(const string &texturePath, sf::Vector2<int> &position, const string &id, double parallaxFactor)
-    //     : position{position}, id{id}, parallaxFactor{parallaxFactor}
-    // {
-    // }
 
     void Object::frameUpdate()
     {
         body.frameUpdate();
-        sprite.move(body.getVelocity());
-        // position = calculatePosition(position, offset * parallaxFactor);
-        // setPosition(dstrect, position);
+        sprite.setPosition(body.getPosition());
+        sprite.setRotation(body.getRotation());
     }
     void Object::draw(sf::RenderTarget &target, sf::RenderStates states) const
     {
         target.draw(sprite, states);
     }
-    void Object::playSounds()
-    {
-        // auto &sm = SoundManager::GetInstance();
-        // for (auto sound : soundsToPlay)
-        //     sm.playSound(sound);
-        // soundsToPlay.clear();
-    }
-    // void Object::renderObject()
+    // void Object::playSounds()
     // {
-    //     // if (not SDL_HasIntersection(&viewport, &dstrect))
-    //     //     return;
-    //     // playSounds();
-    //     // SDL_Rect src = physics::normalizedIntersection(dstrect, viewport);
-    //     // SDL_Rect dest = physics::normalizedIntersection(viewport, dstrect);
-
-    //     // SDL_RenderCopy(gRenderer, texture, &src, &dest);
-    //     window.draw(sprite);
+    // auto &sm = SoundManager::GetInstance();
+    // for (auto sound : soundsToPlay)
+    //     sm.playSound(sound);
+    // soundsToPlay.clear();
     // }
 
-    void Object::printPosition() const
-    {
-        // printf("[%s] Position {%u, %u}, W: {%i}, H:{%i}\n", id.c_str(), dstrect.x, dstrect.y, dstrect.w, dstrect.h);
-    }
 } // namespace rendering

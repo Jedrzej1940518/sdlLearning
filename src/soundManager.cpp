@@ -83,11 +83,11 @@ void SoundManager::pauseUniqueSound(Sound sound)
 
 void SoundManager::loadData()
 {
-    engineSound = getDataPath("data/sound/engine_03_hitek_01_frigate.ogg");
-    playerWeaponSound = getDataPath("data/sound/hephaestus_fire_01.ogg");
-    shellHitSmallSound = getDataPath("data/sound/gun_hit_light_01.ogg");
-    shellHitBigSound = getDataPath("data/sound/gun_hit_heavy_03.ogg");
-    collisionSound = getDataPath("data/sound/collision_asteroid_vs_asteroid_01.ogg");
+    engineSound = getDataPath("sound/engine_03_hitek_01_frigate.ogg");
+    playerWeaponSound = getDataPath("sound/hephaestus_fire_01.ogg");
+    shellHitSmallSound = getDataPath("sound/gun_hit_light_01.ogg");
+    shellHitBigSound = getDataPath("sound/gun_hit_heavy_03.ogg");
+    collisionSound = getDataPath("sound/collision_asteroid_vs_asteroid_01.ogg");
 
     soundPaths[Sound::PLAYER_WEAPON] = playerWeaponSound;
     soundPaths[Sound::ENGINE] = engineSound;

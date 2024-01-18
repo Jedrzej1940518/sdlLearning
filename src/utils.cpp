@@ -2,6 +2,7 @@
 #include "physics/physics.hpp"
 
 #include <Windows.h>
+#include <SFML/Graphics/Sprite.hpp>
 
 const unsigned int SCREEN_HEIGHT = 800;
 const unsigned int SCREEN_WIDTH = 1000;
@@ -44,6 +45,12 @@ std::vector<sf::ConvexShape> getVectorShapes(const sf::Vector2f &vector, const s
     return arrowShapes;
 }
 
+float getSpriteRadius(const sf::Sprite &sprite)
+{
+    auto rect = sprite.getTextureRect();
+    return std::max(rect.width / 2.f, rect.height / 2.f);
+}
+
 std::string getDataPath(std::string dataPath)
 {
     char buffer[MAX_PATH];
@@ -51,7 +58,7 @@ std::string getDataPath(std::string dataPath)
 
     std::string executablePath(buffer);
     std::string executableDirectory = executablePath.substr(0, executablePath.find_last_of("\\/"));
-    return executableDirectory + "\\" + dataPath;
+    return executableDirectory + "\\data\\" + dataPath;
 }
 
 std::string boolToString(bool b)

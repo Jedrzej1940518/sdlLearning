@@ -10,7 +10,7 @@ namespace levels
 
         button.setSize({rect.width, rect.height});
         button.setPosition({rect.left, rect.top});
-        button.setFillColor(globals::Grey);
+        button.setFillColor(globals::GREY);
         button.setOutlineColor(sf::Color::Black);
         button.setOutlineThickness(2);
         button.setCallback(callback);
@@ -25,7 +25,7 @@ namespace levels
     }
     Menu::Menu(sf::RenderWindow &window, LevelType &level) : Level{window, level}
     {
-        if (!font.loadFromFile(getDataPath("data/graphics/fonts/TiltNeon-Regular.ttf")))
+        if (!font.loadFromFile(getDataPath("graphics/fonts/TiltNeon-Regular.ttf")))
             std::cerr << "Error loading font" << std::endl;
 
         buttons.push_back(&newGameButton);

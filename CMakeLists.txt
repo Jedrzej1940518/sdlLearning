@@ -14,15 +14,18 @@ set(SOURCES
     src/physics/physics.cpp
     src/physics/body.cpp
     src/physics/collisionModel.cpp
-    src/rendering/collisionObject.cpp
+    src/rendering/background.cpp
     src/rendering/object.cpp
+    src/rendering/collisionObject.cpp
     src/rendering/button.cpp
     src/levels/menu.cpp
     src/levels/arena.cpp
     #src/levels/gameOver.cpp
-    src/ships/ship.cpp
     #src/ships/hostileShip.cpp
-    #src/ships/projectile.cpp
+    src/ships/ship.cpp
+    src/ships/weapon.cpp
+    src/ships/projectile.cpp
+    src/ships/playerShip.cpp
 )
 
 add_executable(starships ${SOURCES})

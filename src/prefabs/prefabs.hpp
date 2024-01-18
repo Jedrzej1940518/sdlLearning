@@ -1,5 +1,7 @@
 #pragma once
 
+#include "utils.hpp"
+
 #include <string>
 
 namespace prefabs
@@ -8,30 +10,40 @@ namespace prefabs
     {
         const std::string texturePath;
         const std::string id;
+    };
 
-        float maxRotationSpeed;
+    struct ObjectPrefab : Prefab
+    {
         float maxVelocity;
-        float acceleration;
         float mass;
+        float maxRotationSpeed;
+        float maxAcceleration;
+    };
 
+    struct CollidablePrefab : ObjectPrefab
+    {
         int hp;
     };
 
-    // struct ProjectilePrefab : public Prefab
-    // {
-    //     ProjectilePrefab(Prefab prefab, int lifetime, int dmg, int reload, int scatterAngle) : Prefab{prefab}, lifetime{lifetime}, dmg{dmg}, reload{reload}, scatterAngle{scatterAngle} {}
-    //     int lifetime;
-    //     int dmg;
-    //     int reload;
-    //     int scatterAngle;
-    // };
+    struct ProjectilePrefab : Prefab
+    {
+        int lifetime;
+        int dmg;
+        int reload;
+        float maxVelocity;
+        float scatterAngle;
+    };
 
-    const inline Prefab background{getDataPath("data/graphics/backgrounds/background3.jpg"), "background3", 0, 0, 0, 0, 0};
+    struct ShipPrefab : CollidablePrefab
+    {
+        const ProjectilePrefab &weaponPrefab;
+    };
 
-    const inline Prefab asteroidBig2{getDataPath("data/graphics/asteroids/asteroid_big02.png"), "asteroid1", 2, 3, 0, 1000, 120};
-    const inline Prefab asteroid2{getDataPath("data/graphics/asteroids/asteroid2.png"), "asteroid2", 5, 7, 0, 200, 20};
-    const inline Prefab asteroid3{getDataPath("data/graphics/asteroids/asteroid3.png"), "asteroid3", 5, 7, 0, 200, 30};
-    const inline Prefab scarab{getDataPath("data/graphics/ships/scarab.png"), "scarab", 3, 5, 0.2f, 500, 300};
+    const inline Prefab background{getDataPath("graphics/backgrounds/background3.jpg"), "background3"};
+
+    const inline CollidablePrefab asteroid2{getDataPath("graphics/asteroids/asteroid2.png"), "asteroid2", 4, 600, 4, 0.f, 60};
+    const inline CollidablePrefab asteroid3{getDataPath("graphics/asteroids/asteroid3.png"), "asteroid3", 3, 1200, 3, 0.f, 120};
+    const inline CollidablePrefab asteroidBig2{getDataPath("graphics/asteroids/asteroid_big02.png"), "asteroid1", 2.5, 2000, 2.5f, 0.f, 200};
 
     // const inline Prefab lasher{getDataPath(
     //                                "data/graphics/ships/lasher_ff.png")
@@ -51,9 +63,11 @@ namespace prefabs
     //                          "wolf",
     //                          {3.5, 6.5, 0.4, 250},
     //                          40};
+    // const inline ProjectilePrefab lasherShell{Prefab{getDataPath("graphics/projectiles/shell_small_green.png"), "shell", 5}, 50, 5, 30, 6.f};
+    // const inline ProjectilePrefab hammerheadShell{Prefab{getDataPath("graphics/projectiles/bomblet2.png"), "big_shell", 8}, 60, 6, 50, 3.f};
+    const inline ProjectilePrefab scarabShell{getDataPath("graphics/projectiles/rift_torpedo.png"), "scarab_shell", 9, 50, 7, 10, 3.f};
+    // // const inline ProjectilePrefab torpedo{getDataPath("graphics/projectiles/missile_torpedo_compact.png"), "torpedo", 60, 50, 4, 300, 0};
 
-    // const inline ProjectilePrefab lasherShell{{getDataPath("data/graphics/projectiles/shell_small_green.png").c_str(), "shell", {0, 12, 1, 0}, 0}, 50, 5, 30, 6};
-    // const inline ProjectilePrefab hammerheadShell{{getDataPath("data/graphics/projectiles/bomblet2.png").c_str(), "bomblet2", {0, 14, 1, 0}, 0}, 60, 8, 50, 3};
-    // const inline ProjectilePrefab scarabShell{{getDataPath("data/graphics/projectiles/rift_torpedo.png").c_str(), "rift_torpedo", {0, 14, 1, 0}, 0}, 50, 10, 1, 3};
-    // const inline ProjectilePrefab torpedo{{getDataPath("data/graphics/projectiles/missile_torpedo_compact.png").c_str(), "torpedo", {0, 10, 1, 0}, 0}, 60, 50, 300, 0};
+    const inline ShipPrefab scarab{getDataPath("graphics/ships/scarab.png"), "scarab", 5, 1000, 5, 0.5f, 300, scarabShell};
+
 }

@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rendering/collisionObject.hpp"
+#include "ships/projectile.hpp"
+
 #include "physics.hpp"
 #include <cstdint>
 #include <sys/types.h>
@@ -11,14 +13,19 @@ namespace physics
   class CollisionModel
   {
     using CollisionObject = rendering::CollisionObject;
+    using Projectile = ships::Projectile;
 
-    //[rows][columns] of vector<CollisonObject*>
-    using Grid = std::vector<std::vector<std::vector<CollisionObject *>>>; // todo use smart ptr here probably
+    //[rows][columns] of std::list<CollisonObject*>
+    using CollisionObjectGrid = std::vector<std::vector<std::vector<CollisionObject *>>>; // todo use smart ptr here probably
+                                                                                          // also switch to anything else please
+    using ProjectilesGrid = std::vector<std::vector<std::vector<Projectile *>>>;
 
     GridParams gridParams;
     int rows;
     int columns;
-    Grid grid;
+
+    CollisionObjectGrid grid;
+    ProjectilesGrid pGrid;
 
   public:
     CollisionModel(GridParams gridParams);
@@ -28,15 +35,15 @@ namespace physics
     void collides(CollisionObject &obj, GridCoords &neigh);
 
   public:
+    void inputCollisions();
     void frameUpdate();
-
-    void checkCollisions();
-    void recalculateGridPositions();
 
     GridCoords calculateGridCoords(const sf::Vector2f &v);
 
-    void remove(const CollisionObject &obj);
     void emplace(CollisionObject &obj);
+    void emplace(Projectile &proj);
+    void remove(const CollisionObject &obj);
+    void remove(const Projectile &proj);
 
     const GridParams &getGridParams();
   };
