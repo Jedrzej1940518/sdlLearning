@@ -3,3 +3,6 @@ build/*
 .vscode
 Debug/*
 Release/*
+/.vs
+/out/build
+/bin
