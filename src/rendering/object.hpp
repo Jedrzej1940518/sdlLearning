@@ -1,7 +1,7 @@
 #pragma once
 
 #include "utils.hpp"
-#include "deadCheckable.hpp"
+#include "killable.hpp"
 #include "prefabs/prefabs.hpp"
 #include "physics/body.hpp"
 // #include "soundManager.hpp"

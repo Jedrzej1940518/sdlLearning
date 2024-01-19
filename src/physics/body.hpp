@@ -34,9 +34,9 @@ namespace physics
     void applyCollision(const CollisionParams &cp);
 
     // setters
-    void setPosition(sf::Vector2f p) { position = p; }
-    void setVelocity(sf::Vector2f v) { velocity = v; }
-    void setRotation(float r) { rotation = r; }
+    void setPosition(const sf::Vector2f& p) { position = p; }
+    void setVelocity(const sf::Vector2f& v) { velocity = physics::clampVector(v, maxVelocity); }
+    void setRotation(float r) { rotation = physics::normalizeDegrees(r); }
 
     // getters
     const sf::Vector2f &getVelocity() const { return velocity; }

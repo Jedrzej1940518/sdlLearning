@@ -33,7 +33,7 @@ namespace physics
     }
     float getAngleBetweenVectors(const sf::Vector2f &a, const sf::Vector2f &b)
     {
-        return normalizeDegrees(getVectorRotation(a) - getVectorRotation(b));
+        return normalizeDegrees( getVectorRotation(b) - getVectorRotation(a));
     }
     float getRelativeAngle(const sf::Vector2f &a, const sf::Vector2f &b, float currentAngle)
     {
@@ -95,6 +95,15 @@ namespace physics
     float distance(const sf::Vector2f &a, const sf::Vector2f &b)
     {
         return static_cast<float>(std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2)));
+    }
+
+    float distance(const Circle& a, const Circle& b)
+    {
+        return distance(a.position, b.position) - a.radius - b.radius;
+    }
+    float distance(const sf::Vector2f& a, const Circle& b)
+    {
+        return distance(a, b.position) - b.radius;
     }
 
     bool collisionHappening(const Circle &a, const Circle &b)

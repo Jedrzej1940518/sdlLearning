@@ -17,23 +17,17 @@ namespace rendering
     void CollisionObject::addDebugObjects()
     {
         // obj radius
-        shapesToDraw.push_back(std::make_unique<sf::CircleShape>(spriteRadius));
-        auto &collisionRadius = *(shapesToDraw.back());
-        collisionRadius.setPosition(getCenter() - sf::Vector2f{spriteRadius, spriteRadius});
-        collisionRadius.setFillColor(sf::Color::Transparent);
-        collisionRadius.setOutlineThickness(3);
-        collisionRadius.setOutlineColor(sf::Color::Yellow);
+        shapesToDraw.push_back(makeCircle(getCenter(), spriteRadius, sf::Color::Yellow));
+
         // obj center
-        shapesToDraw.push_back(std::make_unique<sf::CircleShape>(5.f));
-        auto &center = *(shapesToDraw.back());
-        center.setPosition(getCenter() - sf::Vector2f{5, 5});
-        center.setFillColor(sf::Color::Red);
+        shapesToDraw.push_back(makeCircle(getCenter(), 5.f, sf::Color::Red));
         // maxAcceleration
 
         // speed
-        auto vectorShapes = getVectorShapes(body.getVelocity(), getCenter(), sf::Color::Blue);
-        for (auto &vectorShape : vectorShapes)
-            shapesToDraw.push_back(std::make_unique<sf::ConvexShape>(vectorShape));
+        auto [arrowBase, arrowPoint] = getVectorShapes(body.getVelocity(), getCenter(), sf::Color::Blue);
+ 
+        shapesToDraw.push_back(std::move(arrowBase));
+        shapesToDraw.push_back(std::move(arrowPoint));
     }
 
     void CollisionObject::addHpBar()
@@ -41,7 +35,7 @@ namespace rendering
         constexpr float hpBarH = 10.f;
         constexpr float outlineThickness = 1.f;
 
-        shapesToDraw.push_back(std::make_unique<sf::RectangleShape>(sf::Vector2{spriteRadius * 2, hpBarH}));
+        shapesToDraw.push_back(std::make_shared<sf::RectangleShape>(sf::Vector2{spriteRadius * 2, hpBarH}));
         auto &hpBarOutline = shapesToDraw.back();
         hpBarOutline->setPosition(sprite.getPosition());
         hpBarOutline->move({-spriteRadius, -spriteRadius - 20.f});
@@ -49,7 +43,7 @@ namespace rendering
         hpBarOutline->setOutlineColor(sf::Color::Black);
         hpBarOutline->setOutlineThickness(outlineThickness);
 
-        shapesToDraw.push_back(std::make_unique<sf::RectangleShape>(sf::Vector2{spriteRadius * 2, hpBarH}));
+        shapesToDraw.push_back(std::make_shared<sf::RectangleShape>(sf::Vector2{spriteRadius * 2, hpBarH}));
         auto &hpBar = shapesToDraw.back();
         hpBar->setPosition(sprite.getPosition());
         hpBar->move({-spriteRadius, -spriteRadius - 20.f});
@@ -74,7 +68,7 @@ namespace rendering
 
         Object::frameUpdate();
 
-        if (debugObject)
+        if (config::debugObject)
             addDebugObjects();
 
         addHpBar();

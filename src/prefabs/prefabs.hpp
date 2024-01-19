@@ -54,11 +54,11 @@ namespace prefabs
 
     // const inline ProjectilePrefab lasherShell{Prefab{getDataPath("graphics/projectiles/shell_small_green.png"), "shell", 5}, 50, 5, 30, 6.f};
     // const inline ProjectilePrefab hammerheadShell{Prefab{getDataPath("graphics/projectiles/bomblet2.png"), "big_shell", 8}, 60, 6, 50, 3.f};
-    const inline ProjectilePrefab scarabShell{getDataPath("graphics/projectiles/rift_torpedo.png"), "scarab_shell", 60, 5, 7, 10, 3.f};
+    const inline ProjectilePrefab scarabShell{getDataPath("graphics/projectiles/rift_torpedo.png"), "scarab_shell", 30, 5, 10, 10, 3.f};
     // // const inline ProjectilePrefab torpedo{getDataPath("graphics/projectiles/missile_torpedo_compact.png"), "torpedo", 60, 50, 4, 300, 0};
 
-    const inline ShipPrefab lasher{getDataPath("graphics/ships/lasher_ff.png"), "lasher", 5, 1000, 5, 0.5f, 300, scarabShell};
-    const inline ShipPrefab wolf{getDataPath("graphics/ships/wolf_ff.png"), "wolf", 5, 1000, 5, 0.5f, 300, scarabShell};
+    const inline ShipPrefab lasher{getDataPath("graphics/ships/lasher_ff.png"), "lasher", 4.5, 1200, 4.5, 0.45f, 300, scarabShell};
+    const inline ShipPrefab wolf{getDataPath("graphics/ships/wolf_ff.png"), "wolf", 5.5, 600, 6, 0.7f, 300, scarabShell};
     const inline ShipPrefab scarab{getDataPath("graphics/ships/scarab.png"), "scarab", 5, 1000, 5, 0.5f, 300, scarabShell};
-
+               
 }

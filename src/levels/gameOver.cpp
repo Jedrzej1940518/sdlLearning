@@ -33,7 +33,7 @@ namespace levels
     {
         SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 255);
         SDL_RenderClear(gRenderer);
-        SDL_Rect fakeViewport{3000, 3000, (int)SCREEN_WIDTH, (int)SCREEN_HEIGHT};
+        SDL_Rect fakeViewport{3000, 3000, (int)config::SCREEN_WIDTH, (int)config::SCREEN_HEIGHT};
         background.renderObject(fakeViewport);
         text.renderText();
         playAgainButton.renderButton();

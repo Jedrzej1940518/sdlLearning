@@ -13,6 +13,8 @@ namespace rendering
         texture.loadFromFile(prefab.texturePath); // TODO optimize to share texture between prefabs probably
         texture.setSmooth(true);
         sprite.setTexture(texture);
+        float radius = getSpriteRadius(sprite);
+        sprite.setOrigin({ radius, radius });
         sprite.setPosition(position);
     }
 

@@ -6,6 +6,9 @@ namespace physics
 {
     Body::Body(float maxRotationSpeed, float maxVelocity, float maxAcceleration, float mass) : maxRotationSpeed{maxRotationSpeed}, maxVelocity{maxVelocity}, maxAcceleration{maxAcceleration}, mass{mass}
     {
+        acceleratingOnce = false;
+        rotation = 0;
+        rotationLeft = 0;
     }
 
     void Body::applyCollision(const CollisionParams &cp)
@@ -29,7 +32,7 @@ namespace physics
     }
     void Body::frameUpdate()
     {
-        if (abs(rotationLeft) > 0.1f)
+        if (abs(rotationLeft) >= 0.01f)
         {
             rotation += rotationLeft;
             rotationLeft = 0;
@@ -47,7 +50,7 @@ namespace physics
     void Body::accelerateOnce(sf::Vector2f accelerationVector)
     {
         acceleration = physics::clampVector(accelerationVector, maxAcceleration);
-        acceleratingOnce = physics::vectorLenght(acceleration) > 0.05;
+        acceleratingOnce = physics::vectorLenght(acceleration) >= 0.01f;
     }
 
     void Body::rotateOnce(float degrees)

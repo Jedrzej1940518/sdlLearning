@@ -1,7 +1,7 @@
 #pragma once
 
 #include "frameUpdateable.hpp"
-#include "deadCheckable.hpp"
+#include "killable.hpp"
 
 #include "prefabs/prefabs.hpp"
 #include "rendering/collisionObject.hpp"
@@ -10,7 +10,7 @@
 
 namespace ships
 {
-    class Projectile : public sf::Drawable, public FrameUpdateable, public DeadCheckable
+    class Projectile : public sf::Drawable, public FrameUpdateable, public Killable
     {
         sf::Texture texture;
         sf::Sprite sprite;

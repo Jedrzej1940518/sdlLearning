@@ -34,6 +34,8 @@ namespace physics
 
     sf::Vector2f clampVector(const sf::Vector2f &velocity, float maxVelocity);
     float distance(const sf::Vector2f &a, const sf::Vector2f &b);
+    float distance(const Circle& a, const Circle& b);
+    float distance(const sf::Vector2f& a, const Circle& b);
 
     bool collisionHappening(const Circle &a, const Circle &b);
 

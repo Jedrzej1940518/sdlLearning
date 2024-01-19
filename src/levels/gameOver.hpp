@@ -11,8 +11,8 @@ namespace levels
     {
         int buttonW{200};
         int buttonH{50};
-        int buttonY{(int)SCREEN_HEIGHT / 2 - 3 * buttonH / 2};
-        int buttonX{(int)SCREEN_WIDTH / 2 - buttonW / 2};
+        int buttonY{(int)config::SCREEN_HEIGHT / 2 - 3 * buttonH / 2};
+        int buttonX{(int)config::SCREEN_WIDTH / 2 - buttonW / 2};
 
         rendering::Object background{getDataPath("graphics/backgrounds/background3.jpg").c_str(), {3000, 3000}, "background", 0.4};
 

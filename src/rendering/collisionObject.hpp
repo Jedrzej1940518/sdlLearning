@@ -12,38 +12,37 @@
 
 namespace rendering
 {
-  class CollisionObject : public Object, public DeadCheckable
-  {
-    inline static bool debugObject{true};
+	class CollisionObject : public Object, public Killable
+	{
+	protected:
+		std::vector<std::shared_ptr<sf::Shape>> shapesToDraw;
+		physics::CollisionParams collisionParams;
 
-  protected:
-    std::vector<std::unique_ptr<sf::Shape>> shapesToDraw;
-    physics::CollisionParams collisionParams;
+		const int maxHp;
+		int hp;
 
-    const int maxHp;
-    int hp;
+		void addDebugObjects();
+		void addHpBar();
 
-    void addDebugObjects();
-    void addHpBar();
+	public:
+		CollisionObject(const prefabs::CollidablePrefab& prefab, sf::Vector2f position, sf::Vector2f velocity = { 0, 0 }, float rotation = 0);
 
-  public:
-    CollisionObject(const prefabs::CollidablePrefab &prefab, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
+		void handleCollision(const CollisionObject& oth);
 
-    void handleCollision(const CollisionObject &oth);
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+		void frameUpdate() override;
+		void hit(int dmg);
 
-    void frameUpdate() override;
-    void hit(int dmg);
+		// setters
 
-    // setters
+		// getters
+		const physics::Circle getCollisionCircle() const { return physics::Circle{ getCenter(), spriteRadius }; };
+		const sf::Vector2f& getCenter() const { return body.getPosition(); };
+		const sf::FloatRect getBoundingBox() const { return sprite.getGlobalBounds(); }
 
-    // getters
-    const physics::Circle getCollisionCircle() const { return physics::Circle{getCenter(), spriteRadius}; };
-    const sf::Vector2f &getCenter() const { return body.getPosition(); };
+		float getMass() const { return body.getMass(); };
 
-    float getMass() const { return body.getMass(); };
-
-    virtual ~CollisionObject() {}
-  };
+		virtual ~CollisionObject() {}
+	};
 } // namespace rendering

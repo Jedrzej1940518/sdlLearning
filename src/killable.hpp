@@ -1,6 +1,6 @@
 #pragma once
 
-class DeadCheckable
+class Killable
 {
 protected:
     bool alive{true};

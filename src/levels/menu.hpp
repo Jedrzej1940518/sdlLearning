@@ -14,8 +14,8 @@ namespace levels
   {
     float buttonW{200};
     float buttonH{50};
-    float buttonY{(float)SCREEN_HEIGHT / 2 - 3 * buttonH / 2};
-    float buttonX{(float)SCREEN_WIDTH / 2 - buttonW / 2};
+    float buttonY{(float)config::SCREEN_HEIGHT / 2 - 3 * buttonH / 2};
+    float buttonX{(float)config::SCREEN_WIDTH / 2 - buttonW / 2};
 
     rendering::Button newGameButton;
     rendering::Button continueButton;
