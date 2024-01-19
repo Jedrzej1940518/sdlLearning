@@ -1,5 +1,7 @@
 #include "arena.hpp"
 #include "rendering/background.hpp"
+#include "ships/aiShip.hpp"
+
 // #include "prefabs/prefabs.hpp"
 
 namespace levels
@@ -39,7 +41,7 @@ namespace levels
 
     //         bool playerCollision = SDL_HasIntersection(&playerRect, &b);
 
-    //         if (collisionPresent(obj, collidableObjects) || collisionPresent(obj, hostileShips) || playerCollision)
+    //         if (collisionPresent(obj, collidableObjects) || collisionPresent(obj, aiShips) || playerCollision)
     //         {
     //             printf("Collision was present, rolling new obj\n");
     //             delete (obj);
@@ -53,24 +55,27 @@ namespace levels
     Arena::Arena(sf::RenderWindow &window, LevelType &level) : Level{window, level} //: console{gRenderer, getconsoleRect()}
     {
         auto background = std::make_shared<rendering::Background>(prefabs::background);
-        auto player = std::make_shared<ships::PlayerShip>(prefabs::scarab, sf::Vector2f{1250, 1250});
+
         auto asteroid1 = std::make_shared<rendering::CollisionObject>(prefabs::asteroid3, sf::Vector2f{1100, 1100}, sf::Vector2f{1.f, -1.f});
         auto asteroid2 = std::make_shared<rendering::CollisionObject>(prefabs::asteroidBig2, sf::Vector2f{1400, 1400}, sf::Vector2f{1.f, 1.f});
 
-        drawables = {background, player, asteroid1, asteroid2};
-        frameUpdateables = {player, asteroid1, asteroid2};
-        collidables = {player, asteroid1, asteroid2};
-        shooters = {player};
+        auto wolf = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{1800, 1200});
+        auto lasher = std::make_shared<ships::AiShip>(prefabs::lasher, sf::Vector2f{1200, 1800});
+
+        auto player = std::make_shared<ships::PlayerShip>(prefabs::scarab, sf::Vector2f{1250, 1250});
+
+        drawables = {background, asteroid1, asteroid2, player, wolf, lasher};
+        frameUpdateables = {asteroid1, asteroid2, player, wolf, lasher};
+        collidables = {asteroid1, asteroid2, player, wolf, lasher};
+        shooters = {player, wolf, lasher};
+        aiShips = {wolf, lasher};
+        hostileShips = {wolf, lasher};
+        playerShips = {player};
+
         controledObject = player;
 
         for (auto &object : collidables)
             collisionModel.add(object);
-
-        // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {4700, 4700}));
-        // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {3400, 3300}));
-        // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3550, 3750}));
-        // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3700, 3750}));
-        // hostileShips.push_back(new ships::HostileShip(prefabs::hammerhead, prefabs::hammerheadShell, {4200, 3550}));
 
         // populateArenaWithAsteroids(x, y);
     }
@@ -103,12 +108,18 @@ namespace levels
         cleanupVector(collidables);
         cleanupVector(frameUpdateables);
         cleanupVector(shooters);
+        cleanupVector(playerShips);
+        cleanupVector(aiShips);
+
         // debugPrint();
     }
 
     void Arena::frameUpdate()
     {
         collisionModel.updateCollisions();
+
+        for (auto &aiShip : aiShips)
+            aiShip->determineTactic(hostileShips, playerShips, collidables, projectiles);
 
         for (auto &obj : frameUpdateables)
             obj->frameUpdate();
@@ -122,6 +133,7 @@ namespace levels
                 collisionModel.add(proj);
                 frameUpdateables.push_back(proj);
                 drawables.push_back(proj);
+                projectiles.push_back(proj);
             }
         }
         cleanupDeadObjects();
@@ -133,6 +145,7 @@ namespace levels
 
     void Arena::draw()
     {
+        // todo dont draw objects outside view
         for (auto &obj : drawables)
             window.draw(*obj);
     }

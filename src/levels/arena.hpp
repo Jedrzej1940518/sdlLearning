@@ -8,13 +8,12 @@
 #include "physics/collisionModel.hpp"
 
 #include "ships/playerShip.hpp"
+#include "ships/aiShip.hpp"
 #include "ships/projectile.hpp"
 
 #include <vector>
 
 #include <SFML/Graphics/Drawable.hpp>
-
-// #include "ships/hostileShip.hpp"
 
 namespace levels
 {
@@ -25,8 +24,14 @@ namespace levels
     std::vector<std::shared_ptr<FrameUpdateable>> frameUpdateables;
 
     std::vector<std::shared_ptr<rendering::CollisionObject>> collidables;
+    std::vector<std::shared_ptr<ships::Projectile>> projectiles;
 
     std::vector<std::shared_ptr<ships::Ship>> shooters;
+
+    std::vector<std::shared_ptr<ships::AiShip>> aiShips;
+
+    std::vector<std::shared_ptr<ships::Ship>> hostileShips;
+    std::vector<std::shared_ptr<ships::Ship>> playerShips;
 
     std::shared_ptr<ships::PlayerShip> controledObject;
 

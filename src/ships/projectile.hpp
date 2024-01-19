@@ -40,6 +40,7 @@ namespace ships
         physics::Circle getCollisionCircle() const { return physics::Circle{getCenter(), spriteRadius}; };
         const sf::Vector2f &getCenter() const { return sprite.getPosition(); };
         const std::string &getId() const { return id; }
+        float getRadius() const { return spriteRadius; }
 
         virtual ~Projectile();
     };

@@ -21,7 +21,8 @@ set(SOURCES
     src/levels/menu.cpp
     src/levels/arena.cpp
     #src/levels/gameOver.cpp
-    #src/ships/hostileShip.cpp
+    src/ships/aiShip.cpp
+    src/ships/tactic.cpp
     src/ships/ship.cpp
     src/ships/weapon.cpp
     src/ships/projectile.cpp
@@ -33,17 +34,8 @@ add_compile_definitions(_USE_MATH_DEFINES)
 
 target_compile_options(starships PRIVATE)
 
-#find_package(SDL2 REQUIRED CONFIG)
-#find_package(SDL2_image REQUIRED CONFIG)
-#find_package(SDL2_ttf REQUIRED CONFIG)
 find_package(SFML REQUIRED CONFIG)
-
-#target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_image::SDL2_image-static)
-#target_link_libraries(${PROJECT_NAME} PRIVATE SDL2_ttf::SDL2_ttf)
-#target_link_libraries(${PROJECT_NAME} PRIVATE SDL2::SDL2main SDL2::SDL2-static)
 target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-audio)
-
-#target_link_libraries(starships PRIVATE ${CONAN_LIBS})#SDL2 SDL2_image SDL2_ttf SDL2_mixer SDL2_gfx)
 
 set_target_properties(starships PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 

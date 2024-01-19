@@ -45,29 +45,20 @@ namespace prefabs
     const inline CollidablePrefab asteroid3{getDataPath("graphics/asteroids/asteroid3.png"), "asteroid3", 3, 1200, 3, 0.f, 120};
     const inline CollidablePrefab asteroidBig2{getDataPath("graphics/asteroids/asteroid_big02.png"), "asteroid1", 2.5, 2000, 2.5f, 0.f, 200};
 
-    // const inline Prefab lasher{getDataPath(
-    //                                "data/graphics/ships/lasher_ff.png")
-    //                                .c_str(),
-    //                            "lasher",
-    //                            {1.2, 4.5, 0.25, 500},
-    //                            50};
     // const inline Prefab hammerhead{getDataPath(
     //                                    "data/graphics/ships/hammerhead_dd.png")
     //                                    .c_str(),
     //                                "hammerhead",
     //                                {0.6, 3, 0.075, 800},
     //                                150};
-    // const inline Prefab wolf{getDataPath(
-    //                              "data/graphics/ships/wolf_ff.png")
-    //                              .c_str(),
-    //                          "wolf",
-    //                          {3.5, 6.5, 0.4, 250},
-    //                          40};
+
     // const inline ProjectilePrefab lasherShell{Prefab{getDataPath("graphics/projectiles/shell_small_green.png"), "shell", 5}, 50, 5, 30, 6.f};
     // const inline ProjectilePrefab hammerheadShell{Prefab{getDataPath("graphics/projectiles/bomblet2.png"), "big_shell", 8}, 60, 6, 50, 3.f};
     const inline ProjectilePrefab scarabShell{getDataPath("graphics/projectiles/rift_torpedo.png"), "scarab_shell", 60, 5, 7, 10, 3.f};
     // // const inline ProjectilePrefab torpedo{getDataPath("graphics/projectiles/missile_torpedo_compact.png"), "torpedo", 60, 50, 4, 300, 0};
 
+    const inline ShipPrefab lasher{getDataPath("graphics/ships/lasher_ff.png"), "lasher", 5, 1000, 5, 0.5f, 300, scarabShell};
+    const inline ShipPrefab wolf{getDataPath("graphics/ships/wolf_ff.png"), "wolf", 5, 1000, 5, 0.5f, 300, scarabShell};
     const inline ShipPrefab scarab{getDataPath("graphics/ships/scarab.png"), "scarab", 5, 1000, 5, 0.5f, 300, scarabShell};
 
 }

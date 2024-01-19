@@ -40,7 +40,11 @@ namespace rendering
     // getters
     const sf::Sprite &getSprite() const { return sprite; };
     const std::string &getId() const { return id; }
+
     const sf::Vector2f &getVelocity() const { return body.getVelocity(); }
+    float getMaxVelocity() const { return body.getMaxVelocity(); }
+    float getMaxAcceleration() const { return body.getMaxAcceleration(); }
+    float getRadius() const { return spriteRadius; }
 
     // our sprites are by default facing NORTH which is -90. So object with rotation 0 is facing -90 in cartesian coordinates.
     float getRotationCartesian() const { return physics::normalizeDegrees(body.getRotation() - 90); }

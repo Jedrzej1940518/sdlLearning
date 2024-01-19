@@ -62,7 +62,6 @@ namespace ships
 
     void PlayerShip::frameUpdate()
     {
-        CollisionObject::frameUpdate();
         weapon.frameUpdate();
 
         bool accelerateOnce = false;
@@ -71,9 +70,10 @@ namespace ships
             accelerateOnce |= inputDirections[i];
 
         if (accelerateOnce)
-            body.accelerateOnce(physics::sumDirections(inputDirections));
+            accelerationVector = physics::getRotatedVector(physics::sumDirections(inputDirections)) * getMaxAcceleration();
+        else
+            accelerationVector = {0, 0};
 
-        float relativeAngle = physics::normalizeDegrees(targetAngle - getRotationCartesian());
-        body.rotateOnce(relativeAngle);
+        Ship::frameUpdate();
     }
 }

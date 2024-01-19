@@ -31,9 +31,21 @@ namespace physics
         float degrees = radiansToDegrees(atan2(v.y, v.x));
         return degrees;
     }
-    sf::Vector2f calculateSpeed(const sf::Vector2f &velocity, float maxVelocity, float maxAcceleration, float accelerationAngle)
+    float getAngleBetweenVectors(const sf::Vector2f &a, const sf::Vector2f &b)
     {
-        sf::Vector2f newSpeed = velocity + getRotatedVector(accelerationAngle) * maxAcceleration;
+        return normalizeDegrees(getVectorRotation(a) - getVectorRotation(b));
+    }
+    float getRelativeAngle(const sf::Vector2f &a, const sf::Vector2f &b, float currentAngle)
+    {
+        sf::Vector2f targetOffset = a - b;
+        sf::Vector2f currentRotationVector = physics::getRotatedVector(currentAngle);
+
+        return physics::getAngleBetweenVectors(currentRotationVector, targetOffset);
+    }
+
+    sf::Vector2f calculateSpeed(const sf::Vector2f &velocity, float maxVelocity, const sf::Vector2f &acceleration)
+    {
+        sf::Vector2f newSpeed = velocity + acceleration;
         newSpeed = clampVector(newSpeed, maxVelocity);
 
         return newSpeed;
@@ -41,6 +53,11 @@ namespace physics
     float vectorLenght(const sf::Vector2f &v)
     {
         return sqrt(v.x * v.x + v.y * v.y);
+    }
+    float getBrakingDistance(float velocity, float acceleration)
+    {
+        float dist = velocity * velocity / (2.f * acceleration);
+        return dist;
     }
     sf::Vector2f clampVector(const sf::Vector2f &velocity, float maxVelocity)
     {

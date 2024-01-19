@@ -13,10 +13,10 @@ namespace physics
   {
     sf::Vector2f position;
     sf::Vector2f velocity;
+    sf::Vector2f acceleration;
     float rotation;
 
     float rotationLeft;
-    float accelerationAngle;
     bool acceleratingOnce;
 
     float maxRotationSpeed;
@@ -29,7 +29,7 @@ namespace physics
 
     void frameUpdate() override;
 
-    void accelerateOnce(float angle);
+    void accelerateOnce(sf::Vector2f accelerationVector);
     void rotateOnce(float degrees);
     void applyCollision(const CollisionParams &cp);
 
@@ -41,9 +41,10 @@ namespace physics
     // getters
     const sf::Vector2f &getVelocity() const { return velocity; }
     const sf::Vector2f &getPosition() const { return position; }
+    float getMaxVelocity() const { return maxVelocity; }
+    float getMaxAcceleration() const { return maxAcceleration; }
     float getRotation() const { return rotation; }
     float getRotationLeft() { return rotationLeft; }
-    float getAccelerationAngle() const { return accelerationAngle; }
     float getMass() const { return mass; }
   };
 } // namespace physics

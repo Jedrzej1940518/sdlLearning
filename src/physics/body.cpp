@@ -38,16 +38,16 @@ namespace physics
 
         if (acceleratingOnce)
         {
-            velocity = calculateSpeed(velocity, maxVelocity, maxAcceleration, accelerationAngle);
+            velocity = calculateSpeed(velocity, maxVelocity, acceleration);
             acceleratingOnce = false;
         }
         position += velocity;
     }
 
-    void Body::accelerateOnce(float angle)
+    void Body::accelerateOnce(sf::Vector2f accelerationVector)
     {
-        accelerationAngle = angle;
-        acceleratingOnce = true;
+        acceleration = physics::clampVector(accelerationVector, maxAcceleration);
+        acceleratingOnce = physics::vectorLenght(acceleration) > 0.05;
     }
 
     void Body::rotateOnce(float degrees)
