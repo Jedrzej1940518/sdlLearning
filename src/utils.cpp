@@ -7,12 +7,12 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 
-std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f& vector, const sf::Vector2f& center, sf::Color color)
+std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f& vector, const sf::Vector2f& center, sf::Color color, float multiplier)
 {
 	std::shared_ptr<sf::ConvexShape> arrowBase = std::make_shared<sf::ConvexShape>();
 
 	constexpr float w = 2.f;
-	float l = physics::vectorLenght(vector) * 15.f;
+	float l = physics::getVectorMagnitude(vector) * multiplier;
 	float angle = physics::normalizeDegrees(physics::getVectorRotation(vector));
 
 	arrowBase->setPointCount(4);

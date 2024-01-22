@@ -16,8 +16,8 @@ namespace physics
         sf::Vector2f bounce = -cp.collisionVector * constants::COLLISION_BOUNCE;
         position += bounce;
 
-        float v1 = vectorLenght(velocity);
-        float v2 = vectorLenght(cp.velocity);
+        float v1 = getVectorMagnitude(velocity);
+        float v2 = getVectorMagnitude(cp.velocity);
         float m1 = mass;
         float m2 = cp.mass;
         float theta1 = degreesToRadians(getVectorRotation(velocity));
@@ -50,7 +50,7 @@ namespace physics
     void Body::accelerateOnce(sf::Vector2f accelerationVector)
     {
         acceleration = physics::clampVector(accelerationVector, maxAcceleration);
-        acceleratingOnce = physics::vectorLenght(acceleration) >= 0.01f;
+        acceleratingOnce = physics::getVectorMagnitude(acceleration) >= 0.01f;
     }
 
     void Body::rotateOnce(float degrees)

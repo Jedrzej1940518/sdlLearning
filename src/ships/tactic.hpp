@@ -22,8 +22,6 @@ namespace ships
 		const Ship& guidedShip;
 		// this is distance between edges of objects, so it takes into account objects radius
 		const float safeCollisionDistance;
-		// this is distance between edges of objects, so it takes into account objects radius
-		const float encircleRadius;
 
 	public:
 		typedef std::vector<std::shared_ptr<Ship>> Ships;
@@ -42,12 +40,20 @@ namespace ships
 		TacticOutcome generateTactic(const Ships& friends, const Ships& foes, const Collidables& collidables, const Projectiles& projectiles);
 
 	private:
-		sf::Vector2f getFleetCenterOfMass(const Ships& friends);
 		const Ship& chooseTarget(const Ships& foes, const Ships& friends);
+		sf::Vector2f getFleetCenterOfMass(const Ships& friends);
+
 		sf::Vector2f encircleTarget(const Ship& target);
+		float calcEncircleDist(const Ship& target);
 		sf::Vector2f avoidCollisions(sf::Vector2f velocity, const Collidables& collidables, const Projectiles& projectiles);
-		float targetAngle(const Ship& target);
-		bool shouldShoot(const Ship& target, const Ships& friends);
+
+		bool noFriendlyFire(const Ships& friends);
+
+		float getProjectileInterceptTime(const sf::Vector2f& target, const sf::Vector2f& targetVelocity, float targetRadius);
+		float tExtra(float targetRadius);
+		float targetAngle(const sf::Vector2f& target, const sf::Vector2f& targetVelocity, float targetRadius, float ticks);
+		sf::Vector2f predictShotNeededPosition(const Ship& target);
+		bool inRange(const Ship& target);
 	};
 
 }

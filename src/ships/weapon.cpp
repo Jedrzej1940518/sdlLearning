@@ -5,10 +5,14 @@
 namespace ships
 {
 
-	Weapon::Weapon(const prefabs::ProjectilePrefab& prefab, sf::Vector2f weaponPositionOffset) : prefab{ prefab }, weaponPositionOffset{ weaponPositionOffset }, shellReload{ prefab.reload } {}
+	Weapon::Weapon(const prefabs::ProjectilePrefab& prefab, sf::Vector2f weaponPositionOffset) : prefab{ prefab }, weaponPositionOffset{ weaponPositionOffset }, shellReload{ prefab.reload }
+	{
+		auto fakeProjectile = std::make_unique<Projectile>(prefab, sf::Vector2f{ 0,0 }, sf::Vector2f{ 1,1 }, 30.f);
+		projectileRadius = fakeProjectile->getRadius();
+	}
 	void Weapon::frameUpdate() { --shellReload; }
 
-	std::shared_ptr<Projectile> Weapon::shoot(float angle, const sf::Vector2f& shooterPos)
+	std::shared_ptr<Projectile> Weapon::shoot(float angle, const sf::Vector2f& shooterPos, const sf::Vector2f& shooterSpeed)
 	{
 		if (shellReload > 0)
 			return nullptr;
@@ -17,7 +21,7 @@ namespace ships
 		float shotAngle = angle + scatter;
 
 		sf::Vector2f shotSpawnPoint = getProjectileSpawnPoint(angle, shooterPos);
-		sf::Vector2f shotVelocity = getProjectileVelocity(shotAngle);
+		sf::Vector2f shotVelocity = getProjectileVelocity(shotAngle) + shooterSpeed;
 
 		shellReload = prefab.reload;
 
@@ -26,11 +30,10 @@ namespace ships
 
 	sf::Vector2f Weapon::getProjectileSpawnPoint(float angle, const sf::Vector2f& shooterPos) const
 	{
-		sf::Transform vecRotation;
-		vecRotation.rotate(angle + constants::CARTESIAN_TO_SFML_ANGLE);
-		auto shotOffset = vecRotation.transformPoint(weaponPositionOffset);
+		sf::Transform t;
+		//todo this only works if we spawn proj on top of ships
+		auto shotOffset = t.rotate(angle + constants::CARTESIAN_TO_SFML_ANGLE).transformPoint(weaponPositionOffset + sf::Vector2f{ 0, -projectileRadius - 1.f });
 		return shooterPos + shotOffset;
-
 	}
 	sf::Vector2f Weapon::getProjectileVelocity(float angle) const
 	{

@@ -15,39 +15,39 @@
 
 namespace rendering
 {
-  class Object : public FrameUpdateable, public sf::Drawable
-  {
+	class Object : public FrameUpdateable, public sf::Drawable
+	{
 
-  protected:
-    std::string id;
+	protected:
+		std::string id;
 
-    sf::Texture texture;
-    sf::Sprite sprite;
-    float spriteRadius;
+		sf::Texture texture;
+		sf::Sprite sprite;
+		float spriteRadius;
 
-    physics::Body body;
+		physics::Body body;
 
-    // std::unordered_set<Sound> soundsToPlay;
+		// std::unordered_set<Sound> soundsToPlay;
 
-  public:
-    Object(const prefabs::ObjectPrefab &prefab, sf::Vector2f position = {0, 0}, sf::Vector2f velocity = {0, 0}, float rotation = 0);
+	public:
+		Object(const prefabs::ObjectPrefab& prefab, sf::Vector2f position = { 0, 0 }, sf::Vector2f velocity = { 0, 0 }, float rotation = 0);
 
-    void frameUpdate() override;
-    void draw(sf::RenderTarget &target, sf::RenderStates states) const override;
+		void frameUpdate() override;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-    // void playSounds();
+		// void playSounds();
 
-    // getters
-    const sf::Sprite &getSprite() const { return sprite; };
-    const std::string &getId() const { return id; }
+		// getters
+		const sf::Sprite& getSprite() const { return sprite; };
+		const std::string& getId() const { return id; }
 
-    const sf::Vector2f &getVelocity() const { return body.getVelocity(); }
-    float getMaxVelocity() const { return body.getMaxVelocity(); }
-    float getMaxAcceleration() const { return body.getMaxAcceleration(); }
-    float getRadius() const { return spriteRadius; }
+		const sf::Vector2f& getVelocity() const { return body.getVelocity(); }
+		float getMaxVelocity() const { return body.getMaxVelocity(); }
+		float getMaxAcceleration() const { return body.getMaxAcceleration(); }
+		float getRadius() const { return spriteRadius; }
 
-    // our sprites are by default facing NORTH which is -90. So object with rotation 0 is facing -90 in cartesian coordinates.
-    float getRotationCartesian() const { return physics::normalizeDegrees(body.getRotation() - 90); }
-    virtual ~Object() {}
-  };
+		// our sprites are by default facing NORTH which is -90. So object with rotation 0 is facing -90 in cartesian coordinates.
+		float getRotationCartesian() const { return physics::normalizeDegrees(body.getRotation() - 90); }
+		virtual ~Object() {}
+	};
 } // namespace rendering

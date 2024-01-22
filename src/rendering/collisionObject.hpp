@@ -14,15 +14,16 @@ namespace rendering
 {
 	class CollisionObject : public Object, public Killable
 	{
+		void addDebugObjects();
+		void addHpBar();
+
 	protected:
 		std::vector<std::shared_ptr<sf::Shape>> shapesToDraw;
+		std::vector<std::shared_ptr<sf::Shape>> foreverShapes;
 		physics::CollisionParams collisionParams;
 
 		const int maxHp;
 		int hp;
-
-		void addDebugObjects();
-		void addHpBar();
 
 	public:
 		CollisionObject(const prefabs::CollidablePrefab& prefab, sf::Vector2f position, sf::Vector2f velocity = { 0, 0 }, float rotation = 0);

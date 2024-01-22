@@ -26,6 +26,7 @@ namespace constants
 	static inline constexpr float COLLISION_DAMAGE_FACTOR = 2.0f;
 	static inline constexpr float COLLISION_BOUNCE = 0.1f;
 	static inline constexpr float CARTESIAN_TO_SFML_ANGLE = 90.f;
+	static inline constexpr float BASE_SAFE_DIST = 75.f;
 }
 
 namespace config
@@ -48,7 +49,8 @@ const char* findLastOccurrence(const char* str, const char* substr);
         } else { \
             printf("%s [%d] " fmt, __FILE__, __LINE__, __VA_ARGS__); \
         } \
-    } while (0)
+		printf("\n"); \
+	} while (0)
 
 namespace sf
 {
@@ -60,7 +62,7 @@ namespace sf
 std::string boolToString(bool b);
 std::string getDataPath(std::string dataPath);
 
-std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f& vector, const sf::Vector2f& center, sf::Color color);
+std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f& vector, const sf::Vector2f& center, sf::Color color, float multiplier = 15.f);
 std::shared_ptr<sf::CircleShape> makeCircle(const sf::Vector2f& origin, float radius, sf::Color color);
 std::shared_ptr<sf::RectangleShape> makeRectangle(const sf::Vector2f& size, sf::Color color);
 

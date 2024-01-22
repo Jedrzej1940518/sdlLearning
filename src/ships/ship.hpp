@@ -11,7 +11,7 @@ namespace ships
 	protected:
 		bool isShooting{ false };
 
-		float targetAngle{ 0 };                      // ship rotates towards this
+		float targetAngle{ 0.f };                      // ship rotates towards this
 		sf::Vector2f accelerationVector{ 0.f, 0.f }; // ship accelerates in this direction
 		Weapon weapon;
 
@@ -22,6 +22,8 @@ namespace ships
 
 		//todo probably calculate it in a smart way
 		float getRange() const { return weapon.getLifetime() * weapon.getMaxVelocity(); }
+		float getTargetAngle() const { return targetAngle; }
+
 		const Weapon& getWeapon() const { return weapon; }
 
 		virtual ~Ship() {}

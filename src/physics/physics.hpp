@@ -3,6 +3,8 @@
 #include "utils.hpp"
 #include "physicsTypes.hpp"
 
+#include <optional>
+
 namespace physics
 {
 
@@ -25,11 +27,14 @@ namespace physics
     float getVectorRotation(const sf::Vector2f &v);
     float getAngleBetweenVectors(const sf::Vector2f &a, const sf::Vector2f &b);
     float getRelativeAngle(const sf::Vector2f &a, const sf::Vector2f &b, float currentAngle);
+    float getVectorMagnitude(const sf::Vector2f &v);
+    float getVectorsDotProduct(const sf::Vector2f& a, const sf::Vector2f& b);
+
+    std::optional<sf::Vector2f> getIntersectPosition(const sf::Vector2f& velocityA, const sf::Vector2f& velocityB, const sf::Vector2f& posA, const sf::Vector2f& posB);
 
     sf::Vector2f predictPosition(const sf::Vector2f &pos, const sf::Vector2f &velocity, int ticks);
     int calculateTicks(const sf::Vector2f &offset, float velocity);
 
-    float vectorLenght(const sf::Vector2f &v);
     sf::Vector2f calculateSpeed(const sf::Vector2f &velocity, float maxVelocity, const sf::Vector2f &acceleration);
 
     sf::Vector2f clampVector(const sf::Vector2f &velocity, float maxVelocity);
@@ -38,5 +43,7 @@ namespace physics
     float distance(const sf::Vector2f& a, const Circle& b);
 
     bool collisionHappening(const Circle &a, const Circle &b);
+    
+    bool isZero(float a);
 
 } // namespace physics

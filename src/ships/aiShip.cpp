@@ -17,12 +17,6 @@ namespace ships
 	}
 	void AiShip::determineTactic(const Tactic::Ships& friends, const Tactic::Ships& foes, const Tactic::Collidables& collidables, const Tactic::Projectiles& projectiles)
 	{
-		static int tacticTicks = 20;
-		--tacticTicks;
-		if (tacticTicks >= 0)
-			return;
-
-		tacticTicks = 10;
 		currentTactic = tactic.generateTactic(friends, foes, collidables, projectiles);
 	}
 	void AiShip::draw(sf::RenderTarget& target, sf::RenderStates states) const

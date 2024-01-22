@@ -20,8 +20,8 @@ namespace levels
 			const auto& prefab = getRandomAsteroidPrefab();
 			float xx = static_cast<float>(getRandomNumber(-x, x));
 			float yy = static_cast<float>(getRandomNumber(-y, y));
-			float vX = 0 - xx;//getRandomNumber(-prefab.maxVelocity, prefab.maxVelocity);
-			float vY = 0 - yy;//getRandomNumber(-prefab.maxVelocity, prefab.maxVelocity);
+			float vX = getRandomNumber(-prefab.maxVelocity, prefab.maxVelocity);
+			float vY = getRandomNumber(-prefab.maxVelocity, prefab.maxVelocity);
 			auto asteroid = std::make_shared<rendering::CollisionObject>(prefab, sf::Vector2f{ xx, yy }, sf::Vector2f{ vX, vY });
 
 			for (const auto& obj : collidables) {
@@ -44,11 +44,19 @@ namespace levels
 		auto wolf = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{ -200, -200 });
 		auto lasher = std::make_shared<ships::AiShip>(prefabs::lasher, sf::Vector2f{ 200, 0 });
 
+		auto wolf2 = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{ -400, -200 });
+		auto lasher2 = std::make_shared<ships::AiShip>(prefabs::lasher, sf::Vector2f{ 400, 0 });
+		auto hammerhead = std::make_shared<ships::AiShip>(prefabs::hammerhead, sf::Vector2f{ 0, -200 });
+
 		auto player = std::make_shared<ships::PlayerShip>(prefabs::scarab, sf::Vector2f{ 0, 0 });
 
 		addObject(background);
-		addObject(wolf);
+		//addObject(wolf);
 		addObject(lasher);
+		//addObject(wolf2);
+		//addObject(lasher2);
+		//addObject(hammerhead);
+
 		addObject(player, true);
 
 		int asteroids{ 30 };
