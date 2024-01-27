@@ -1,24 +1,15 @@
 #include "soundManager.hpp"
 #include "utils.hpp"
 
+#include <SFML/Audio.hpp>
+
 SoundManager::SoundManager()
 {
-    initAudio();
     loadData();
-
-    // reserving channel 0 for engine
-    Mix_ReserveChannels(1);
-
-    printf("sound channels %d\n", Mix_AllocateChannels(32));
-    Mix_Volume(-1, 20);
+    initUniqueSounds();
 }
 SoundManager::~SoundManager()
 {
-    Mix_FreeChunk(engineSound);
-    Mix_FreeChunk(playerWeaponSound);
-    Mix_FreeMusic(music);
-
-    Mix_Quit();
 }
 
 SoundManager &SoundManager::GetInstance()
@@ -27,114 +18,100 @@ SoundManager &SoundManager::GetInstance()
     return soundManager;
 }
 
-void SoundManager::playMusic()
+void SoundManager::cleanupDeadSounds()
 {
-    if (not Mix_PlayingMusic())
+    for (auto it = sounds.begin(); it != sounds.end();)
     {
-        Mix_FadeInMusic(music, -1, fadeMs);
-    }
-    else if (Mix_PausedMusic())
-    {
-        Mix_ResumeMusic();
+        if (it->getStatus() == sf::Sound::Stopped)
+            it = sounds.erase(it);
+        else
+            ++it;
     }
 }
-void SoundManager::pauseMusic()
+
+void SoundManager::clearSounds()
 {
-    if (not Mix_PausedMusic())
-    {
-        Mix_FadeOutMusic(fadeMs);
-    }
+    sounds.clear();
 }
+
 void SoundManager::switchSound()
 {
-    sound = !sound;
-    Mix_Volume(-1, sound ? 20 : 0);
+    static vector<Sound> uniqueSoundsSwitched;
+    soundOn = !soundOn;
+
+    for (auto &sfSound : sounds)
+        soundOn ? sfSound.play() : sfSound.pause();
+
+    if (!soundOn)
+    {
+        for (auto &[sound, sfSound] : uniqueSounds)
+        {
+            if (sfSound.getStatus() == sf::Sound::Playing)
+            {
+                uniqueSoundsSwitched.push_back(sound);
+                pauseUniqueSound(sound);
+            }
+        }
+    }
+    else
+    {
+        for (auto sound : uniqueSoundsSwitched)
+        {
+            playUniqueSound(sound);
+        }
+
+        uniqueSoundsSwitched.clear();
+    }
 }
 
 void SoundManager::playSound(Sound sound)
 {
-    constexpr int engineChannel = 0;
+    sf::SoundBuffer &buffer = soundBuffers[sound];
+    sounds.push_back(sf::Sound{buffer});
+    sounds.back().play();
+}
 
-    // for engine we dont want to play it if it was already playing
-    if (sound == Sound::ENGINE && Mix_Playing(engineChannel))
-        return;
+void SoundManager::playUniqueSound(Sound sound)
+{
+    if (uniqueSounds[sound].getStatus() != sf::Sound::Playing)
+        uniqueSounds[sound].play();
+}
+void SoundManager::pauseUniqueSound(Sound sound)
+{
+    uniqueSounds[sound].pause();
+}
 
-    int channel = sound == Sound::ENGINE ? engineChannel : -1;
-    auto res = Mix_PlayChannel(channel, chunkPtr[sound], 0);
+void SoundManager::loadData()
+{
+    engineSound = getDataPath("data/sound/engine_03_hitek_01_frigate.ogg");
+    playerWeaponSound = getDataPath("data/sound/hephaestus_fire_01.ogg");
+    shellHitSmallSound = getDataPath("data/sound/gun_hit_light_01.ogg");
+    shellHitBigSound = getDataPath("data/sound/gun_hit_heavy_03.ogg");
+    collisionSound = getDataPath("data/sound/collision_asteroid_vs_asteroid_01.ogg");
 
-    if (res == -1)
+    soundPaths[Sound::PLAYER_WEAPON] = playerWeaponSound;
+    soundPaths[Sound::ENGINE] = engineSound;
+    soundPaths[Sound::SHELL_HIT_SMALL] = shellHitSmallSound;
+    soundPaths[Sound::SHELL_HIT_BIG] = shellHitBigSound;
+    soundPaths[Sound::COLLISION] = collisionSound;
+
+    for (const auto &[sound, path] : soundPaths)
     {
-        cerr << "Unable to play on channel " << channel << " for " << static_cast<int>(sound) << " " << Mix_GetError() << endl;
+        sf::SoundBuffer buffer;
+
+        if (!buffer.loadFromFile(soundPaths[sound]))
+            cerr << "Error loading sound from a file! path: " << soundPaths[sound] << endl;
+
+        soundBuffers[sound] = buffer;
     }
 }
 
-bool SoundManager::initAudio()
+void SoundManager::initUniqueSounds()
 {
-    bool success = true;
-    if (Mix_OpenAudio(audioFrequency, MIX_DEFAULT_FORMAT, hardwareChannels, audioChunkSize) < 0)
+    for (Sound sound : uniqueSoundSet)
     {
-        cerr << "SDL_mixer could not initialize! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
+        sf::SoundBuffer &buffer = soundBuffers[sound];
+        uniqueSounds[sound] = {sf::Sound{buffer}};
+        uniqueSounds[sound].setLoop(true);
     }
-    return success;
-}
-
-bool SoundManager::loadData()
-{
-    bool success = true;
-    music = Mix_LoadMUS("../data/music/07. Violet Sky - Infinity Space.mp3");
-
-    if (music == nullptr)
-    {
-        cerr << "Failed to load beat music! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
-
-    engineSound = Mix_LoadWAV("../data/sound/engine_03_hitek_01_frigate.ogg");
-
-    if (engineSound == nullptr)
-    {
-        cerr << "Failed to load gEngineSound! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
-    playerWeaponSound = Mix_LoadWAV("../data/sound/hephaestus_fire_01.ogg");
-
-    if (playerWeaponSound == nullptr)
-    {
-        cerr << "Failed to load playerWeaponSound! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
-    shellHitSmallSound = Mix_LoadWAV("../data/sound/gun_hit_light_01.ogg");
-
-    if (shellHitSmallSound == nullptr)
-    {
-        cerr << "Failed to load shellHitSmallSound! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
-
-    shellHitBigSound = Mix_LoadWAV("../data/sound/gun_hit_heavy_03.ogg");
-
-    if (shellHitBigSound == nullptr)
-    {
-        cerr << "Failed to load shellHitBigSound! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
-
-    collisionSound = Mix_LoadWAV("../data/sound/collision_asteroid_vs_asteroid_01.ogg");
-
-    if (collisionSound == nullptr)
-    {
-        cerr << "Failed to load collisionSound! SDL_mixer Error: " << Mix_GetError() << endl;
-        success = false;
-    }
-
-    // shellHitBigSound=
-
-    chunkPtr[Sound::PLAYER_WEAPON] = playerWeaponSound;
-    chunkPtr[Sound::ENGINE] = engineSound;
-    chunkPtr[Sound::SHELL_HIT_SMALL] = shellHitSmallSound;
-    chunkPtr[Sound::SHELL_HIT_BIG] = shellHitBigSound;
-    chunkPtr[Sound::COLLISION] = collisionSound;
-
-    return success;
 }

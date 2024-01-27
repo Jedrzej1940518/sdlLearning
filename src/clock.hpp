@@ -1,14 +1,14 @@
 #pragma once
 
-#include "sdl.hpp"
+#include "mySdl.hpp"
 
 class Clock
 {
-    uint frameRate;
-    uint startTime{0};
+    unsigned int frameRate;
+    unsigned int startTime{0};
 
 public:
-    Clock(uint framesPerSecond) : frameRate{static_cast<uint>(1000. / framesPerSecond)}
+    Clock(unsigned int framesPerSecond) : frameRate{static_cast<unsigned int>(1000. / framesPerSecond)}
     {
     }
     void tick()
@@ -17,7 +17,7 @@ public:
     }
     void tock()
     {
-        uint elapsedTime = SDL_GetTicks() - startTime;
+        unsigned int elapsedTime = SDL_GetTicks() - startTime;
         if (elapsedTime < frameRate)
         {
             SDL_Delay(frameRate - elapsedTime);

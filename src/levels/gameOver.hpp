@@ -14,7 +14,7 @@ namespace levels
         int buttonY{(int)SCREEN_HEIGHT / 2 - 3 * buttonH / 2};
         int buttonX{(int)SCREEN_WIDTH / 2 - buttonW / 2};
 
-        rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {3000, 3000}, "background", 0.4};
+        rendering::Object background{getDataPath("data/graphics/backgrounds/background3.jpg").c_str(), {3000, 3000}, "background", 0.4};
 
         rendering::Text text;
         rendering::Button playAgainButton;

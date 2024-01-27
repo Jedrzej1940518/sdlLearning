@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../rendering/collisionObject.hpp"
+#include "rendering/collisionObject.hpp"
 #include "physics.hpp"
 #include <cstdint>
 #include <sys/types.h>

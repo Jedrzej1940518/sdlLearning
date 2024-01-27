@@ -1,17 +1,17 @@
 #pragma once
 
-#include "../physics/body.hpp"
-#include "../physics/physics.hpp"
-#include "../physics/collisionModel.hpp"
-// #include "../rendering/arena_ui/console.hpp"
-#include "../rendering/collisionObject.hpp"
-#include "../sdl.hpp"
-#include "../utils.hpp"
+#include "physics/body.hpp"
+#include "physics/physics.hpp"
+#include "physics/collisionModel.hpp"
+// #include "rendering/arena_ui/console.hpp"
+#include "rendering/collisionObject.hpp"
+#include "mySdl.hpp"
+#include "utils.hpp"
 #include "level.hpp"
 #include <vector>
 
-#include "../ships/ship.hpp"
-#include "../ships/hostileShip.hpp"
+#include "ships/ship.hpp"
+#include "ships/hostileShip.hpp"
 
 namespace levels
 {
@@ -20,10 +20,10 @@ namespace levels
   {
     using CollisionObject = rendering::CollisionObject;
 
-    SDL_Texture *texture;
+   // SDL_Texture *texture;
     SDL_Rect viewport;
     //  rendering::console console;
-    rendering::Object background{"../data/graphics/backgrounds/background3.jpg", {3000, 3000}, "background", 1};
+    rendering::Object background{getDataPath("data/graphics/backgrounds/background3.jpg").c_str(), {3000, 3000}, "background", 1};
 
     ships::Ship *controledObject;
 

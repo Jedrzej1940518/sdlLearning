@@ -6,6 +6,11 @@
 
 void GameState::handleEvent(SDL_Event &event, bool &quit, bool &newGame)
 {
+    if (!currentLevel)
+        cerr << "Handling events::current level is nullptr\n";
+
+    currentLevel->handleEvent(event, levelType, quit, newGame);
+
     if (newGame)
     {
         delete (arena);
@@ -27,10 +32,6 @@ void GameState::handleEvent(SDL_Event &event, bool &quit, bool &newGame)
         currentLevel = &gameWon;
         break;
     }
-    if (!currentLevel)
-        cerr << "Handling events::current level is nullptr\n";
-
-    currentLevel->handleEvent(event, levelType, quit, newGame);
 }
 void GameState::render()
 {

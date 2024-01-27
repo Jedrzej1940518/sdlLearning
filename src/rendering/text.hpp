@@ -1,10 +1,8 @@
 #pragma once
 
-#include "sdl.hpp"
+#include "mySdl.hpp"
 #include "utils.hpp"
 #include <string>
-
-using namespace std;
 
 namespace rendering
 {

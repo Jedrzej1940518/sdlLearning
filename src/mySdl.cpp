@@ -37,7 +37,7 @@ bool loadMedia()
         success = false;
     }
 
-    gFont = TTF_OpenFont("../data/graphics/fonts/TiltNeon-Regular.ttf", 20);
+    gFont = TTF_OpenFont(getDataPath("data\\graphics\\fonts\\TiltNeon-Regular.ttf").c_str(), 20);
 
     if (gFont == nullptr)
     {
@@ -45,7 +45,7 @@ bool loadMedia()
         success = false;
     }
 
-    gBigFont = TTF_OpenFont("../data/graphics/fonts/TiltNeon-Regular.ttf", 120);
+    gBigFont = TTF_OpenFont(getDataPath("data\\graphics\\fonts\\TiltNeon-Regular.ttf").c_str(), 120);
 
     if (gBigFont == nullptr)
     {

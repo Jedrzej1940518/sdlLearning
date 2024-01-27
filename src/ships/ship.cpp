@@ -17,13 +17,13 @@ namespace ships
     void Ship::addInput(physics::DIRECTION dir)
     {
         double angle = static_cast<double>(dir);
-        int indx = angle / 90.;
+        int indx = static_cast<int>(angle / 90.);
         inputDirections[indx] = true;
     }
     void Ship::removeInput(physics::DIRECTION dir)
     {
         double angle = static_cast<double>(dir);
-        int indx = angle / 90.;
+        int indx = static_cast<int>(angle / 90.);
         inputDirections[indx] = false;
     }
 
@@ -64,7 +64,7 @@ namespace ships
 
         // yellow
         SDL_SetRenderDrawColor(gRenderer, 255, 255, 0, 255);
-        float reloadPercent = static_cast<double>(shellReload) / prefabs::scarabShell.reload;
+        double reloadPercent = static_cast<double>(shellReload) / prefabs::scarabShell.reload;
 
         int reloadWidth = static_cast<int>(reloadRect.w * reloadPercent);
 
@@ -104,7 +104,9 @@ namespace ships
         }
 
         if (accelerateOnce || abs(body.getRotationLeft()) > 0)
-            soundsToPlay.insert(Sound::ENGINE);
+            SoundManager::GetInstance().playUniqueSound(Sound::ENGINE);
+        else
+            SoundManager::GetInstance().pauseUniqueSound(Sound::ENGINE);
 
         return projectile;
     }

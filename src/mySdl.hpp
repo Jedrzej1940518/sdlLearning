@@ -4,8 +4,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <string>
 
-using namespace std;
 
 bool initSdl();
 void cleanSdl();
-SDL_Texture *loadTexture(const string path);
+SDL_Texture *loadTexture(const std::string path);

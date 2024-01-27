@@ -1,5 +1,5 @@
 #include "arena.hpp"
-#include "../prefabs/prefabs.hpp"
+#include "prefabs/prefabs.hpp"
 
 namespace levels
 {
@@ -70,14 +70,14 @@ namespace levels
         double x = 4000;
         double y = 4000;
 
-        hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {4700, 4700}));
+        // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {4700, 4700}));
         // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {3400, 3300}));
-        hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3550, 3750}));
+        // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3550, 3750}));
         // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3700, 3750}));
         hostileShips.push_back(new ships::HostileShip(prefabs::hammerhead, prefabs::hammerheadShell, {4200, 3550}));
 
         controledObject = new ships::Ship(prefabs::scarab, {x, y});
-        populateArenaWithAsteroids(x, y);
+        // populateArenaWithAsteroids(x, y);
 
         for (auto &object : collidableObjects)
             collisionModel.emplace(object);
@@ -93,16 +93,19 @@ namespace levels
         {
             SoundManager::GetInstance().switchSound();
             levelType = LevelType::GAME_OVER;
+            return;
         }
         else if (hostileShips.empty())
         {
             SoundManager::GetInstance().switchSound();
             levelType = LevelType::GAME_WON;
+            return;
         }
         else if ((event.type == SDL_KEYDOWN) && (event.key.keysym.sym == SDLK_ESCAPE))
         {
             SoundManager::GetInstance().switchSound();
             levelType = LevelType::MENU;
+            return;
         }
 
         SDL_Point p;
@@ -183,7 +186,7 @@ namespace levels
     template <typename T>
     void cleanupDeadCollidables(vector<T *> &objects, CollisionModel &collisionModel)
     {
-        for (uint i = 0; i < objects.size(); ++i)
+        for (unsigned int i = 0; i < objects.size(); ++i)
         {
             if (!(objects[i]->isAlive()))
             {
@@ -233,7 +236,7 @@ namespace levels
         moveViewport();
 
         SDL_RenderClear(gRenderer);
-        SDL_RenderCopy(gRenderer, texture, NULL, NULL);
+        // SDL_RenderCopy(gRenderer, texture, NULL, NULL);
         background.renderObject(viewport);
 
         for (auto &object : collidableObjects)
@@ -249,7 +252,7 @@ namespace levels
     }
     Arena::~Arena()
     {
-        SDL_DestroyTexture(texture);
+        // SDL_DestroyTexture(texture);
 
         delete (controledObject);
 
