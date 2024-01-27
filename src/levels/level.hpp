@@ -1,14 +1,31 @@
 #pragma once
 
-#include "mySdl.hpp"
 #include "utils.hpp"
+#include <SFML\Window\Event.hpp>
+#include <SFML\Graphics.hpp>
+
+#include "rendering/button.hpp"
 
 namespace levels
 {
+
+  enum class LevelType
+  {
+    MENU,
+    ARENA,
+    GAME_OVER,
+    GAME_WON
+  };
+
   class Level
   {
+  protected:
+    sf::RenderWindow &window;
+    LevelType &level;
+
   public:
-    virtual void handleEvent(SDL_Event &event, LevelType &levelType, bool &quit, bool &newGame) = 0;
+    Level(sf::RenderWindow &window, LevelType &level) : window{window}, level{level} {}
+    virtual void handleEvents(const sf::Event &event) = 0;
     virtual void render() = 0;
     virtual ~Level(){};
   };

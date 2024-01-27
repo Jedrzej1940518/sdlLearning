@@ -1,186 +1,108 @@
 #include "collisionObject.hpp"
-#include "physics/collisionModel.hpp"
 #include "object.hpp"
-#include <SDL2/SDL_rect.h>
-#include <SDL2/SDL_stdinc.h>
-#include <soundManager.hpp>
+#//include "soundManager.hpp"
 
-// #include <SDL2/SDL2_gfxPrimitives.h>
+#include <SFML/Graphics/CircleShape.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/Graphics/RenderTarget.hpp>
 
 namespace rendering
 {
 
-    CollisionObject::CollisionObject(const prefabs::Prefab &prefab, Vector2d position, Vector2d velocity, double rotation)
-        : Object{prefab.texturePath, position, prefab.id}, prefab{prefab}, body{velocity, rotation, prefab.hardware}, collisionParams{false, {0, 0}, 0}, hp{prefab.hp}
-    {
-        radius = std::max(getWidth(), getHeight()) / 2;
-    }
-    void CollisionObject::frameUpdate(physics::CollisionModel &collisionModel)
-    {
-        // debug logs
-        //  printCollisionObject();
+	CollisionObject::CollisionObject(const prefabs::CollidablePrefab& prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation)
+		: Object{ prefab, position, velocity, rotation }, hp{ prefab.hp }, maxHp{ prefab.hp }
+	{
+	}
 
-        body.frameUpdate(collisionParams);
-        slowDown(body.getSpeed(), position, collisionModel.getGridParams());
+	void CollisionObject::addDebugObjects()
+	{
+		// obj radius
+		shapesToDraw.push_back(makeCircle(getCenter(), spriteRadius, sf::Color::Yellow));
 
-        Object::frameUpdate(body.getSpeed() + body.applyBounce());
-        collisionModel.recalculateGridPosition(*this);
-    }
-    void renderHPBar(SDL_Renderer *renderer, SDL_Rect dest, int currentHP, int maxHP)
-    {
-        SDL_Rect hpBar{dest};
-        hpBar.y -= 20;
-        hpBar.h = 10;
+		// obj center
+		shapesToDraw.push_back(makeCircle(getCenter(), 5.f, sf::Color::Red));
+		// maxAcceleration
 
-        float healthPercentage = static_cast<float>(currentHP) / maxHP;
+		// speed
+		auto [arrowBase, arrowPoint] = getVectorShapes(body.getVelocity(), getCenter(), sf::Color::Blue);
 
-        int red = static_cast<int>(255 * (1.0 - healthPercentage));
-        int green = static_cast<int>(255 * healthPercentage);
+		shapesToDraw.push_back(std::move(arrowBase));
+		shapesToDraw.push_back(std::move(arrowPoint));
+	}
 
-        SDL_SetRenderDrawColor(renderer, red, green, 0, 255);
+	void CollisionObject::addHpBar()
+	{
+		constexpr float hpBarH = 10.f;
+		constexpr float outlineThickness = 1.f;
 
-        int hpBarWidth = static_cast<int>(hpBar.w * healthPercentage);
+		shapesToDraw.push_back(std::make_shared<sf::RectangleShape>(sf::Vector2{ spriteRadius * 2, hpBarH }));
+		auto& hpBarOutline = shapesToDraw.back();
+		hpBarOutline->setPosition(sprite.getPosition());
+		hpBarOutline->move({ -spriteRadius, -spriteRadius - 20.f });
+		hpBarOutline->setFillColor(sf::Color::Transparent);
+		hpBarOutline->setOutlineColor(sf::Color::Black);
+		hpBarOutline->setOutlineThickness(outlineThickness);
 
-        SDL_Rect hpBarRect = {hpBar.x, hpBar.y, hpBarWidth, hpBar.h};
+		shapesToDraw.push_back(std::make_shared<sf::RectangleShape>(sf::Vector2{ spriteRadius * 2, hpBarH }));
+		auto& hpBar = shapesToDraw.back();
+		hpBar->setPosition(sprite.getPosition());
+		hpBar->move({ -spriteRadius, -spriteRadius - 20.f });
 
-        SDL_RenderFillRect(renderer, &hpBarRect);
+		float healthPercentage = static_cast<float>(hp) / maxHp;
 
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderDrawRect(renderer, &hpBar);
-    }
+		sf::Uint8 red = static_cast<sf::Uint8>(255 * (1.0 - healthPercentage));
+		sf::Uint8 green = static_cast<sf::Uint8>(255 * healthPercentage);
+		hpBar->setFillColor(sf::Color{ red, green, 0 });
+		hpBar->setScale(healthPercentage, 1);
+	}
 
-    void CollisionObject::debugRender(SDL_Rect viewport)
-    {
-        // auto pos = getObjectCenter() - physics::Vector2d{(double)viewport.x, (double)viewport.y};
-        // auto color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 0, 255);
-        // lineColor(gRenderer, pos.x, pos.y, pos.x + body.getSpeed().x * 50, pos.y + body.getSpeed().y * 50, color);
+	void CollisionObject::frameUpdate()
+	{
+		shapesToDraw.clear();
 
-        // auto accelerationVector = physics::getRotatedVector(getBody().getAccelerationAngle() - 180);
-        // color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 0, 255, 255);
-        // lineColor(gRenderer, pos.x, pos.y, pos.x + accelerationVector.x * 50, pos.y + accelerationVector.y * 50, color);
+		if (collisionParams.collided)
+		{
+			body.applyCollision(collisionParams);
+			collisionParams = {};
+		}
 
-        // color = SDL_MapRGB(SDL_AllocFormat(SDL_PIXELFORMAT_RGBA32), 255, 255, 0);
-        // ellipseColor(gRenderer, pos.x, pos.y, radius, radius, color);
-    }
+		Object::frameUpdate();
 
-    void CollisionObject::renderObject(SDL_Rect viewport)
-    {
-        if (not SDL_HasIntersection(&viewport, &dstrect))
-            return;
-        playSounds();
-        SDL_Rect dest = physics::normalizedIntersection(viewport, dstrect);
+		if (config::debugObject)
+			addDebugObjects();
 
-        // SDL_Intersect wont return -x or -y so we have to acoomodate for that
+		addHpBar();
 
-        if (dest.h < dstrect.h && dest.y <= 0)
-        {
-            dest.y -= (dstrect.h - dest.h);
-        }
-        if (dest.w < dstrect.w && dest.x <= 0)
-        {
-            dest.x -= (dstrect.w - dest.w);
-        }
-        dest.h = dstrect.h;
-        dest.w = dstrect.w;
+		// slowDown(body.getVelocity(), position, collisionModel.getGridParams());
+	}
 
-        if (hp > 0)
-        {
-            renderHPBar(gRenderer, dest, hp, prefab.hp);
-        }
+	void CollisionObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
+	{
+		Object::draw(target, states);
 
-        SDL_RenderCopyEx(gRenderer, texture, NULL, &dest, body.getRotation(), NULL, SDL_FLIP_NONE);
+		for (auto& shape : shapesToDraw)
+			target.draw(*shape, states);
 
-        if (debugObject)
-            debugRender(viewport);
-    }
+		//debug purposes
+		for (auto& shape : foreverShapes)
+			target.draw(*shape, states);
+	}
 
-    void CollisionObject::collisionCheck(CollisionObject &oth)
-    {
-        if (not SDL_HasIntersection(&dstrect, &oth.dstrect) || this == &oth)
-            return;
+	void CollisionObject::handleCollision(const CollisionObject& oth)
+	{
+		// soundsToPlay.insert(Sound::COLLISION);
+		sf::Vector2f collisionVector = oth.getCenter() - getCenter();
+		collisionParams = physics::CollisionParams{ true, oth.body.getVelocity(), collisionVector, oth.body.getMass() };
+		auto sumSpeed = oth.body.getVelocity() - body.getVelocity();
+		auto magnitude = physics::getVectorMagnitude(sumSpeed);
+		auto dmg = magnitude * oth.body.getMass() / body.getMass() * constants::COLLISION_DAMAGE_FACTOR;
+		hit((int)dmg);
+	}
 
-        handleCollision(oth);
-    }
+	void CollisionObject::hit(int dmg)
+	{
+		hp -= dmg;
+		alive = hp > 0;
+	}
 
-    void CollisionObject::handleCollision(CollisionObject &oth)
-    {
-        if (oth.body.getMass())
-        {
-            soundsToPlay.insert(Sound::COLLISION);
-            constexpr double collisionFactor = 2.0;
-            collisionParams = {true, oth.body.getSpeed(), oth.body.getMass()};
-            auto sumSpeed = oth.body.getSpeed() - body.getSpeed();
-            auto magnitude = physics::vectorLenght(sumSpeed);
-            auto dmg = magnitude * oth.body.getMass() / body.getMass() * collisionFactor;
-            hit((int)dmg);
-        }
-    }
-
-    void CollisionObject::hit(int dmg)
-    {
-        hp -= dmg;
-        alive = hp > 0;
-    }
-
-    int CollisionObject::getWidth() const
-    {
-        return dstrect.w;
-    }
-    int CollisionObject::getHeight() const
-    {
-        return dstrect.h;
-    }
-    int CollisionObject::getRadius() const
-    {
-        return radius;
-    }
-    bool CollisionObject::isAlive() const
-    {
-        return alive;
-    }
-    const CollisionObject::Body &CollisionObject::getBody() const
-    {
-        return body;
-    }
-    physics::Vector2d CollisionObject::getPosition()
-    {
-        return Object::getPosition();
-    }
-    physics::Vector2d CollisionObject::getObjectCenter() const
-    {
-        return Object::getPosition() + physics::Vector2d{getWidth() / 2., getHeight() / 2.};
-    }
-    double CollisionObject::getRotation()
-    {
-        return body.getRotation();
-    }
-    double CollisionObject::getMass() const
-    {
-        return body.getMass();
-    }
-    physics::GridPosition &CollisionObject::getGridPosition()
-    {
-        return gridPosition;
-    }
-    const physics::GridPosition &CollisionObject::getGridPosition() const
-    {
-        return gridPosition;
-    }
-    void CollisionObject::printSpeed() const
-    {
-        printf("[%s] Velocity {%f, %f}\n", id.c_str(), body.getSpeed().x, body.getSpeed().y);
-    }
-    void CollisionObject::printGridPosition() const
-    {
-        auto &g = gridPosition;
-        printf("[%s] Grid [%i][%i][%i]\n", id.c_str(), g.row, g.column, g.index);
-    }
-    void CollisionObject::printCollisionObject() const
-    {
-        Object::printPosition();
-        printSpeed();
-        printGridPosition();
-        printf("hp %d", hp);
-        cout << endl;
-    }
 } // namespace rendering

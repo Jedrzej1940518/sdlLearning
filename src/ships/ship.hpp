@@ -1,34 +1,31 @@
 #pragma once
 
+#include "weapon.hpp"
+
 #include "rendering/collisionObject.hpp"
-#include "physics/physics.hpp"
-#include "physics/collisionModel.hpp"
-#include "prefabs/prefabs.hpp"
-#include "projectile.hpp"
 
 namespace ships
 {
-    class Ship : public rendering::CollisionObject
-    {
-        bool inputDirections[4];
-        bool spawnProjectile;
-        int shellReload{0};
+	class Ship : public rendering::CollisionObject
+	{
+	protected:
+		bool isShooting{ false };
 
-    public:
-        Ship(const prefabs::Prefab &prefab, physics::Vector2d position, physics::Vector2d velocity = {0, 0}, double rotation = 0);
+		float targetAngle{ 0.f };                      // ship rotates towards this
+		sf::Vector2f accelerationVector{ 0.f, 0.f }; // ship accelerates in this direction
+		Weapon weapon;
 
-        void shoot();
+	public:
+		Ship(const prefabs::ShipPrefab& prefab, sf::Vector2f position, sf::Vector2f velocity = { 0, 0 }, float rotation = 0);
+		void frameUpdate() override;
+		std::shared_ptr<Projectile> shoot();
 
-        void addInput(physics::DIRECTION dir);
-        void removeInput(physics::DIRECTION dir);
+		//todo probably calculate it in a smart way
+		float getRange() const { return weapon.getLifetime() * weapon.getMaxVelocity(); }
+		float getTargetAngle() const { return targetAngle; }
 
-        void rotateLeft();
-        void rotateRight();
-        void stopRotateLeft();
-        void stopRotateRight();
+		const Weapon& getWeapon() const { return weapon; }
 
-        void renderReload(SDL_Rect viewport);
-        void renderObject(SDL_Rect viewport) override;
-        Projectile *frameUpdate(CollisionModel &collisionModel);
-    };
+		virtual ~Ship() {}
+	};
 }

@@ -1,50 +1,71 @@
 
 #include "menu.hpp"
-#include "mySdl.hpp"
+
+#include <SFML/Window/Event.hpp>
 
 namespace levels
 {
-    Menu::Menu() : continueButton{"Continue", {buttonX, buttonY, buttonW, buttonH}},
-                   newGameButton{"New Game", {buttonX, buttonY + buttonH + 10, buttonW, buttonH}},
-                   quitButton{"Quit", {buttonX, buttonY + buttonH * 2 + 10 * 2, buttonW, buttonH}},
-                   title{"Starships", {buttonX - buttonW, buttonY - 6 * buttonH, 3 * buttonW, 3 * buttonH}, SDL_Color{255, 255, 0, 255}}
+    void setButton(rendering::Button &button, sf::FloatRect rect, sf::Font &font, std::string &&str, rendering::Button::CallbackFunction callback)
     {
+
+        button.setSize({rect.width, rect.height});
+        button.setPosition({rect.left, rect.top});
+        button.setFillColor(globals::GREY);
+        button.setOutlineColor(sf::Color::Black);
+        button.setOutlineThickness(2);
+        button.setCallback(callback);
+
+        auto &text = button.getText();
+        text.setString(str);
+        text.setPosition(rect.left, rect.top);
+        text.setFont(font);
+        text.setCharacterSize(30);
+        text.setFillColor(sf::Color::Black);
+        text.setOutlineColor(sf::Color::Black);
+    }
+    Menu::Menu(sf::RenderWindow &window, LevelType &level) : Level{window, level}
+    {
+        if (!font.loadFromFile(getDataPath("graphics/fonts/TiltNeon-Regular.ttf")))
+            std::cerr << "Error loading font" << std::endl;
+
+        buttons.push_back(&newGameButton);
+        buttons.push_back(&continueButton);
+        buttons.push_back(&quitButton);
+
+        setButton(newGameButton, {buttonX, buttonY, buttonW, buttonH}, font, "New Game", [&level]()
+                  { level = LevelType::ARENA; });
+
+        setButton(continueButton, {buttonX, buttonY + buttonH + 50, buttonW, buttonH}, font, "Continue", [&level]()
+                  { level = LevelType::ARENA; });
+
+        setButton(quitButton, {buttonX, buttonY + (buttonH + 50) * 2, buttonW, buttonH}, font, "Quit", [&window]()
+                  { window.close(); });
     }
 
-    void Menu::handleEvent(SDL_Event &event, LevelType &levelType, bool &quit, bool &newGame)
+    void Menu::handleEvents(const sf::Event &event)
     {
-        if (event.type == SDL_MOUSEBUTTONDOWN)
+        if (event.type == sf::Event::Closed)
+            window.close();
+
+        if (event.type == sf::Event::MouseButtonPressed)
         {
-            SDL_Point p;
-            SDL_GetMouseState(&p.x, &p.y);
-            if (continueButton.isInside(p))
-            {
-                SoundManager::GetInstance().switchSound();
-                levelType = LevelType::ARENA;
-            }
-            else if (quitButton.isInside(p))
-            {
-                quit = true;
-            }
-            else if (newGameButton.isInside(p))
-            {
-                SoundManager::GetInstance().switchSound();
-                levelType = LevelType::ARENA;
-                newGame = true;
-            }
+            for (auto &button : buttons)
+                if (button->handleClick(event.mouseButton))
+                    break;
         }
     }
 
     void Menu::render()
     {
-        SDL_SetRenderDrawColor(gRenderer, 0, 0, 255, 255);
-        SDL_RenderClear(gRenderer);
-        SDL_Rect fakeViewport{3000, 3000, (int)SCREEN_WIDTH, (int)SCREEN_HEIGHT};
-        background.renderObject(fakeViewport);
-        title.renderText();
-        continueButton.renderButton();
-        newGameButton.renderButton();
-        quitButton.renderButton();
-        SDL_RenderPresent(gRenderer);
+        window.clear(sf::Color::White);
+        window.draw(background.getSprite());
+
+        for (auto &button : buttons)
+        {
+            window.draw(*button);
+            window.draw(button->getText());
+        }
+
+        window.display();
     }
 } // namespace levels

@@ -1,80 +1,49 @@
 #pragma once
 
-#include "mySdl.hpp"
 #include "utils.hpp"
+#include "physicsTypes.hpp"
+
+#include <optional>
+
 namespace physics
 {
-    inline constexpr double collisionBounce = 3.0;
+
     enum class DIRECTION
     {
-        up = 0,
-        right = 90,
-        down = 180,
-        left = 270,
+        right = 0,
+        down = 90,
+        left = 180,
+        up = 270
     };
 
-    struct Vector2d
-    {
-        double x;
-        double y;
-        Vector2d operator+(const Vector2d &rhs) const;
-        Vector2d operator-(const Vector2d &rhs) const;
-        Vector2d operator*(double factor) const;
-        Vector2d operator-() const;
-    };
+    float degreesToRadians(float degrees);
+    float radiansToDegrees(float radians);
+    float normalizeDegrees(float degrees);
 
-    struct GridCoords
-    {
-        int row;
-        int column;
-    };
-    struct GridPosition
-    {
-        int row;
-        int column;
-        int index;
-    };
-    struct GridParams
-    {
-        int mapWidth;
-        int mapHeight;
-        int cellSide;
-    };
-    struct CollisionParams
-    {
-        bool collided;
-        Vector2d velocity;
-        double mass;
-    };
+    float sumDirections(bool directions[4]);
+    float getBrakingDistance(float velocity, float acceleration);
 
-    double degreesToRadians(double degrees);
-    double radiansToDegrees(double radians);
-    double normalizeDegrees(double degrees);
+    sf::Vector2f getRotatedVector(float degrees);
+    float getVectorRotation(const sf::Vector2f &v);
+    float getAngleBetweenVectors(const sf::Vector2f &a, const sf::Vector2f &b);
+    float getRelativeAngle(const sf::Vector2f &a, const sf::Vector2f &b, float currentAngle);
+    float getVectorMagnitude(const sf::Vector2f &v);
+    float getVectorsDotProduct(const sf::Vector2f& a, const sf::Vector2f& b);
 
-    double sumDirections(bool directions[4]);
-    Vector2d getRotatedVector(double degrees);
-    double getVectorRotation(const Vector2d &v);
-    double getVectorRotationRadians(const Vector2d &v);
+    std::optional<sf::Vector2f> getIntersectPosition(const sf::Vector2f& velocityA, const sf::Vector2f& velocityB, const sf::Vector2f& posA, const sf::Vector2f& posB);
 
-    Vector2d predictPosition(const Vector2d &pos, const Vector2d &velocity, int ticks);
-    int calculateTicks(const Vector2d &offset, double velocity);
-    double vectorLenght(const Vector2d &v);
-    Vector2d calculateSpeed(const Vector2d &velocity, double maxVelocity, double acceleration, double rotation);
-    Vector2d clampVector(const Vector2d &velocity, double maxVelocity);
-    double calculateDistance(const Vector2d &a, const Vector2d &b);
-    double getAngleBetweenPoints(const Vector2d &a, const Vector2d &b);
-    Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset);
-    SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset);
+    sf::Vector2f predictPosition(const sf::Vector2f &pos, const sf::Vector2f &velocity, int ticks);
+    int calculateTicks(const sf::Vector2f &offset, float velocity);
 
-    SDL_Rect expandRectangle(const SDL_Rect &rect, int n);
+    sf::Vector2f calculateSpeed(const sf::Vector2f &velocity, float maxVelocity, const sf::Vector2f &acceleration);
 
-    void slowDown(Vector2d &velocity, Vector2d &position, const GridParams &gridParams);
+    sf::Vector2f clampVector(const sf::Vector2f &velocity, float maxVelocity);
+    float distance(const sf::Vector2f &a, const sf::Vector2f &b);
+    float distance(const Circle& a, const Circle& b);
+    float distance(const sf::Vector2f& a, const Circle& b);
 
-    SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b);
-
-    void printVector(const Vector2d &v);
-
-    void setPosition(SDL_Rect &r, const SDL_Point &p);
-    void setPosition(SDL_Rect &r, const Vector2d &v);
+    bool collisionHappening(const Circle &a, const Circle &b);
+    
+    bool isZero(float a);
 
 } // namespace physics

@@ -1,164 +1,138 @@
 #include "physics.hpp"
+
 #include <algorithm>
+#include <cmath>
 
 namespace physics
 {
+    float degreesToRadians(float degrees)
+    {
+        return static_cast<float>(degrees * M_PI / 180.);
+    }
+    float radiansToDegrees(float radians)
+    {
+        return static_cast<float>(radians * 180. / M_PI);
+    }
+    float normalizeDegrees(float degrees)
+    {
+        degrees = fmod(degrees, 360.0f);
+        return degrees > 180.f ? degrees - 360 : degrees;
+    }
 
-    double degreesToRadians(double degrees)
+    sf::Vector2f getRotatedVector(float degrees)
     {
-        return degrees * M_PI / 180.;
+        float radians = degreesToRadians(degrees);
+        float x = cos(radians);
+        float y = sin(radians);
+        return {x, y};
     }
-    double radiansToDegrees(double radians)
+    float getVectorRotation(const sf::Vector2f &v)
     {
-        return radians * 180. / M_PI;
+        float degrees = radiansToDegrees(atan2(v.y, v.x));
+        return degrees;
     }
-    double normalizeDegrees(double degrees)
+    float getAngleBetweenVectors(const sf::Vector2f &a, const sf::Vector2f &b)
     {
-        return degrees < 0 ? degrees + 360 : (degrees > 360 ? degrees - 360 : degrees);
+        return normalizeDegrees( getVectorRotation(b) - getVectorRotation(a));
     }
-    Vector2d getRotatedVector(double degrees)
+    float getRelativeAngle(const sf::Vector2f &a, const sf::Vector2f &b, float currentAngle)
     {
-        double radians = degreesToRadians(degrees); //?
-        return {-sin(radians), cos(radians)};
-    }
-    double getVectorRotation(const Vector2d &v)
-    {
-        return radiansToDegrees(atan2(v.y, v.x));
-    }
-    double getVectorRotationRadians(const Vector2d &v)
-    {
-        return atan2(v.x, v.y);
-    }
-    Vector2d calculateSpeed(const Vector2d &velocity, double maxVelocity, double acceleration, double rotation)
-    {
-        rotation = degreesToRadians(rotation);
-        double y1 = -acceleration;
+        sf::Vector2f targetOffset = a - b;
+        sf::Vector2f currentRotationVector = physics::getRotatedVector(currentAngle);
 
-        Vector2d rotatedVector{-sin(rotation) * y1, cos(rotation) * y1};
-        Vector2d newSpeed = velocity + rotatedVector;
-
-        return clampVector(newSpeed, maxVelocity);
+        return physics::getAngleBetweenVectors(currentRotationVector, targetOffset);
     }
-    double vectorLenght(const Vector2d &v)
+    float getVectorMagnitude(const sf::Vector2f& v)
     {
         return sqrt(v.x * v.x + v.y * v.y);
     }
-    Vector2d clampVector(const Vector2d &velocity, double maxVelocity)
+
+    float getVectorsDotProduct(const sf::Vector2f& a, const sf::Vector2f& b)
     {
-        double scalingFactor = maxVelocity / vectorLenght(velocity);
+        return a.x * b.x + a.y * b.y;
+    }
+
+    std::optional<sf::Vector2f> getIntersectPosition(const sf::Vector2f& velocityA, const sf::Vector2f& velocityB, const sf::Vector2f& posA, const sf::Vector2f& posB)
+    {
+        auto getLineFunction = [](const sf::Vector2f& velocity, const sf::Vector2f& pos) {
+            float a = velocity.y / velocity.x;
+            float b = pos.y - a * pos.x;
+            return std::make_pair(a, b);
+        };
+
+        auto [a, c] = getLineFunction(velocityA, posA);
+        auto [b, d] = getLineFunction(velocityB, posB);
+        if (a == b)
+            return std::nullopt;
+
+        float x = (d - c) / (a - b);
+        return sf::Vector2f{ x, a * x + c };
+    }
+
+    sf::Vector2f calculateSpeed(const sf::Vector2f &velocity, float maxVelocity, const sf::Vector2f &acceleration)
+    {
+        return clampVector(velocity + acceleration, maxVelocity);;
+    }
+
+    float getBrakingDistance(float velocity, float acceleration)
+    {
+        float dist = velocity * velocity / (2.f * acceleration);
+        return dist;
+    }
+    sf::Vector2f clampVector(const sf::Vector2f &velocity, float maxVelocity)
+    {
+        float scalingFactor = (float)(maxVelocity / getVectorMagnitude(velocity));
         if (scalingFactor > 1)
             return velocity;
         else
             return velocity * scalingFactor;
     }
-    Vector2d predictPosition(const Vector2d &pos, const Vector2d &velocity, int ticks)
+    sf::Vector2f predictPosition(const sf::Vector2f &pos, const sf::Vector2f &velocity, int ticks)
     {
-        return pos + velocity * ticks;
+        return pos + velocity * (float)ticks;
     }
-    int calculateTicks(const Vector2d &offset, double velocity)
+    int calculateTicks(const sf::Vector2f &offset, float velocity)
     {
-        return vectorLenght(offset) / velocity;
-    }
-
-    Vector2d calculatePosition(Vector2d oldPosition, Vector2d offset)
-    {
-        return {oldPosition.x + offset.x, oldPosition.y + offset.y};
+        return static_cast<int>(getVectorMagnitude(offset) / velocity);
     }
 
-    SDL_Point calculatePosition(SDL_Point oldPosition, Vector2d offset)
+    float sumDirections(bool directions[4])
     {
-        return {static_cast<int>(oldPosition.x + offset.x), static_cast<int>(oldPosition.y + offset.y)};
-    }
-    SDL_Rect expandRectangle(const SDL_Rect &rect, int n)
-    {
-        return SDL_Rect{rect.x - n, rect.y - n, rect.w + n, rect.h + n};
-    }
+        sf::Vector2f summedVector{0, 0};
 
-    void slowDown(Vector2d &velocity, Vector2d &position, const GridParams &gridParams)
-    {
-        constexpr auto slowDownDistance = 200;
-        if (position.x < slowDownDistance)
-            velocity.x = 1;
-        else if (position.x > gridParams.mapWidth - slowDownDistance)
-            velocity.x = -1;
+        for (int i = 0; i < 4; ++i)
+            if (directions[i])
+                summedVector += getRotatedVector(90.f * i);
 
-        if (position.y < slowDownDistance)
-            velocity.y = 1;
-        else if (position.y > gridParams.mapHeight - slowDownDistance)
-            velocity.y = -1;
+        return getVectorRotation(summedVector);
     }
 
-    void setPosition(SDL_Rect &r, const SDL_Point &p)
-    {
-        r.x = p.x;
-        r.y = p.y;
-    }
-
-    void setPosition(SDL_Rect &r, const Vector2d &v)
-    {
-        r.x = static_cast<int>(v.x);
-        r.y = static_cast<int>(v.y);
-    }
-
-    SDL_Rect normalizedIntersection(SDL_Rect a, SDL_Rect b)
-    {
-        int x = a.x;
-        int y = a.y;
-
-        a.x = 0;
-        a.y = 0;
-        b.x -= x;
-        b.y -= y;
-
-        SDL_Rect res;
-        SDL_IntersectRect(&a, &b, &res);
-        return res;
-    }
-    double sumDirections(bool directions[4])
-    {
-        int x = directions[1] || directions[3] ? (directions[1] && directions[3] ? 0 : (directions[1] ? -1 : 1)) : 0;
-        int y = directions[0] || directions[2] ? (directions[0] && directions[2] ? 0 : (directions[0] ? 1 : -1)) : 0;
-
-        double angleRad = atan2(y, x);
-        double angleDeg = radiansToDegrees(angleRad);
-
-        if (angleDeg < 0)
-        {
-            angleDeg += 360.0;
-        }
-
-        return angleDeg - 90; // bcs we treat north as 0 degrees, not 90 degrees like atan does
-    }
-
-    void printVector(const Vector2d &v)
+    void printVector(const sf::Vector2f &v)
     {
         printf("[%f,%f]\n", v.x, v.y);
     }
 
-    double calculateDistance(const Vector2d &a, const Vector2d &b)
+    float distance(const sf::Vector2f &a, const sf::Vector2f &b)
     {
-        return std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2));
-    }
-    double getAngleBetweenPoints(const Vector2d &a, const Vector2d &b)
-    {
-        Vector2d c = {b.x - a.x, b.y - a.y};
-        return physics::radiansToDegrees(atan2(c.y, c.x));
+        return static_cast<float>(std::sqrt(std::pow(b.x - a.x, 2) + std::pow(b.y - a.y, 2)));
     }
 
-    Vector2d Vector2d::operator+(const Vector2d &rhs) const
+    float distance(const Circle& a, const Circle& b)
     {
-        return Vector2d{x + rhs.x, y + rhs.y};
+        return distance(a.position, b.position) - a.radius - b.radius;
     }
-    Vector2d Vector2d::operator-(const Vector2d &rhs) const
+    float distance(const sf::Vector2f& a, const Circle& b)
     {
-        return Vector2d{x - rhs.x, y - rhs.y};
+        return distance(a, b.position) - b.radius;
     }
-    Vector2d Vector2d::operator*(double factor) const
+
+    bool collisionHappening(const Circle &a, const Circle &b)
     {
-        return Vector2d{x * factor, y * factor};
+        auto dist = distance(a.position, b.position);
+        return dist < a.radius + b.radius;
     }
-    Vector2d Vector2d::operator-() const
-    {
-        return Vector2d{-x, -y};
-    }
+
+    bool isZero(float a) { 
+        constexpr float epsilon = 1e-6f;
+        return std::abs(a) < epsilon; }
 } // namespace physics

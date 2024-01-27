@@ -1,266 +1,149 @@
 #include "arena.hpp"
-#include "prefabs/prefabs.hpp"
+#include "rendering/background.hpp"
+#include "ships/aiShip.hpp"
+
+// #include "prefabs/prefabs.hpp"
 
 namespace levels
 {
+	void Arena::populateArenaWithAsteroids(int n)
+	{
+		constexpr int safeDistance = 100;
 
-    using namespace physics; // todo remove this
-    SDL_Rect getconsoleRect()
-    {
-        int w = SCREEN_WIDTH / 2;
-        int h = SCREEN_HEIGHT / 4;
-        int x = SCREEN_WIDTH / 2 - w / 2;
-        int y = SCREEN_HEIGHT - h;
+		auto getRandomAsteroidPrefab = []() -> const prefabs::CollidablePrefab& {
+			int r = getRandomNumber(0, 100);
+			return (r > 80) ? prefabs::asteroidBig2 : (r > 40) ? prefabs::asteroid2 : prefabs::asteroid3;
+			};
 
-        return {x, y, w, h};
-    }
+		for (int i = 0; i < n;)
+		{
+			const auto& prefab = getRandomAsteroidPrefab();
+			float xx = static_cast<float>(getRandomNumber(-x, x));
+			float yy = static_cast<float>(getRandomNumber(-y, y));
+			float vX = getRandomNumber(-prefab.maxVelocity, prefab.maxVelocity);
+			float vY = getRandomNumber(-prefab.maxVelocity, prefab.maxVelocity);
+			auto asteroid = std::make_shared<rendering::CollisionObject>(prefab, sf::Vector2f{ xx, yy }, sf::Vector2f{ vX, vY });
 
-    void Arena::populateArenaWithAsteroids(int x, int y)
-    {
+			for (const auto& obj : collidables) {
+				if (physics::collisionHappening(obj->getCollisionCircle(), { {xx,yy}, asteroid->getRadius() + safeDistance }))
+				{
+					LOG("[%d/%d] Collision happenning => rerolling asteroid\n", i, n);
+					continue;
+				}
+			}
+			addObject(asteroid);
+			++i;
+		}
 
-        auto collisionPresent = []<typename Collidable>(CollisionObject *obj, vector<Collidable *> othObjects)
-        {
-            SDL_Rect a = obj->getDstrect();
-            for (const auto &object : othObjects)
-            {
-                SDL_Rect b = object->getDstrect();
+	}
 
-                if (SDL_HasIntersection(&a, &b))
-                    return true;
-            }
-            return false;
-        };
-        SDL_Rect playerRect = controledObject->getDstrect();
+	Arena::Arena(sf::RenderWindow& window, LevelType& level) : Level{ window, level } //: console{gRenderer, getconsoleRect()}
+	{
+		auto background = std::make_shared<rendering::Background>(prefabs::background);
 
-        for (int i = 0; i < 10;)
-        {
-            int p = getRandomNumber(0, 100);
-            const prefabs::Prefab &prefab = p > 75 ? prefabs::asteroidBig2 : (p > 40 ? prefabs::asteroid2 : prefabs::asteroid3);
+		auto wolf = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{ -200, -200 });
+		auto lasher = std::make_shared<ships::AiShip>(prefabs::lasher, sf::Vector2f{ 200, 0 });
 
-            double xx = x + getRandomNumber(-1200, +1200);
-            double yy = y + getRandomNumber(-1200, +1200);
+		auto wolf2 = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{ -400, -200 });
+		auto lasher2 = std::make_shared<ships::AiShip>(prefabs::lasher, sf::Vector2f{ 400, 0 });
+		auto hammerhead = std::make_shared<ships::AiShip>(prefabs::hammerhead, sf::Vector2f{ 0, -200 });
 
-            double velX = getRandomNumber<double>(-2.5, 2.5);
-            double velY = getRandomNumber<double>(-2.5, 2.5);
+		auto player = std::make_shared<ships::PlayerShip>(prefabs::scarab, sf::Vector2f{ 0, 0 });
 
-            CollisionObject *obj = new CollisionObject{prefab, {xx, yy}, {velX, velY}};
-            SDL_Rect b = obj->getDstrect();
-            b = physics::expandRectangle(b, 100);
+		addObject(background);
+		//addObject(wolf);
+		addObject(lasher);
+		//addObject(wolf2);
+		//addObject(lasher2);
+		//addObject(hammerhead);
 
-            bool playerCollision = SDL_HasIntersection(&playerRect, &b);
+		addObject(player, true);
 
-            if (collisionPresent(obj, collidableObjects) || collisionPresent(obj, hostileShips) || playerCollision)
-            {
-                printf("Collision was present, rolling new obj\n");
-                delete (obj);
-                continue;
-            }
-            collidableObjects.push_back(obj);
-            ++i;
-        }
-    }
+		int asteroids{ 30 };
+		populateArenaWithAsteroids(asteroids);
+	}
 
-    Arena::Arena() //: console{gRenderer, getconsoleRect()}
-    {
-        viewport.h = SCREEN_HEIGHT;
-        viewport.w = SCREEN_WIDTH;
-        viewport.x = 0;
-        viewport.y = 0;
+	void Arena::handleEvents(const sf::Event& event)
+	{
+		if (event.type == sf::Event::Closed)
+			window.close();
+		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
+		{
+			window.setView(window.getDefaultView());
+			level = LevelType::MENU;
+		}
+		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
+		{
+			paused = !paused;
+		}
+		else
+			controledObject->handleEvents(event);
+	}
 
-        double x = 4000;
-        double y = 4000;
+	void Arena::frameUpdate()
+	{
+		collisionModel.updateCollisions();
 
-        // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {4700, 4700}));
-        // hostileShips.push_back(new ships::HostileShip(prefabs::wolf, prefabs::torpedo, {3400, 3300}));
-        // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3550, 3750}));
-        // hostileShips.push_back(new ships::HostileShip(prefabs::lasher, prefabs::lasherShell, {3700, 3750}));
-        hostileShips.push_back(new ships::HostileShip(prefabs::hammerhead, prefabs::hammerheadShell, {4200, 3550}));
+		for (auto& aiShip : aiShips)
+			aiShip->determineTactic(hostileShips, playerShips, collidables, projectiles);
 
-        controledObject = new ships::Ship(prefabs::scarab, {x, y});
-        // populateArenaWithAsteroids(x, y);
+		for (auto& obj : frameUpdateables)
+			obj->frameUpdate();
 
-        for (auto &object : collidableObjects)
-            collisionModel.emplace(object);
-        for (auto &object : hostileShips)
-            collisionModel.emplace(object);
+		for (auto& obj : shooters)
+		{
+			auto proj = obj->shoot();
 
-        collisionModel.emplace(controledObject);
-    }
+			if (proj != nullptr)
+				addObject(proj);
+		}
+		cleanupDeads();
 
-    void Arena::handleEvent(SDL_Event &event, LevelType &levelType, bool & /**/, bool & /**/)
-    {
-        if (not controledObject->isAlive())
-        {
-            SoundManager::GetInstance().switchSound();
-            levelType = LevelType::GAME_OVER;
-            return;
-        }
-        else if (hostileShips.empty())
-        {
-            SoundManager::GetInstance().switchSound();
-            levelType = LevelType::GAME_WON;
-            return;
-        }
-        else if ((event.type == SDL_KEYDOWN) && (event.key.keysym.sym == SDLK_ESCAPE))
-        {
-            SoundManager::GetInstance().switchSound();
-            levelType = LevelType::MENU;
-            return;
-        }
+		sf::View v = window.getView();
+		v.setCenter(controledObject->getSprite().getPosition());
+		window.setView(v);
+	}
 
-        SDL_Point p;
-        SDL_GetMouseState(&p.x, &p.y);
-        physics::Vector2d mousePtr{(double)p.x - SCREEN_WIDTH / 2, (double)p.y - SCREEN_HEIGHT / 2};
-        double angle = physics::normalizeDegrees(physics::getVectorRotation(mousePtr) + 90);
-        angle -= controledObject->getRotation();
-        angle = angle > 360 ? angle - 360 : (angle < 0 ? angle + 360 : angle);
+	void Arena::draw()
+	{
+		// todo dont draw objects outside view
+		for (auto& obj : drawables)
+			window.draw(*obj);
+	}
 
-        if (abs(angle - 360) > 3 && angle > 180)
-        {
-            controledObject->stopRotateRight();
-            controledObject->rotateLeft();
-        }
-        else if (abs(angle - 360) > 3 && angle < 180)
-        {
-            controledObject->stopRotateLeft();
-            controledObject->rotateRight();
-        }
-        else
-        {
-            controledObject->stopRotateRight();
-            controledObject->stopRotateLeft();
-        }
-        if (event.type == SDL_MOUSEBUTTONDOWN)
-            controledObject->shoot();
+	void Arena::render()
+	{
+		if (paused)
+			return;
 
-        else if (event.type == SDL_KEYDOWN)
-        {
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_w:
-                controledObject->addInput(physics::DIRECTION::up);
-                break;
-            case SDLK_d:
-                controledObject->addInput(physics::DIRECTION::right);
-                break;
-            case SDLK_a:
-                controledObject->addInput(physics::DIRECTION::left);
-                break;
-            case SDLK_s:
-                controledObject->addInput(physics::DIRECTION::down);
-                break;
-            }
-        }
-        if (event.type == SDL_KEYUP)
-        {
-            switch (event.key.keysym.sym)
-            {
-            case SDLK_w:
-                controledObject->removeInput(physics::DIRECTION::up);
-                break;
-            case SDLK_d:
-                controledObject->removeInput(physics::DIRECTION::right);
-                break;
-            case SDLK_a:
-                controledObject->removeInput(physics::DIRECTION::left);
-                break;
-            case SDLK_s:
-                controledObject->removeInput(physics::DIRECTION::down);
-                break;
-            }
-        }
-    }
-    void Arena::moveViewport()
-    {
-        int x = controledObject->getX();
-        int y = controledObject->getY();
-        int w = controledObject->getWidth();
-        int h = controledObject->getHeight();
-        Vector2d offset{static_cast<double>(-(SCREEN_WIDTH / 2.) + w / 2.),
-                        static_cast<double>(-(SCREEN_HEIGHT / 2.) + h / 2.)};
+		window.clear(sf::Color::White);
 
-        SDL_Point screenCenter = calculatePosition(SDL_Point{x, y}, offset);
-        setPosition(viewport, screenCenter);
-    }
+		frameUpdate();
+		draw();
 
-    template <typename T>
-    void cleanupDeadCollidables(vector<T *> &objects, CollisionModel &collisionModel)
-    {
-        for (unsigned int i = 0; i < objects.size(); ++i)
-        {
-            if (!(objects[i]->isAlive()))
-            {
-                collisionModel.remove(*(objects[i]));
-                delete (objects[i]);
-                removeVectorElement(objects, i);
-            }
-        }
-    }
+		window.display();
+	}
+	Arena::~Arena()
+	{
+	}
 
-    void Arena::render()
-    {
-        ships::Projectile *projectile = controledObject->frameUpdate(collisionModel);
+	void Arena::debugPrint()
+	{
+		printf("drawables %zd, collidables %zd, frameUpd %zd, shooters %zd\n", drawables.size(), collidables.size(), frameUpdateables.size(), shooters.size());
+		printf("\n----Arena----\n");
+		for (auto& obj : drawables)
+		{
+			auto proj = std::dynamic_pointer_cast<ships::Projectile>(obj);
+			std::string s = "";
+			if (proj)
+				s = proj->getId();
 
-        if (projectile)
-        {
-            projectiles.push_back(projectile);
-            collisionModel.emplace(projectile);
-        }
-
-        collisionModel.checkCollisions();
-
-        for (auto &object : collidableObjects)
-        {
-            object->frameUpdate(collisionModel);
-        }
-        for (auto &projectile : projectiles)
-        {
-            projectile->frameUpdate(collisionModel);
-        }
-
-        cleanupDeadCollidables(projectiles, collisionModel);
-        cleanupDeadCollidables(collidableObjects, collisionModel);
-        cleanupDeadCollidables(hostileShips, collisionModel);
-        // determine tactic after cleanup of asteroids etc.
-        for (auto &hostileShip : hostileShips)
-        {
-            ships::Projectile *p = hostileShip->frameUpdate(hostileShips, collidableObjects, *controledObject, collisionModel);
-            if (p)
-            {
-                projectiles.push_back(p);
-                collisionModel.emplace(p);
-            }
-        }
-
-        background.frameUpdate(controledObject->getBody().getSpeed());
-        moveViewport();
-
-        SDL_RenderClear(gRenderer);
-        // SDL_RenderCopy(gRenderer, texture, NULL, NULL);
-        background.renderObject(viewport);
-
-        for (auto &object : collidableObjects)
-            object->renderObject(viewport);
-        for (auto &object : hostileShips)
-            object->renderObject(viewport);
-        for (auto &projectile : projectiles)
-            projectile->renderObject(viewport);
-
-        controledObject->renderObject(viewport);
-        //   console.render();
-        SDL_RenderPresent(gRenderer);
-    }
-    Arena::~Arena()
-    {
-        // SDL_DestroyTexture(texture);
-
-        delete (controledObject);
-
-        for (auto *obj : projectiles)
-            delete (obj);
-        for (auto *obj : hostileShips)
-            delete (obj);
-        for (auto *obj : collidableObjects)
-            delete (obj);
-    }
+			auto collid = std::dynamic_pointer_cast<rendering::CollisionObject>(obj);
+			if (collid)
+				s = collid->getId();
+			if (s != "")
+				printf("[%s]\n", s.c_str());
+		}
+		std::cout << std::endl;
+	}
 } // namespace levels

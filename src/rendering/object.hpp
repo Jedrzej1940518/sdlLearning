@@ -1,46 +1,53 @@
 #pragma once
 
-#include "physics/body.hpp"
-#include "mySdl.hpp"
 #include "utils.hpp"
-#include "soundManager.hpp"
+#include "killable.hpp"
+#include "prefabs/prefabs.hpp"
+#include "physics/body.hpp"
+// #include "soundManager.hpp"
+
 #include <unordered_set>
-#include <SDL2/SDL_rect.h>
+
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/Graphics/Drawable.hpp>
 
 namespace rendering
 {
-  class Object
-  {
-    using Body = physics::Body;
+	class Object : public FrameUpdateable, public sf::Drawable
+	{
 
-  protected:
-    SDL_Texture *texture;
+	protected:
+		std::string id;
 
-    SDL_Rect dstrect;
-    physics::Vector2d position;
-    string id;
-    double parallaxFactor;
-    std::unordered_set<Sound> soundsToPlay;
+		sf::Texture texture;
+		sf::Sprite sprite;
+		float spriteRadius;
 
-  public:
-    Object(const string &texturePath, physics::Vector2d &position, const string &id, double parallaxFactor = 1.0);
-    Object(string &&texturePath, physics::Vector2d &&position, string &&id, double parallaxFactor = 1.0);
+		physics::Body body;
 
-    void printPosition() const;
+		// std::unordered_set<Sound> soundsToPlay;
 
-    void frameUpdate(physics::Vector2d offset);
-    void playSounds();
-    virtual void renderObject(SDL_Rect viewport);
+	public:
+		Object(const prefabs::ObjectPrefab& prefab, sf::Vector2f position = { 0, 0 }, sf::Vector2f velocity = { 0, 0 }, float rotation = 0);
 
-    int getX();
-    int getY();
-    physics::Vector2d getPosition() const;
-    SDL_Rect getDstrect();
-    const string &getId() { return id; }
+		void frameUpdate() override;
+		void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
-    virtual ~Object()
-    {
-      SDL_DestroyTexture(texture);
-    }
-  };
+		// void playSounds();
+
+		// getters
+		const sf::Sprite& getSprite() const { return sprite; };
+		const std::string& getId() const { return id; }
+
+		const sf::Vector2f& getVelocity() const { return body.getVelocity(); }
+		float getMaxVelocity() const { return body.getMaxVelocity(); }
+		float getMaxAcceleration() const { return body.getMaxAcceleration(); }
+		float getRadius() const { return spriteRadius; }
+
+		// our sprites are by default facing NORTH which is -90. So object with rotation 0 is facing -90 in cartesian coordinates.
+		float getRotationCartesian() const { return physics::normalizeDegrees(body.getRotation() - 90); }
+		virtual ~Object() {}
+	};
 } // namespace rendering

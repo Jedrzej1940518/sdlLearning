@@ -1,29 +1,26 @@
-#include "clock.hpp"
+
+#include <SFML/Graphics.hpp>
+
+
+#include "utils.hpp"
 #include "gameState.hpp"
-#include "mySdl.hpp"
-#include "soundManager.hpp"
+// #include "soundManager.hpp"
 
 int main(int argc, char **argv)
 {
-    bool quit = not initSdl(); // if init failed, quit
-    bool newGame = false;
-    GameState gameState{};
-    Clock clock{FRAME_RATE};
+    sf::RenderWindow window(sf::VideoMode(config::SCREEN_WIDTH, config::SCREEN_HEIGHT), "My window");
+    window.setFramerateLimit(config::FRAME_RATE);
+    // window.setVerticalSyncEnabled(true);
+    GameState gameState{window};
 
-    SDL_Event event;
-
-    while (not quit)
+    while (window.isOpen())
     {
-        clock.tick();
-        do
-        {
-            gameState.handleEvent(event, quit, newGame);
-        } while (SDL_PollEvent(&event));
-
+        gameState.handleEvents();
         gameState.render();
-        SoundManager::GetInstance().cleanupDeadSounds();
-        clock.tock();
+  
+        // SoundManager::GetInstance().cleanupDeadSounds();
+
     }
-    cleanSdl();
+
     return 1;
 }

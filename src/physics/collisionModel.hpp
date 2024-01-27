@@ -1,41 +1,28 @@
 #pragma once
 
-#include "rendering/collisionObject.hpp"
 #include "physics.hpp"
-#include <cstdint>
-#include <sys/types.h>
+#include "rendering/collisionObject.hpp"
+#include "ships/projectile.hpp"
+
 #include <vector>
+#include <memory>
 
 namespace physics
 {
+  // SweepAndPrune algorithm
   class CollisionModel
   {
-    using CollisionObject = rendering::CollisionObject;
-
-    //[rows][columns] of vector<CollisonObject*>
-    using Grid = vector<vector<vector<CollisionObject *>>>;
-
-    GridParams gridParams;
-    int rows;
-    int columns;
-    Grid grid;
+    std::vector<std::shared_ptr<rendering::CollisionObject>> collidables;
+    std::vector<std::shared_ptr<ships::Projectile>> projectiles;
 
   public:
-    CollisionModel(GridParams gridParams);
+    CollisionModel(){};
+    void add(const std::shared_ptr<rendering::CollisionObject> &collisionObject) { collidables.push_back(collisionObject); };
+    void add(const std::shared_ptr<ships::Projectile> &projectile) { projectiles.push_back(projectile); };
 
-  private:
-    void debugPrint(const string &s);
-    void collides(CollisionObject &obj, GridCoords &neigh);
-
-  public:
-    void checkCollisions();
-    GridCoords calculateGridCoords(int x, int y);
-    void remove(const CollisionObject &obj);
-
-    void emplace(CollisionObject *obj);
-
-    void recalculateGridPosition(CollisionObject &obj);
-
-    const GridParams &getGridParams();
+    // calls handleCollision on every collidable A that collides with collidable B
+    // and for every projectile A that collides wit collidable B
+    // also automaticly removes dead elements
+    void updateCollisions();
   };
 } // namespace physics

@@ -1,49 +1,50 @@
 #pragma once
 
 #include "physics.hpp"
+#include "frameUpdateable.hpp"
+
 #include <array>
-#include "hardware.hpp"
+
+#include <SFML/System/Vector2.hpp>
 
 namespace physics
 {
-  class Body
+  class Body : public FrameUpdateable
   {
-  protected:
-    Vector2d bounce;
-    Vector2d velocity;
-    double rotation;
-    Hardware hardware;
+    sf::Vector2f position;
+    sf::Vector2f velocity;
+    sf::Vector2f acceleration;
+    float rotation;
 
-    double rotationLeft;
-
-    bool accelerating;
-
-    double accelerationAngle;
+    float rotationLeft;
     bool acceleratingOnce;
 
+    float maxRotationSpeed;
+    float maxVelocity;
+    float maxAcceleration;
+    float mass;
+
   public:
-    Body(Hardware hardware);
-    Body(Vector2d velocity, double rotation, Hardware hardware);
+    Body(float maxRotationSpeed, float maxVelocity, float maxAcceleration, float mass);
 
-    void accelerate();
-    void accelerateOnce(double angle);
-    void deaccelerate();
+    void frameUpdate() override;
 
-    void rotate(double degrees);
-    void rotateOnce(DIRECTION rd);
+    void accelerateOnce(sf::Vector2f accelerationVector);
+    void rotateOnce(float degrees);
+    void applyCollision(const CollisionParams &cp);
 
-    void handleColision(CollisionParams &collisionParams);
+    // setters
+    void setPosition(const sf::Vector2f& p) { position = p; }
+    void setVelocity(const sf::Vector2f& v) { velocity = physics::clampVector(v, maxVelocity); }
+    void setRotation(float r) { rotation = physics::normalizeDegrees(r); }
 
-    void frameUpdate(CollisionParams &collisionParams);
-
-    Vector2d &getSpeed();
-    const Vector2d &getSpeed() const;
-    Vector2d applyBounce();
-    double getRotation() const;
-    double getRotationLeft();
-    double getAccelerationAngle() const;
-    double getMass() const;
-
-    void printBody() const;
+    // getters
+    const sf::Vector2f &getVelocity() const { return velocity; }
+    const sf::Vector2f &getPosition() const { return position; }
+    float getMaxVelocity() const { return maxVelocity; }
+    float getMaxAcceleration() const { return maxAcceleration; }
+    float getRotation() const { return rotation; }
+    float getRotationLeft() { return rotationLeft; }
+    float getMass() const { return mass; }
   };
 } // namespace physics
