@@ -1,8 +1,8 @@
 #pragma once
 
 #include "utils.hpp"
-#include <SFML\Window\Event.hpp>
-#include <SFML\Graphics.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window.hpp>
 
 #include "rendering/button.hpp"
 

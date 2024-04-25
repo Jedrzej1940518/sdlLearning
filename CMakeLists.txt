@@ -33,8 +33,8 @@ add_compile_definitions(_USE_MATH_DEFINES)
 
 target_compile_options(starships PRIVATE)
 
-find_package(SFML COMPONENTS graphics audio REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-audio)
+find_package(SFML COMPONENTS graphics window system audio REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE sfml-graphics sfml-audio sfml-window sfml-system)
 
 set_target_properties(starships PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin/)

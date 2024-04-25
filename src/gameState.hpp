@@ -6,10 +6,10 @@
 
 // #include "utils.hpp"
 
-#include < memory>
+#include <memory>
 
-#include <SFML\Graphics.hpp>
-#include <SFML\Window\Event.hpp>
+#include <SFML/Graphics.hpp>
+#include <SFML/Window/Event.hpp>
 
 class GameState
 {

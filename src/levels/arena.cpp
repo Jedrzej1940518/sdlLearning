@@ -27,7 +27,7 @@ namespace levels
 			for (const auto& obj : collidables) {
 				if (physics::collisionHappening(obj->getCollisionCircle(), { {xx,yy}, asteroid->getRadius() + safeDistance }))
 				{
-					LOG("[%d/%d] Collision happenning => rerolling asteroid\n", i, n);
+					//LOG("[%d/%d] Collision happenning => rerolling asteroid\n", i, n);
 					continue;
 				}
 			}

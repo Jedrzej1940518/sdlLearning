@@ -69,7 +69,7 @@ namespace ships
 
 	sf::Vector2f Tactic::predictShotNeededPosition(const Ship& target)
 	{
-		LOG("0\n");
+		//LOG("0\n");
 		return { 0,0 };
 
 	}
@@ -78,7 +78,7 @@ namespace ships
 
 	bool Tactic::inRange(const Ship& target)
 	{
-		LOG("0\n");
+		//LOG("0\n");
 		return true;
 	}
 
@@ -106,11 +106,11 @@ namespace ships
 
 		float delta = (float)pow(b, 2) - (4.f * a * c);
 		if (delta < 0) {
-			LOG("no intercept possible, delta < 0, a%.2f b%.2f c%.2f", a, b, c);
+			//LOG("no intercept possible, delta < 0, a%.2f b%.2f c%.2f", a, b, c);
 			return 1000000.f;
 		}
 		if (physics::isZero(a)) {
-			LOG("a == 0, linear problem");
+			//LOG("a == 0, linear problem");
 			return 1000000.f;
 		}
 		float sqrtDelta = sqrt(delta);
@@ -194,7 +194,7 @@ namespace ships
 			debugShapes.push_back(std::move(arrowBase));
 			debugShapes.push_back(std::move(arrowPoint));
 			debugShapes.push_back(makeCircle(guidedShip.getCenter(), safeCollisionDistance + guidedShip.getRadius(), sf::Color::Red));
-			//LOG("[%s] Base velocity [%f %f]\n", guidedShip.getId().c_str(), velocity.x, velocity.y);
+			////LOG("[%s] Base velocity [%f %f]\n", guidedShip.getId().c_str(), velocity.x, velocity.y);
 		}
 
 		auto avoidCollisions = [&]<typename Vec>(const Vec & collidables)
@@ -211,7 +211,7 @@ namespace ships
 				{
 					sf::Vector2f deltaVector = physics::clampVector(object->getCenter() - guidedShip.getCenter(), 1.0f);
 					float angle = physics::getAngleBetweenVectors(velocity, deltaVector);
-					//LOG("%s | angle [%f] velocity [%f %f], deltaVector [%f %f]", object->getId().c_str(), angle, velocity.x, velocity.y, deltaVector.x, deltaVector.y);
+					////LOG("%s | angle [%f] velocity [%f %f], deltaVector [%f %f]", object->getId().c_str(), angle, velocity.x, velocity.y, deltaVector.x, deltaVector.y);
 					// If the obstacle is in front of the ship, adjust the velocity vector
 					if (fabs(angle) < 90.f)
 					{
@@ -230,7 +230,7 @@ namespace ships
 							debugShapes.push_back(std::move(arrowBase));
 							debugShapes.push_back(std::move(arrowPoint));
 						}
-						//LOG(" dist [%f], proximity [%f], deltaVectorScaled [%f %f], \n",  dist, modifiedSigmoid(dist, safeCollisionDistance, max),  deltaVector.x, deltaVector.y);
+						////LOG(" dist [%f], proximity [%f], deltaVectorScaled [%f %f], \n",  dist, modifiedSigmoid(dist, safeCollisionDistance, max),  deltaVector.x, deltaVector.y);
 					}
 				}
 			}
@@ -270,8 +270,9 @@ namespace ships
 
 			//if friendly fire then shouldnt shoot
 			noFriendlyFire &= (not shotPath.intersects(ship->getBoundingBox()));
-			if (config::debugTactic && (not shotPath.intersects(ship->getBoundingBox())))
-				LOG("[%s] should not shoot - %s in path", guidedShip.getId().c_str(), ship->getId().c_str());
+			if (config::debugTactic && (not shotPath.intersects(ship->getBoundingBox()))){
+				//LOG("[%s] should not shoot - %s in path", guidedShip.getId().c_str(), ship->getId().c_str());
+			}
 		}
 
 		if (config::debugTactic) {
@@ -304,9 +305,9 @@ namespace ships
 		if (!shoot) {
 			auto& weapon = guidedShip.getWeapon();
 			float projRange = physics::getVectorMagnitude(target.getVelocity() - guidedShip.getVelocity()) + guidedShip.getRange();
-			LOG("[%s] encricle_dist [%f], dist to target [%f], t [%f], weapon range [%f], velocity [%f %f], inRange %d rotationAchieved %d",
-				guidedShip.getId().c_str(), calcEncircleDist(target), physics::distance(guidedShip.getCollisionCircle(), target.getCollisionCircle()), ticks,
-				guidedShip.getRange(), guidedShip.getVelocity().x, guidedShip.getVelocity().y, (int)targetInRange, (int)rotationAchieved);
+			//LOG("[%s] encricle_dist [%f], dist to target [%f], t [%f], weapon range [%f], velocity [%f %f], inRange %d rotationAchieved %d",
+			//	guidedShip.getId().c_str(), calcEncircleDist(target), physics::distance(guidedShip.getCollisionCircle(), target.getCollisionCircle()), ticks,
+			//	guidedShip.getRange(), guidedShip.getVelocity().x, guidedShip.getVelocity().y, (int)targetInRange, (int)rotationAchieved);
 		}
 
 		return { angle, velocity, shoot, debugShapes };

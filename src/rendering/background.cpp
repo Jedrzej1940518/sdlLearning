@@ -1,4 +1,4 @@
-#include "Background.hpp"
+#include "background.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
 

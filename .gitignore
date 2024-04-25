@@ -1,4 +1,4 @@
-build/*
+build
 .cache
 .vscode
 Debug/*
@@ -6,3 +6,4 @@ Release/*
 /.vs
 /out/build
 /bin
+test

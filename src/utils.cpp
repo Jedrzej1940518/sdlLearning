@@ -1,11 +1,13 @@
 #include "utils.hpp"
 #include "physics/physics.hpp"
 
-#include <Windows.h>
-
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+
+
+#include <unistd.h>
+#include <limits.h>
 
 std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f& vector, const sf::Vector2f& center, sf::Color color, float multiplier)
 {
@@ -72,21 +74,22 @@ const char* findLastOccurrence(const char* str, const char* substr) {
 
 	const char* last = nullptr;
 
-	while ((str = strstr(str, substr)) != nullptr) {
-		last = str;
-		str++;
-	}
+	// while ((str = strstr(str, substr)) != nullptr) {
+	// 	last = str;
+	// 	str++;
+	// }
 	return last;
 }
 
 std::string getDataPath(std::string dataPath)
 {
-	char buffer[MAX_PATH];
-	GetModuleFileName(NULL, buffer, MAX_PATH);
+	char buffer[PATH_MAX];
+	readlink("/proc/self/exe", buffer, PATH_MAX);
 
 	std::string executablePath(buffer);
-	std::string executableDirectory = executablePath.substr(0, executablePath.find_last_of("\\/"));
-	return executableDirectory + "\\data\\" + dataPath;
+	std::string executableDirectory = executablePath.substr(0, executablePath.find_last_of("/"));
+
+	return executableDirectory + "/data/" + dataPath;
 }
 
 std::string boolToString(bool b)

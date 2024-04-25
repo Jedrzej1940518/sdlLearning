@@ -1,5 +1,5 @@
 
-#include "PlayerShip.hpp"
+#include "playerShip.hpp"
 // #include "soundManager.hpp"
 
 namespace ships

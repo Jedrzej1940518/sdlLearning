@@ -7,6 +7,7 @@
 #include <vector>
 #include <random>
 #include <utility>
+#include <memory>
 
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
@@ -33,8 +34,8 @@ namespace config
 {
 	inline static constexpr bool debugTactic{ true };
 	inline static constexpr bool debugObject{ true };
-	inline static unsigned constexpr int SCREEN_HEIGHT = 1000;
-	inline static unsigned constexpr int SCREEN_WIDTH = 1400;
+	inline static unsigned constexpr int SCREEN_HEIGHT = 800;
+	inline static unsigned constexpr int SCREEN_WIDTH = 1024;
 	inline static unsigned constexpr int FRAME_RATE = 60;
 
 }
