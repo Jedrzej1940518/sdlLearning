@@ -1,0 +1,13 @@
+#include <pybind11/pybind11.h>
+
+#include "environment.hpp"
+
+namespace py = pybind11;
+
+PYBIND11_MODULE(Starships, m)
+{
+    py::class_<Environment>(m, "Starships")
+        .def(py::init<>())
+        .def("step", &Environment::step)
+        .def("reset", &Environment::reset);
+}

@@ -54,6 +54,6 @@ namespace prefabs
 	const inline ShipPrefab hammerhead{ getDataPath("graphics/ships/hammerhead_dd.png"), "hammerhead", 3.8f, 2500, 3.8f, 0.38f, 300, hammerheadShell };
 	const inline ShipPrefab lasher{ getDataPath("graphics/ships/lasher_ff.png"), "lasher", 4.5f, 1200, 4.5f, 0.45f, 60, lasherShell };
 	const inline ShipPrefab wolf{ getDataPath("graphics/ships/wolf_ff.png"), "wolf", 5.5f, 600, 6, 0.7f, 40, torpedo };
-	const inline ShipPrefab scarab{ getDataPath("graphics/ships/scarab.png"), "scarab", 5, 1000, 5, 0.5f, 1000, lasherShell };
+	const inline ShipPrefab scarab{ getDataPath("graphics/ships/scarab.png"), "scarab", 5, 1000, 5, 0.5f, 1000, scarabShell };
 
 }

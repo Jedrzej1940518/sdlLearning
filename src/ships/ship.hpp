@@ -23,6 +23,8 @@ namespace ships
 		//todo probably calculate it in a smart way
 		float getRange() const { return weapon.getLifetime() * weapon.getMaxVelocity(); }
 		float getTargetAngle() const { return targetAngle; }
+		float getCooldown() const { return weapon.getReload();}
+		float getMaxCooldown() const { return weapon.getMaxReload();}
 
 		const Weapon& getWeapon() const { return weapon; }
 

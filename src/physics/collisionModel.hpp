@@ -20,6 +20,7 @@ namespace physics
     void add(const std::shared_ptr<rendering::CollisionObject> &collisionObject) { collidables.push_back(collisionObject); };
     void add(const std::shared_ptr<ships::Projectile> &projectile) { projectiles.push_back(projectile); };
 
+    void clear() {collidables.clear(); projectiles.clear();}
     // calls handleCollision on every collidable A that collides with collidable B
     // and for every projectile A that collides wit collidable B
     // also automaticly removes dead elements

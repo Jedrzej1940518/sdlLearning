@@ -7,3 +7,4 @@ Release/*
 /out/build
 /bin
 test
+reinforcement_learning/Starships.cpython-310-x86_64-linux-gnu.so

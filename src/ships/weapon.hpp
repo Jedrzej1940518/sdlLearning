@@ -25,6 +25,9 @@ namespace ships
 		float getMaxVelocity() const { return prefab.maxVelocity; }
 		float getScatter() const { return prefab.scatterAngle; }
 		float getProjectileRadius() const { return projectileRadius; }
+
+		float getReload() const {return shellReload; }
+		float getMaxReload() const {return prefab.reload; }
 		bool canShoot() const { return shellReload <= 0; }
 
 		//

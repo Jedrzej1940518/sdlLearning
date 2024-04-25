@@ -42,6 +42,7 @@ namespace rendering
 		const sf::Vector2f& getCenter() const { return body.getPosition(); };
 		const sf::FloatRect getBoundingBox() const { return sprite.getGlobalBounds(); }
 
+		int getHp() const {return hp;}
 		float getMass() const { return body.getMass(); };
 
 		virtual ~CollisionObject() {}

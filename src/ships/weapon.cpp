@@ -10,7 +10,10 @@ namespace ships
 		auto fakeProjectile = std::make_unique<Projectile>(prefab, sf::Vector2f{ 0,0 }, sf::Vector2f{ 1,1 }, 30.f);
 		projectileRadius = fakeProjectile->getRadius();
 	}
-	void Weapon::frameUpdate() { --shellReload; }
+	void Weapon::frameUpdate() { 
+		--shellReload; 
+		shellReload = std::max(shellReload, 0);
+	}
 
 	std::shared_ptr<Projectile> Weapon::shoot(float angle, const sf::Vector2f& shooterPos, const sf::Vector2f& shooterSpeed)
 	{

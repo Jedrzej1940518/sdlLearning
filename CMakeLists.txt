@@ -8,6 +8,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 set(SOURCES
     src/main.cpp
+    src/environment.cpp
+    src/envModule.cpp
     src/gameState.cpp
     src/utils.cpp
     src/soundManager.cpp
@@ -36,9 +38,15 @@ target_compile_options(starships PRIVATE)
 find_package(pybind11 REQUIRED)
 find_package(SFML COMPONENTS graphics window system audio REQUIRED)
 
+#dont link agaisnt embed
 target_link_libraries(${PROJECT_NAME} PRIVATE pybind11::embed sfml-graphics sfml-audio sfml-window sfml-system)
 
 set_target_properties(starships PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bin/)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/data DESTINATION ${CMAKE_CURRENT_SOURCE_DIR}/bin/)
 
 target_include_directories(starships PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+
+pybind11_add_module(Starships ${SOURCES})
+
+target_include_directories(Starships PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src/)
+target_link_libraries(Starships PRIVATE pybind11::embed sfml-graphics sfml-audio sfml-window sfml-system)
