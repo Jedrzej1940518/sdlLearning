@@ -26,7 +26,7 @@ namespace levels
     rendering::Background background{prefabs::background};
 
   public:
-    Menu(sf::RenderWindow &window, LevelType &level);
+    Menu(LevelType &level);
     virtual ~Menu() {}
     virtual void handleEvents(const sf::Event &event) override;
 

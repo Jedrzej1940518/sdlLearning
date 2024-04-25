@@ -9,6 +9,11 @@
 #include <unistd.h>
 #include <limits.h>
 
+namespace globals
+{
+	sf::RenderWindow* WINDOW {nullptr};
+}
+
 std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f& vector, const sf::Vector2f& center, sf::Color color, float multiplier)
 {
 	std::shared_ptr<sf::ConvexShape> arrowBase = std::make_shared<sf::ConvexShape>();

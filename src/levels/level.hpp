@@ -20,11 +20,10 @@ namespace levels
   class Level
   {
   protected:
-    sf::RenderWindow &window;
     LevelType &level;
 
   public:
-    Level(sf::RenderWindow &window, LevelType &level) : window{window}, level{level} {}
+    Level(LevelType &level) : level{level} {}
     virtual void handleEvents(const sf::Event &event) = 0;
     virtual void render() = 0;
     virtual ~Level(){};

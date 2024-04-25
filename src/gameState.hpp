@@ -14,7 +14,6 @@
 class GameState
 {
   levels::LevelType levelType{levels::LevelType::MENU};
-  sf::RenderWindow &window;
 
   levels::Menu menu;
   // levels::GameOver gameLost{"Game Over"};
@@ -23,7 +22,7 @@ class GameState
   levels::Level *currentLevel{&menu};
 
 public:
-  GameState(sf::RenderWindow &window) : window{window}, menu{window, levelType}, arena{new levels::Arena(window, levelType)} {};
+  GameState() :  menu{levelType}, arena{new levels::Arena(levelType)} {};
   void handleEvents();
   void render();
 };

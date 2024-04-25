@@ -10,8 +10,10 @@ void GameState::handleEvents()
         std::cerr << "Handling events::current level is nullptr\n";
 
     sf::Event event;
-    while (window.pollEvent(event))
+
+    while (globals::WINDOW->pollEvent(event))
         currentLevel->handleEvents(event);
+    
 
     // if (newGame)
     // {

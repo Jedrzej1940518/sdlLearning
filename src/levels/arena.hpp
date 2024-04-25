@@ -46,7 +46,7 @@ namespace levels
 		physics::CollisionModel collisionModel{};
 
 	public:
-		Arena(sf::RenderWindow& window, LevelType& level);
+		Arena(LevelType& level);
 		virtual ~Arena();
 		virtual void handleEvents(const sf::Event& event) override;
 

@@ -37,7 +37,7 @@ namespace levels
 
 	}
 
-	Arena::Arena(sf::RenderWindow& window, LevelType& level) : Level{ window, level } //: console{gRenderer, getconsoleRect()}
+	Arena::Arena(LevelType& level) : Level{ level } //: console{gRenderer, getconsoleRect()}
 	{
 		auto background = std::make_shared<rendering::Background>(prefabs::background);
 
@@ -66,10 +66,10 @@ namespace levels
 	void Arena::handleEvents(const sf::Event& event)
 	{
 		if (event.type == sf::Event::Closed)
-			window.close();
+			globals::WINDOW->close();
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)
 		{
-			window.setView(window.getDefaultView());
+			globals::WINDOW->setView(globals::WINDOW->getDefaultView());
 			level = LevelType::MENU;
 		}
 		else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
@@ -99,16 +99,16 @@ namespace levels
 		}
 		cleanupDeads();
 
-		sf::View v = window.getView();
+		sf::View v = globals::WINDOW->getView();
 		v.setCenter(controledObject->getSprite().getPosition());
-		window.setView(v);
+		globals::WINDOW->setView(v);
 	}
 
 	void Arena::draw()
 	{
 		// todo dont draw objects outside view
 		for (auto& obj : drawables)
-			window.draw(*obj);
+			globals::WINDOW->draw(*obj);
 	}
 
 	void Arena::render()
@@ -116,12 +116,12 @@ namespace levels
 		if (paused)
 			return;
 
-		window.clear(sf::Color::White);
+		globals::WINDOW->clear(sf::Color::White);
 
 		frameUpdate();
 		draw();
 
-		window.display();
+		globals::WINDOW->display();
 	}
 	Arena::~Arena()
 	{

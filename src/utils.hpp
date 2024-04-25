@@ -9,6 +9,7 @@
 #include <utility>
 #include <memory>
 
+#include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
@@ -20,6 +21,7 @@
 namespace globals
 {
 	static inline sf::Color GREY{ 200, 200, 200, 200 };
+	extern sf::RenderWindow* WINDOW;
 }
 
 namespace constants
