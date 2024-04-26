@@ -5,8 +5,7 @@
 
 int main(int argc, char **argv)
 {
-    globals::WINDOW = new sf::RenderWindow (sf::VideoMode(config::SCREEN_WIDTH, config::SCREEN_HEIGHT), "My window");
-    globals::WINDOW->setFramerateLimit(config::FRAME_RATE);
+    initRendering();
 
     // globals::WINDOW->setVerticalSyncEnabled(true);
     GameState gameState{};
@@ -16,9 +15,8 @@ int main(int argc, char **argv)
 
         gameState.handleEvents();
         gameState.render();
-  
-        // SoundManager::GetInstance().cleanupDeadSounds();
 
+        // SoundManager::GetInstance().cleanupDeadSounds();
     }
 
     return 1;

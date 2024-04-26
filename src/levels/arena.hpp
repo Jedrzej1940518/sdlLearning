@@ -64,13 +64,13 @@ namespace levels
 		StepType step(ships::Tactic::TacticOutcome tactic);
 		ObservationType reset();
 		ObservationType make_obs();
+		void draw();
 
 	private:
 		void populateArenaWithAsteroids(int n);
 
 		void cleanupDeadObjects();
 		void frameUpdate();
-		void draw();
 		virtual void render() override;
 
 		template <typename F>
@@ -144,6 +144,7 @@ namespace levels
 				vec.clear();
 			};
 			doOnEveryContainer(clearVec);
+			collisionModel.clear();
 		}
 		// debug
 		void debugPrint();

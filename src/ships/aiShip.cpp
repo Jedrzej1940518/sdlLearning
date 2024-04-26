@@ -20,7 +20,6 @@ namespace ships
 		if (neuralNetwork)
 			return;
 		currentTactic = tactic.generateTactic(friends, foes, collidables, projectiles);
-		std::cout << "determining tactic " << currentTactic.shoot << " " << currentTactic.targetAngle << " " << currentTactic.targetVelocity.x << " " << currentTactic.targetVelocity.y << std::endl;
 	}
 	void AiShip::draw(sf::RenderTarget &target, sf::RenderStates states) const
 	{

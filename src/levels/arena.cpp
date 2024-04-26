@@ -18,7 +18,6 @@ namespace levels
 					  { playerTeamHp += obj->getHp(); });
 		std::for_each(hostileShips.begin(), hostileShips.end(), [&enemyTeamHp](auto &obj)
 					  { enemyTeamHp += obj->getHp(); });
-		std::cout << "player team hp " << playerTeamHp << " enemy team hp " << enemyTeamHp << std::endl;
 
 		frameUpdate();
 
@@ -29,7 +28,6 @@ namespace levels
 
 		int reward = enemyTeamHp - playerTeamHp; // how much hp diff we gained
 		bool done = neuralNetworkShip->getHp() <= 0;
-		std::cout << "delta: player team hp " << playerTeamHp << " enemy team hp " << enemyTeamHp << " reward " << reward << std::endl;
 
 		return std::make_tuple(make_obs(), reward, done);
 	}
@@ -47,7 +45,7 @@ namespace levels
 		auto hammerhead = std::make_shared<ships::AiShip>(prefabs::hammerhead, sf::Vector2f{0, -200});
 
 		// auto player = std::make_shared<ships::PlayerShip>(prefabs::scarab, sf::Vector2f{ 0, 0 });
-		auto neuralNetwork = std::make_shared<ships::AiShip>(prefabs::scarab, sf::Vector2f{0, 0});
+		auto neuralNetwork = std::make_shared<ships::AiShip>(prefabs::scarab, sf::Vector2f{0, 0}, sf::Vector2f{0, 0}, 0.f, true);
 
 		addObject(background);
 		// addObject(wolf);
@@ -149,6 +147,15 @@ namespace levels
 		for (auto &obj : frameUpdateables)
 			obj->frameUpdate();
 
+		for (auto &ship : shooters)
+		{
+			if (ship->getCenter().x > x or ship->getCenter().x < -x) // apply dmg for being out of arena
+				ship->hit(1);
+
+			else if (ship->getCenter().y > y or ship->getCenter().y < -y) // apply dmg for being out of arena
+				ship->hit(1);
+		}
+
 		for (auto &obj : shooters)
 		{
 			auto proj = obj->shoot();
@@ -161,13 +168,20 @@ namespace levels
 
 	void Arena::draw()
 	{
+		globals::WINDOW->clear(sf::Color::White);
+
 		sf::View v = globals::WINDOW->getView();
-		v.setCenter(controledObject->getSprite().getPosition());
+
+		v.setCenter(neuralNetworkShip->getSprite().getPosition());
+
 		globals::WINDOW->setView(v);
 
 		// todo dont draw objects outside view
 		for (auto &obj : drawables)
+		{
 			globals::WINDOW->draw(*obj);
+		}
+		globals::WINDOW->display();
 	}
 
 	void Arena::render()
@@ -175,12 +189,8 @@ namespace levels
 		if (paused)
 			return;
 
-		globals::WINDOW->clear(sf::Color::White);
-
 		frameUpdate();
 		draw();
-
-		globals::WINDOW->display();
 	}
 	Arena::~Arena()
 	{

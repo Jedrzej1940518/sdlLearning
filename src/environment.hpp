@@ -17,6 +17,9 @@ public:
     py::tuple step(py::array_t<float> action);
     py::array_t<float> reset();
 
+    void initHumanRender() { initRendering(); }
+    void draw() { arena.draw(); }
+
 private:
     levels::Arena arena;
     levels::LevelType fakeLevel{levels::LevelType::ARENA};

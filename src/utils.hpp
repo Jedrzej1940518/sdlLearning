@@ -20,8 +20,8 @@
 
 namespace globals
 {
-	static inline sf::Color GREY{ 200, 200, 200, 200 };
-	extern sf::RenderWindow* WINDOW;
+	static inline sf::Color GREY{200, 200, 200, 200};
+	extern sf::RenderWindow *WINDOW;
 }
 
 namespace constants
@@ -34,25 +34,29 @@ namespace constants
 
 namespace config
 {
-	inline static constexpr bool debugTactic{ true };
-	inline static constexpr bool debugObject{ true };
+	inline static constexpr bool debugTactic{true};
+	inline static constexpr bool debugObject{true};
 	inline static unsigned constexpr int SCREEN_HEIGHT = 800;
 	inline static unsigned constexpr int SCREEN_WIDTH = 1024;
 	inline static unsigned constexpr int FRAME_RATE = 60;
 
 }
 
-const char* findLastOccurrence(const char* str, const char* substr);
+const char *findLastOccurrence(const char *str, const char *substr);
 
-#define LOG(fmt, ...) \
-    do { \
-        const char* relativePath = findLastOccurrence(__FILE__, "\\src\\"); \
-        if (relativePath != nullptr) { \
-            printf("%s [%d] " fmt, relativePath + 5, __LINE__, __VA_ARGS__); \
-        } else { \
-            printf("%s [%d] " fmt, __FILE__, __LINE__, __VA_ARGS__); \
-        } \
-		printf("\n"); \
+#define LOG(fmt, ...)                                                        \
+	do                                                                       \
+	{                                                                        \
+		const char *relativePath = findLastOccurrence(__FILE__, "\\src\\");  \
+		if (relativePath != nullptr)                                         \
+		{                                                                    \
+			printf("%s [%d] " fmt, relativePath + 5, __LINE__, __VA_ARGS__); \
+		}                                                                    \
+		else                                                                 \
+		{                                                                    \
+			printf("%s [%d] " fmt, __FILE__, __LINE__, __VA_ARGS__);         \
+		}                                                                    \
+		printf("\n");                                                        \
 	} while (0)
 
 namespace sf
@@ -62,15 +66,16 @@ namespace sf
 	class RectangleShape;
 }
 
+void initRendering();
+
 std::string boolToString(bool b);
 std::string getDataPath(std::string dataPath);
 
-std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f& vector, const sf::Vector2f& center, sf::Color color, float multiplier = 15.f);
-std::shared_ptr<sf::CircleShape> makeCircle(const sf::Vector2f& origin, float radius, sf::Color color);
-std::shared_ptr<sf::RectangleShape> makeRectangle(const sf::Vector2f& size, sf::Color color);
+std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f &vector, const sf::Vector2f &center, sf::Color color, float multiplier = 15.f);
+std::shared_ptr<sf::CircleShape> makeCircle(const sf::Vector2f &origin, float radius, sf::Color color);
+std::shared_ptr<sf::RectangleShape> makeRectangle(const sf::Vector2f &size, sf::Color color);
 
-float getSpriteRadius(const sf::Sprite& sprite);
-
+float getSpriteRadius(const sf::Sprite &sprite);
 
 template <typename T>
 T getRandomNumber(T from, T to)
@@ -92,7 +97,7 @@ T getRandomNumber(T from, T to)
 
 // THIS IS DONE BY COPY ASSIGNMENT
 template <typename T>
-void removeVectorElement(std::vector<T>& vec, int indx)
+void removeVectorElement(std::vector<T> &vec, int indx)
 {
 	auto lastIndex = vec.size() - 1;
 	if (indx != lastIndex)
