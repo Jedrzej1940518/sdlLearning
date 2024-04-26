@@ -18,7 +18,7 @@ namespace levels
 		videoWriter->write(frame);
 	}
 
-	Arena::StepType Arena::step(ships::Tactic::TacticOutcome tactic)
+	Arena::StepType Arena::step(ships::Tactic::TacticOutcome tactic, int frameSkip)
 	{
 		neuralNetworkShip->setTactic(tactic);
 
@@ -30,10 +30,13 @@ namespace levels
 		std::for_each(hostileShips.begin(), hostileShips.end(), [&enemyTeamHp](auto &obj)
 					  { enemyTeamHp += obj->getHp(); });
 
-		frameUpdate();
+		for (int i = 0; i < frameSkip; ++i)
+		{
+			frameUpdate();
 
-		if (recordVideo)
-			recordFrame();
+			if (recordVideo)
+				recordFrame();
+		}
 
 		std::for_each(playerShips.begin(), playerShips.end(), [&playerTeamHp](auto &obj)
 					  { playerTeamHp -= obj->getHp(); });
@@ -41,7 +44,7 @@ namespace levels
 					  { enemyTeamHp -= obj->getHp(); });
 
 		int reward = enemyTeamHp - playerTeamHp; // how much hp diff we gained
-		bool done = neuralNetworkShip->getHp() <= 0;
+		bool done = neuralNetworkShip->getHp() <= 0 or (hostileShips.size() == 0);
 
 		return std::make_tuple(make_obs(), reward, done);
 	}
@@ -49,14 +52,18 @@ namespace levels
 	{
 		++episodeNumber;
 		if (videoWriter)
+		{
+			globals::WINDOW->close();
 			videoWriter->release();
-
+		}
 		recordVideo = recordEpisode;
 
 		if (recordVideo)
 		{
-			std::string fileName = "output_" + std::to_string(episodeNumber) + ".avi";
-			videoWriter = std::make_shared<cv::VideoWriter>(fileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 10, cv::Size(config::SCREEN_WIDTH, config::SCREEN_HEIGHT));
+			initRendering();
+			std::string dirName = "Trainings/Starships/videos/";
+			std::string fileName = dirName + "output_" + std::to_string(episodeNumber) + ".avi";
+			videoWriter = std::make_shared<cv::VideoWriter>(fileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 60, cv::Size(config::SCREEN_WIDTH, config::SCREEN_HEIGHT));
 			std::cout << "Recording episode....Opening writer success? " << videoWriter->isOpened() << std::endl;
 		}
 
@@ -173,15 +180,6 @@ namespace levels
 
 		for (auto &obj : frameUpdateables)
 			obj->frameUpdate();
-
-		for (auto &ship : shooters)
-		{
-			if (ship->getCenter().x > x or ship->getCenter().x < -x) // apply dmg for being out of arena
-				ship->hit(1);
-
-			else if (ship->getCenter().y > y or ship->getCenter().y < -y) // apply dmg for being out of arena
-				ship->hit(1);
-		}
 
 		for (auto &obj : shooters)
 		{

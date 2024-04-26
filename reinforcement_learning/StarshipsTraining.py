@@ -7,7 +7,7 @@ import Starships
 
 obs_space = 8 #
 a_space = 4 # shoot, x, y
-
+device = 'cuda'
 
 log_path = "Trainings/Starships"
 
@@ -18,22 +18,22 @@ def init_weights(m):
             init.constant_(m.bias, 0)
 
 #critic
-critic_net =  nn.Sequential(  nn.Linear(obs_space, 256),
+critic_net =  nn.Sequential(  nn.Linear(obs_space, 2048),
                                         nn.ReLU(),
-                                        nn.Linear(256, 256),
+                                        nn.Linear(2048, 2048),
                                         nn.ReLU(),
-                                        nn.Linear(256, 64),
+                                        nn.Linear(2048, 128),
                                         nn.ReLU(),
-                                        nn.Linear(64, 1))
+                                        nn.Linear(128, 1))
 
 #actor 
-actor_net = nn.Sequential(    nn.Linear(obs_space, 256),
+actor_net = nn.Sequential(    nn.Linear(obs_space, 2048),
                                         nn.ReLU(),
-                                        nn.Linear(256, 256),
+                                        nn.Linear(2048, 2048),
                                         nn.ReLU(),
-                                        nn.Linear(256, 64),
+                                        nn.Linear(2048, 128),
                                         nn.ReLU(),
-                                        nn.Linear(64, a_space * 2)) # times 2 because we're outputting mean and std
+                                        nn.Linear(128, a_space * 2)) # times 2 because we're outputting mean and std
 
 critic_net.apply(init_weights)
 actor_net.apply(init_weights)
@@ -42,7 +42,7 @@ actor_net.apply(init_weights)
 
 def translate_observation(obs):
     #print("obs ", obs)
-    return torch.tensor(obs)
+    return torch.tensor(obs, device = device)
 
 
 """
@@ -54,16 +54,17 @@ shoot = {r(3) > 0.5};
 
 
 def translate_output(net_output):
-    actions = net_output.clamp(-1, 1)
-    result = np.array(actions)
+    actions = net_output.clamp(-1,1)
+    result = np.array(actions.cpu())
+    result[0] +=1
     result[0] *=180
     result[1] *=10
     result[2] *=10
     return result
 
 def train():
-    env = Starships.Starships(10000, 20)
-    ppo = SimplePPO(actor_net, a_space, critic_net, log_path, translate_observation = translate_observation, translate_ouput= translate_output, debug=True, debug_period = 25, target_device='cpu', minibatch_size=64, entropy_factor=0.00001)
+    env = Starships.Starships(10000, 100, 4) #max steps, video record, frame skip
+    ppo = SimplePPO(actor_net, a_space, critic_net, log_path, minibatch_size=1024, translate_observation = translate_observation, translate_ouput= translate_output, debug=True, debug_period = 25, target_device=device,  entropy_factor=0.0001)
     ppo.train(env, 5000, export_model=True, resume=False, export_iteration_period=50)
 
 

@@ -10,12 +10,13 @@ class Environment
 
     int maxEpisodeSteps;
     int videoRecordInterval;
+    int frameSkip;
 
     int currentStep{0};
     int currentEpsiode{0};
 
 public:
-    Environment(int maxEpisodeSteps, int videoRecordInterval);
+    Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip);
 
     py::tuple step(py::array_t<float> action);
     py::tuple reset();

@@ -14,8 +14,6 @@ import torch.nn.functional as F
 import torch.distributions as distributions
 import torch.optim.lr_scheduler as lr_scheduler
 
-import gymnasium as gym
-
 device = 'cpu' #todo change for cuda
 debug_log = None #debug function
 
@@ -51,7 +49,7 @@ class Actor(nn.Module):
         mean_tan = F.tanh(mean)                     #normalize it
         log_std = x[:, self.action_space:]      # Second half for log standard deviations
         log_std = log_std.squeeze()
-        std = F.softplus(log_std)               # Standard deviation must be positive; use exp to enforce this, maybe SOFTPLUS instead
+        std = F.sigmoid(log_std)               # Standard deviation must be positive; use exp to enforce this, maybe SOFTPLUS instead
                                                 
         debug_log(lambda :f"NEWLOG| mean_tan{mean_tan}, mean {mean}\n std {std} \n log_std {log_std}\n")
         return mean_tan, std

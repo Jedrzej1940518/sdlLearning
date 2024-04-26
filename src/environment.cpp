@@ -1,10 +1,8 @@
 
 #include "environment.hpp"
 
-Environment::Environment(int maxEpisodeSteps, int videoRecordInterval) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, arena{fakeLevel}
+Environment::Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, frameSkip{frameSkip}, arena{fakeLevel}
 {
-    if (videoRecordInterval != 0)
-        initHumanRender();
 }
 
 void Environment::initHumanRender() { initRendering(); }
@@ -34,7 +32,7 @@ py::tuple Environment::step(py::array_t<float> action)
     tactic.targetVelocity = {r(1), r(2)};
     tactic.shoot = {r(3) > 0.5};
 
-    auto [obs, reward, done] = arena.step(tactic);
+    auto [obs, reward, done] = arena.step(tactic, frameSkip);
 
     bool trunc = currentStep > maxEpisodeSteps;
 
@@ -44,7 +42,7 @@ py::tuple Environment::reset()
 {
     ++currentEpsiode;
     currentStep = 0;
-    bool recordEpisode = videoRecordInterval and (videoRecordInterval % currentEpsiode == 0);
+    bool recordEpisode = videoRecordInterval and (currentEpsiode % videoRecordInterval == 0);
 
     auto obs = arena.reset(recordEpisode);
 

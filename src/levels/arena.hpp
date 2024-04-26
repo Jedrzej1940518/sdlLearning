@@ -66,7 +66,7 @@ namespace levels
 		virtual ~Arena();
 		virtual void handleEvents(const sf::Event &event) override;
 
-		StepType step(ships::Tactic::TacticOutcome tactic);
+		StepType step(ships::Tactic::TacticOutcome tactic, int frameSkip);
 		ObservationType reset(bool recordEpisode = false);
 		ObservationType make_obs();
 		void draw();
