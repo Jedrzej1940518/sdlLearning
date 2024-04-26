@@ -38,8 +38,7 @@ namespace config
 	inline static constexpr bool debugObject{true};
 	inline static unsigned constexpr int SCREEN_HEIGHT = 800;
 	inline static unsigned constexpr int SCREEN_WIDTH = 1024;
-	inline static unsigned constexpr int FRAME_RATE = 60;
-
+	inline static unsigned constexpr int FRAME_RATE = 1024;
 }
 
 const char *findLastOccurrence(const char *str, const char *substr);

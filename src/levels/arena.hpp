@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include <SFML/Graphics/Drawable.hpp>
+#include <opencv2/opencv.hpp>
 
 namespace levels
 {
@@ -33,6 +34,10 @@ namespace levels
 		int asteroids_number{0};
 
 		bool paused{false};
+		bool recordVideo{false};
+		int episodeNumber{0};
+
+		std::shared_ptr<cv::VideoWriter> videoWriter;
 
 		std::vector<std::shared_ptr<sf::Drawable>> drawables;
 		std::vector<std::shared_ptr<FrameUpdateable>> frameUpdateables;
@@ -62,11 +67,12 @@ namespace levels
 		virtual void handleEvents(const sf::Event &event) override;
 
 		StepType step(ships::Tactic::TacticOutcome tactic);
-		ObservationType reset();
+		ObservationType reset(bool recordEpisode = false);
 		ObservationType make_obs();
 		void draw();
 
 	private:
+		void recordFrame();
 		void populateArenaWithAsteroids(int n);
 
 		void cleanupDeadObjects();

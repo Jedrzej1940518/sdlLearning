@@ -6,6 +6,17 @@
 
 namespace levels
 {
+	void Arena::recordFrame()
+	{
+		draw();
+		sf::Texture texture;
+		texture.create(config::SCREEN_WIDTH, config::SCREEN_HEIGHT);
+		texture.update(*globals::WINDOW);
+		sf::Image image = texture.copyToImage();
+		cv::Mat frame(image.getSize().y, image.getSize().x, CV_8UC4, (void *)image.getPixelsPtr());
+		cv::cvtColor(frame, frame, cv::COLOR_RGBA2BGR); // Convert to BGR format which OpenCV expects
+		videoWriter->write(frame);
+	}
 
 	Arena::StepType Arena::step(ships::Tactic::TacticOutcome tactic)
 	{
@@ -21,6 +32,9 @@ namespace levels
 
 		frameUpdate();
 
+		if (recordVideo)
+			recordFrame();
+
 		std::for_each(playerShips.begin(), playerShips.end(), [&playerTeamHp](auto &obj)
 					  { playerTeamHp -= obj->getHp(); });
 		std::for_each(hostileShips.begin(), hostileShips.end(), [&enemyTeamHp](auto &obj)
@@ -31,8 +45,21 @@ namespace levels
 
 		return std::make_tuple(make_obs(), reward, done);
 	}
-	Arena::ObservationType Arena::reset()
+	Arena::ObservationType Arena::reset(bool recordEpisode)
 	{
+		++episodeNumber;
+		if (videoWriter)
+			videoWriter->release();
+
+		recordVideo = recordEpisode;
+
+		if (recordVideo)
+		{
+			std::string fileName = "output_" + std::to_string(episodeNumber) + ".avi";
+			videoWriter = std::make_shared<cv::VideoWriter>(fileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 10, cv::Size(config::SCREEN_WIDTH, config::SCREEN_HEIGHT));
+			std::cout << "Recording episode....Opening writer success? " << videoWriter->isOpened() << std::endl;
+		}
+
 		clear();
 
 		auto background = std::make_shared<rendering::Background>(prefabs::background);
@@ -76,7 +103,7 @@ namespace levels
 			rposNorm.x, rposNorm.y,
 			hostileVel.x, hostileVel.y,
 			velNormalized.x, velNormalized.y,
-			neuralNetworkShip->getRotationCartesian(),
+			neuralNetworkShip->getRotationCartesian() / 360,
 			neuralNetworkShip->getCooldown() / neuralNetworkShip->getMaxCooldown()};
 
 		return obs;

@@ -8,17 +8,20 @@ namespace py = pybind11;
 class Environment
 {
 
-    int maxEpisodeSteps{10000};
+    int maxEpisodeSteps;
+    int videoRecordInterval;
+
     int currentStep{0};
+    int currentEpsiode{0};
 
 public:
-    Environment();
+    Environment(int maxEpisodeSteps, int videoRecordInterval);
 
     py::tuple step(py::array_t<float> action);
-    py::array_t<float> reset();
+    py::tuple reset();
 
-    void initHumanRender() { initRendering(); }
-    void draw() { arena.draw(); }
+    void initHumanRender();
+    void draw();
 
 private:
     levels::Arena arena;

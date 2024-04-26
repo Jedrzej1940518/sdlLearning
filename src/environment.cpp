@@ -1,8 +1,19 @@
 
 #include "environment.hpp"
 
-Environment::Environment() : arena{fakeLevel}
+Environment::Environment(int maxEpisodeSteps, int videoRecordInterval) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, arena{fakeLevel}
 {
+    if (videoRecordInterval != 0)
+        initHumanRender();
+}
+
+void Environment::initHumanRender() { initRendering(); }
+
+void Environment::draw() { arena.draw(); }
+
+bool make_info()
+{
+    return false;
 }
 
 py::array_t<float> make_obs(const levels::Arena::ObservationType &obs)
@@ -27,10 +38,15 @@ py::tuple Environment::step(py::array_t<float> action)
 
     bool trunc = currentStep > maxEpisodeSteps;
 
-    return py::make_tuple(make_obs(obs), reward, done, trunc);
+    return py::make_tuple(make_obs(obs), reward, done, trunc, make_info());
 }
-py::array_t<float> Environment::reset()
+py::tuple Environment::reset()
 {
-    auto obs = arena.reset();
-    return make_obs(obs);
+    ++currentEpsiode;
+    currentStep = 0;
+    bool recordEpisode = videoRecordInterval and (videoRecordInterval % currentEpsiode == 0);
+
+    auto obs = arena.reset(recordEpisode);
+
+    return py::make_tuple(make_obs(obs), make_info());
 }
