@@ -4,7 +4,7 @@
 
 namespace ships
 {
-	AiShip::AiShip(const prefabs::ShipPrefab &prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation, bool neuralNetwork) : Ship{prefab, position, velocity, rotation}, neuralNetwork{neuralNetwork}
+	AiShip::AiShip(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, sf::Vector2f velocity, float rotation, bool neuralNetwork) : Ship{prefab, team, position, velocity, rotation}, neuralNetwork{neuralNetwork}
 	{
 	}
 	void AiShip::frameUpdate()

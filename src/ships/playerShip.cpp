@@ -4,8 +4,8 @@
 
 namespace ships
 {
-	PlayerShip::PlayerShip(const prefabs::ShipPrefab& prefab, sf::Vector2f position, sf::Vector2f velocity,
-		float rotation) : Ship{ prefab, position, velocity, rotation }
+	PlayerShip::PlayerShip(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, sf::Vector2f velocity,
+						   float rotation) : Ship{prefab, team, position, velocity, rotation}
 	{
 		for (int i = 0; i < 4; ++i)
 		{
@@ -13,13 +13,13 @@ namespace ships
 		}
 	}
 
-	void PlayerShip::handleEvents(const sf::Event& event)
+	void PlayerShip::handleEvents(const sf::Event &event)
 	{
 		if (event.type == sf::Event::MouseMoved)
 		{
 			auto [x, y] = event.mouseMove;
-			sf::Vector2f mousePos{ (float)x, (float)y };
-			sf::Vector2f screenCenter{ (float)config::SCREEN_WIDTH / 2.f, (float)config::SCREEN_HEIGHT / 2.f };
+			sf::Vector2f mousePos{(float)x, (float)y};
+			sf::Vector2f screenCenter{(float)config::SCREEN_WIDTH / 2.f, (float)config::SCREEN_HEIGHT / 2.f};
 			sf::Vector2f relativePos = mousePos - screenCenter;
 			float neededAngle = physics::getVectorRotation(relativePos);
 			targetAngle = neededAngle;
@@ -70,7 +70,7 @@ namespace ships
 		if (accelerateOnce)
 			accelerationVector = physics::getRotatedVector(physics::sumDirections(inputDirections)) * getMaxAcceleration();
 		else
-			accelerationVector = { 0, 0 };
+			accelerationVector = {0, 0};
 
 		Ship::frameUpdate();
 	}

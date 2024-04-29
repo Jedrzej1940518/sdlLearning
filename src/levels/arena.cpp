@@ -71,24 +71,26 @@ namespace levels
 
 		auto background = std::make_shared<rendering::Background>(prefabs::background);
 
-		auto wolf = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{-200, -200});
-		auto lasher = std::make_shared<ships::AiShip>(prefabs::lasher, sf::Vector2f{200, 0});
+		// auto wolf = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{-200, -200});
+		auto lasher_blue = std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{200, 0});
+		// auto lasher2_blue = std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{400, 0});
+		// auto hammerhead_blue = std::make_shared<ships::AiShip>(prefabs::hammerhead, blueTeam, sf::Vector2f{0, -200});
 
-		auto wolf2 = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{-400, -200});
-		auto lasher2 = std::make_shared<ships::AiShip>(prefabs::lasher, sf::Vector2f{400, 0});
-		auto hammerhead = std::make_shared<ships::AiShip>(prefabs::hammerhead, sf::Vector2f{0, -200});
-
-		// auto player = std::make_shared<ships::PlayerShip>(prefabs::scarab, sf::Vector2f{ 0, 0 });
-		auto neuralNetwork = std::make_shared<ships::AiShip>(prefabs::scarab, sf::Vector2f{0, 0}, sf::Vector2f{0, 0}, 0.f, true);
+		// auto lasher_red = std::make_shared<ships::AiShip>(prefabs::lasher, redTeam, sf::Vector2f{200, 0});
+		// auto lasher2_red = std::make_shared<ships::AiShip>(prefabs::lasher, redTeam, sf::Vector2f{400, 0});
+		auto neuralNetwork = std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 0}, sf::Vector2f{0, 0}, 0.f, true);
 
 		addObject(background);
 		// addObject(wolf);
-		addObject(lasher);
-		// addObject(wolf2);
-		// addObject(lasher2);
-		// addObject(hammerhead);
-
-		addObject(neuralNetwork, true);
+		addObject(lasher_blue, lasher_blue->getTeam());
+		// addObject(lasher2_blue, lasher2_blue->getTeam());
+		// addObject(hammerhead_blue, hammerhead_blue->getTeam());
+		// // addObject(lasher_red);
+		// // addObject(lasher2);
+		// // addObject(hammerhead);
+		// addObject(lasher_red, lasher_red->getTeam());
+		// addObject(lasher2_red, lasher2_red->getTeam());
+		addObject(neuralNetwork, neuralNetwork->getTeam());
 		neuralNetworkShip = neuralNetwork;
 
 		populateArenaWithAsteroids(asteroids_number);
@@ -97,23 +99,8 @@ namespace levels
 	}
 	Arena::ObservationType Arena::make_obs()
 	{
-		if (hostileShips.size() == 0)
-			return ObservationType{};
-
-		auto vel = neuralNetworkShip->getVelocity();
-		auto velNormalized = vel / neuralNetworkShip->getMaxVelocity();
-
-		auto relativePos = neuralNetworkShip->getCenter() - hostileShips[0]->getCenter();
-		auto rposNorm = relativePos / 10000.f; // damn thats big
-		auto hostileVel = hostileShips[0]->getVelocity() / hostileShips[0]->getMaxVelocity();
-		auto obs = ObservationType{
-			rposNorm.x, rposNorm.y,
-			hostileVel.x, hostileVel.y,
-			velNormalized.x, velNormalized.y,
-			neuralNetworkShip->getRotationCartesian() / 360,
-			neuralNetworkShip->getCooldown() / neuralNetworkShip->getMaxCooldown()};
-
-		return obs;
+		ObservationFactory obsFactory{};
+		return obsFactory.makeObservation(*neuralNetworkShip, shooters);
 	}
 
 	void Arena::populateArenaWithAsteroids(int n)

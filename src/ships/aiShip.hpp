@@ -12,7 +12,7 @@ namespace ships
         bool neuralNetwork = false;
 
     public:
-        AiShip(const prefabs::ShipPrefab &prefab, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0, bool neuralNetwork = false);
+        AiShip(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0, bool neuralNetwork = false);
         void frameUpdate() override;
         void determineTactic(const Tactic::Ships &friends, const Tactic::Ships &foes, const Tactic::Collidables &collidables, const Tactic::Projectiles &projectiles);
         void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

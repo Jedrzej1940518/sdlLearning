@@ -14,9 +14,11 @@ namespace ships
 		float targetAngle{0.f};					   // ship rotates towards this
 		sf::Vector2f accelerationVector{0.f, 0.f}; // ship accelerates in this direction
 		Weapon weapon;
+		int team;
+		int shipId;
 
 	public:
-		Ship(const prefabs::ShipPrefab &prefab, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
+		Ship(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
 		void frameUpdate() override;
 		std::shared_ptr<Projectile> shoot();
 
@@ -25,7 +27,8 @@ namespace ships
 		float getTargetAngle() const { return targetAngle; }
 		float getCooldown() const { return weapon.getReload(); }
 		float getMaxCooldown() const { return weapon.getMaxReload(); }
-
+		int getTeam() const { return team; }
+		int getShipId() const { return shipId; }
 		const Weapon &getWeapon() const { return weapon; }
 
 		virtual ~Ship() {}

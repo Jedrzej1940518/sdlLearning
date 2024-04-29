@@ -5,7 +5,7 @@ from PpoAgent import *
 import torch.nn.init as init
 import Starships
 
-obs_space = 8 #
+obs_space = 36 #
 a_space = 4 # shoot, x, y
 device = 'cuda'
 
@@ -22,7 +22,9 @@ critic_net =  nn.Sequential(  nn.Linear(obs_space, 2048),
                                         nn.ReLU(),
                                         nn.Linear(2048, 2048),
                                         nn.ReLU(),
-                                        nn.Linear(2048, 128),
+                                        nn.Linear(2048, 1024),
+                                        nn.ReLU(),
+                                        nn.Linear(1024, 128),
                                         nn.ReLU(),
                                         nn.Linear(128, 1))
 
@@ -31,7 +33,9 @@ actor_net = nn.Sequential(    nn.Linear(obs_space, 2048),
                                         nn.ReLU(),
                                         nn.Linear(2048, 2048),
                                         nn.ReLU(),
-                                        nn.Linear(2048, 128),
+                                        nn.Linear(2048, 1024),
+                                        nn.ReLU(),
+                                        nn.Linear(1024, 128),
                                         nn.ReLU(),
                                         nn.Linear(128, a_space * 2)) # times 2 because we're outputting mean and std
 
@@ -63,8 +67,8 @@ def translate_output(net_output):
     return result
 
 def train():
-    env = Starships.Starships(10000, 100, 4) #max steps, video record, frame skip
-    ppo = SimplePPO(actor_net, a_space, critic_net, log_path, minibatch_size=1024, translate_observation = translate_observation, translate_ouput= translate_output, debug=True, debug_period = 25, target_device=device,  entropy_factor=0.0001)
+    env = Starships.Starships(1024, 100, 4) #max steps, video record, frame skip
+    ppo = SimplePPO(actor_net, a_space, critic_net, log_path, minibatch_size=1024, actor_lr=0.00001, min_actor_lr=0.000001, entropy_factor=0.000001, translate_observation = translate_observation, translate_ouput= translate_output, debug=True, debug_period = 25, target_device=device)
     ppo.train(env, 5000, export_model=True, resume=False, export_iteration_period=50)
 
 

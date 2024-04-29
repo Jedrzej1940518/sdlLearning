@@ -16,7 +16,7 @@ namespace ships
         void handleInput(physics::DIRECTION dir, bool pressed);
 
     public:
-        PlayerShip(const prefabs::ShipPrefab &prefab, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
+        PlayerShip(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
         void handleEvents(const sf::Event &event);
 
         void frameUpdate();

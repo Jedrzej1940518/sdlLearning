@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 
 set(SOURCES
     src/main.cpp
+    src/observationFactory.cpp
     src/environment.cpp
     src/envModule.cpp
     src/gameState.cpp

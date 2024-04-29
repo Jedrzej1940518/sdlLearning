@@ -2,6 +2,7 @@
 
 #include "utils.hpp"
 #include "level.hpp"
+#include "observationFactory.hpp"
 
 #include "rendering/object.hpp"
 #include "rendering/collisionObject.hpp"
@@ -23,7 +24,7 @@ namespace levels
 	class Arena : public Level
 	{
 	public:
-		using ObservationType = std::array<float, 8>;
+		using ObservationType = ObservationFactory::ObservationType;
 		using StepType = std::tuple<ObservationType, int, bool>; // obs, reward, done
 
 	private:
@@ -31,6 +32,10 @@ namespace levels
 		//  to -y, y
 		int x = 5000;
 		int y = 5000;
+
+		int redTeam = 0;
+		int blueTeam = 1;
+
 		int asteroids_number{0};
 
 		bool paused{false};
@@ -93,7 +98,7 @@ namespace levels
 		}
 
 		template <typename T, typename F>
-		void doOnBaseContainers(F &&func, bool playerTeam = false)
+		void doOnBaseContainers(F &&func, int team = 0)
 		{
 			if constexpr (std::is_base_of_v<sf::Drawable, T>)
 				func(drawables);
@@ -108,20 +113,20 @@ namespace levels
 			if constexpr (std::is_base_of_v<ships::Ship, T>)
 			{
 				func(shooters);
-				playerTeam ? func(playerShips) : func(hostileShips);
+				team == redTeam ? func(playerShips) : func(hostileShips);
 			}
 		}
 
 		// templated
 		template <typename T>
-		void addObject(std::shared_ptr<T> obj, bool playerTeam = false)
+		void addObject(std::shared_ptr<T> obj, int team = 0)
 		{
 			auto pushBack = [&obj]<typename Container>(Container &c)
 			{
 				c.push_back(obj);
 			};
 
-			doOnBaseContainers<T>(pushBack, playerTeam);
+			doOnBaseContainers<T>(pushBack, team);
 			if constexpr (std::is_base_of_v<ships::Projectile, T> || std::is_base_of_v<rendering::CollisionObject, T>)
 				collisionModel.add(obj);
 

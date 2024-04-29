@@ -159,7 +159,7 @@ class SimplePPO:
                     acts, log_probs = self.actor.sample_continous_action(obs)
                     env_actions = self.translate_ouput(acts)
                     debug_log(lambda: f"NEWLOG| actions after sampling {acts}, probs {log_probs}\n env_actions {env_actions}\n")
-    
+                    debug_log(lambda: f"NEWLOG| observation {obs} \n")
                     self.global_step +=1
                     obs_n, r, done, trunc, info = env.step(env_actions)
                     obs_n = self.translate_observation(obs_n)
@@ -211,7 +211,9 @@ class SimplePPO:
 
 
                 debug_log(lambda: f"calculate advantages:\nterminals: {terminals}, \nrewards{rs}, \nvs: {vs}, \nvs_n: {vs_n}, \ndts{dts}, \nadvantages {advantages}")
-                
+                advantages -= torch.mean(advantages)
+                advantages /= torch.std(advantages)
+                debug_log(lambda: f"advantages after normalization {advantages}, mean {torch.mean(advantages)}, std {torch.std(advantages)}")
                 target_v = rs + self.critic.discount * vs_n
 
 
@@ -235,7 +237,7 @@ class SimplePPO:
                 obj1 = ratio * advantages[indices]
                 obj2 = torch.clamp(ratio, 1-self.clip, 1+ self.clip) * advantages[indices] 
 
-                debug_log(lambda: f"NEWLOG| ratio{ratio}, obj1 {obj1}, obj2 {obj2}, advantages {advantages[indices]}")
+                debug_log(lambda: f"NEWLOG| ratio: {ratio}, obj1: {obj1}, obj2: {obj2}, advantages: {advantages[indices]}")
                 #todo add entorpy bonus
                 new_probs = torch.exp(new_log_probs[indices])
                 entropy_scalar = distributions.Categorical(probs = new_probs).entropy()

@@ -22,8 +22,8 @@ py::array_t<float> make_obs(const levels::Arena::ObservationType &obs)
 py::tuple Environment::step(py::array_t<float> action)
 {
     ++currentStep;
+    // std::cout << "action to str " << action.ndim() << std::endl;
     auto r = action.unchecked<1>(); // add more dims l8ter sk8ter
-
     float targetAngle;
     sf::Vector2f targetVelocity;
     bool shoot;
