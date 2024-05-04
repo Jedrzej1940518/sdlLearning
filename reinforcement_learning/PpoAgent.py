@@ -41,13 +41,13 @@ class Actor(nn.Module):
         
     def forward(self, x: torch.Tensor):
         x = self.network(x)
-        if x.dim() == 1:  # If the input is of dim 1 because we're just playin
+        if x.dim() == 2:  # If the input is of dim 2 because we're just playin
             x = x.unsqueeze(0)  # Unsqueeze it so we can properly select its halfs
 
-        mean = x[:, :self.action_space]         # First half for means
+        mean = x[:, :, :self.action_space]         # First half for means
         mean = mean.squeeze()
         mean_tan = F.tanh(mean)                     #normalize it
-        log_std = x[:, self.action_space:]      # Second half for log standard deviations
+        log_std = x[:, :, self.action_space:]      # Second half for log standard deviations
         log_std = log_std.squeeze()
         std = F.sigmoid(log_std)               # Standard deviation must be positive; use exp to enforce this, maybe SOFTPLUS instead
                                                 
@@ -132,15 +132,16 @@ class SimplePPO:
         cum_r = 0
         cum_rs = deque(maxlen=100)
         cum_rs.append(0)
+        
 
         for i in range(1, iterations):
+            obs, _ = env.reset()
+            obs = self.translate_observation(obs)
 
             if export_model and (i % export_iteration_period == 0):
                 self._export_model(np.mean(cum_rs))
 
             print(f"iter: {self.global_iterations}| episode: {self.global_episode}| cum_r: {cum_r} | mean cum_rs last {cum_rs.maxlen}: {np.mean(cum_rs):.2f}")
-            obs, _ = env.reset()
-            obs = self.translate_observation(obs)
 
             cum_rs.append(cum_r)
             cum_r = 0
@@ -163,15 +164,15 @@ class SimplePPO:
                     self.global_step +=1
                     obs_n, r, done, trunc, info = env.step(env_actions)
                     obs_n = self.translate_observation(obs_n)
-                    terminal = done or trunc
+                    terminal = trunc #todo make it not fake 
                                         
                     observations.append(obs) 
                     actions.append(acts)
                     rewards.append(r)
                     observations_n.append(obs_n)
                     actions_probs.append(log_probs)
-                    terminals.append(terminal)
-                    cum_r +=r
+                    terminals.append(done) #todo make it better
+                    cum_r += np.sum(r)
 
                     obs = obs_n
                     
@@ -192,27 +193,31 @@ class SimplePPO:
                 obs_n = torch.stack(observations_n)
                 acts = torch.stack(actions)
                 rs = torch.tensor(rewards, device=device)
-                terminals = torch.tensor(terminals, device=device)
+                terminals = (torch.tensor(terminals) > 0).to(device)
                 
                 debug_log(lambda: f"NEWLOG| acts: {acts}\nold_prob {old_log_prob}\n")
             #calculate advantages
-            
-                vs = self.critic(obs).squeeze()
-                vs_n = self.critic(obs_n).squeeze() #squeeze :|
+                
+                vs = self.critic(obs)
+                vs_n = self.critic(obs_n)
+                debug_log(lambda: f"vs shape {vs.shape}, vs_n shape {vs_n.shape}, termianls shape {terminals.shape}\n")
                 vs_n = torch.where(terminals, 0, vs_n)
                 dts = rs + self.critic.discount * vs_n - vs
+                
                 advantages = torch.zeros_like(dts, device=device)
                 advantages[-1] = dts[-1]
                 for t in reversed(range(len(dts)-1)):
-                    if terminals[t+1]:
-                        advantages[t] = dts[t]  # Reset advantage at the end of the episode
-                    else:
-                        advantages[t] = dts[t] + self.critic.discount * self.critic.gae * advantages[t+1]
+                    #if terminals[t+1]: #todo obviously add terminals
+                    #    advantages[t] = dts[t]  # Reset advantage at the end of the episode
+                    #else:
+                    advantages[t] = dts[t] + self.critic.discount * self.critic.gae * advantages[t+1]
 
+                debug_log(lambda: f"dts shape {dts.shape}, advantages shape {advantages.shape}\n")
 
                 debug_log(lambda: f"calculate advantages:\nterminals: {terminals}, \nrewards{rs}, \nvs: {vs}, \nvs_n: {vs_n}, \ndts{dts}, \nadvantages {advantages}")
                 advantages -= torch.mean(advantages)
                 advantages /= torch.std(advantages)
+                advantages = advantages.squeeze()
                 debug_log(lambda: f"advantages after normalization {advantages}, mean {torch.mean(advantages)}, std {torch.std(advantages)}")
                 target_v = rs + self.critic.discount * vs_n
 
@@ -227,24 +232,24 @@ class SimplePPO:
                 mean, std =  self.actor(obs)                                #todo probaby should use only indexes
                 normal_dist = torch.distributions.Normal(mean, std)
                 new_log_probs = normal_dist.log_prob(acts)
-                if self.actor.action_space > 1: # Sum log probabilities for multi-dimensional actionsdraw
-                    new_log_probs = new_log_probs.sum(axis=-1)  
+                new_log_probs = new_log_probs.sum(axis=-1)  
 
                 debug_log(lambda: f"NEWLOG|epoch{k}:\n actions {acts}, old_log_probs {old_log_prob}, new_log_probs{new_log_probs}")
 
                 ratio = torch.exp(new_log_probs[indices] - old_log_prob[indices])
+                debug_log(lambda: f"NEWLOG| sub {new_log_probs[indices] - old_log_prob[indices]}\nratio: {ratio}\n")
 
                 obj1 = ratio * advantages[indices]
                 obj2 = torch.clamp(ratio, 1-self.clip, 1+ self.clip) * advantages[indices] 
 
                 debug_log(lambda: f"NEWLOG| ratio: {ratio}, obj1: {obj1}, obj2: {obj2}, advantages: {advantages[indices]}")
                 #todo add entorpy bonus
-                new_probs = torch.exp(new_log_probs[indices])
-                entropy_scalar = distributions.Categorical(probs = new_probs).entropy()
+                #new_probs = torch.exp(new_log_probs[indices])
+                #entropy_scalar = distributions.Categorical(probs = new_probs).entropy()
 
-                debug_log(lambda: f"entropy calc | \nnew_probs {new_probs}, \nentropy scalar: {entropy_scalar}, times factor: {self.entropy_factor *entropy_scalar}\n")
+                #debug_log(lambda: f"entropy calc | \nnew_probs {new_probs}, \nentropy scalar: {entropy_scalar}, times factor: {self.entropy_factor *entropy_scalar}\n")
 
-                a_loss = torch.mean(torch.min(obj1, obj2)) + self.entropy_factor * entropy_scalar
+                a_loss = torch.mean(torch.min(obj1, obj2)) #+ self.entropy_factor * entropy_scalar todo add entropy later
                 #verbose
                 debug_log(lambda: f"loss components | obj1 (policy gradient): {torch.mean(obj1).item():.5f}, obj2 (clip): {torch.mean(obj2).item():.5f}\n")
                 a_loss.backward()                                                 
@@ -253,7 +258,7 @@ class SimplePPO:
                     debug_log(lambda: f"critic loss calculation| critic obs\n{self.critic(obs[indices])}\ntarget_vs\n{target_v[indices]}\n")      
 
                 #c_loss = torch.mean(torch.pow(self.critic(obs[indices]) - target_v[indices], 2)) 
-                c_loss = torch.nn.functional.smooth_l1_loss(self.critic(obs[indices]).squeeze(), target_v[indices])
+                c_loss = torch.nn.functional.smooth_l1_loss(self.critic(obs[indices]), target_v[indices])
                 c_loss.backward()
                 self.critic_optimizer.step()
                

@@ -25,7 +25,11 @@ namespace levels
 	{
 	public:
 		using ObservationType = ObservationFactory::ObservationType;
-		using StepType = std::tuple<ObservationType, int, bool>; // obs, reward, done
+		using Observations = ObservationFactory::Observations;
+		using Rewards = std::vector<float>;
+		using Dones = std::vector<int>;
+		using StepType = std::tuple<Observations, Rewards, Dones>; // obs, reward, done
+		using Tactics = std::vector<ships::Tactic::TacticOutcome>;
 
 	private:
 		// size from -x, x
@@ -54,12 +58,10 @@ namespace levels
 
 		std::vector<std::shared_ptr<ships::AiShip>> aiShips;
 
-		std::vector<std::shared_ptr<ships::Ship>> hostileShips;
-		std::vector<std::shared_ptr<ships::Ship>> playerShips;
+		std::vector<std::shared_ptr<ships::Ship>> blueTeamShips;
+		std::vector<std::shared_ptr<ships::Ship>> redTeamShips;
 
 		std::shared_ptr<ships::PlayerShip> controledObject;
-
-		std::shared_ptr<ships::AiShip> neuralNetworkShip;
 
 		physics::CollisionModel collisionModel{};
 
@@ -71,16 +73,17 @@ namespace levels
 		virtual ~Arena();
 		virtual void handleEvents(const sf::Event &event) override;
 
-		StepType step(ships::Tactic::TacticOutcome tactic, int frameSkip);
-		ObservationType reset(bool recordEpisode = false);
-		ObservationType make_obs();
+		StepType step(const Tactics &tactics, int frameSkip);
+		Observations reset(bool recordEpisode = false);
+		Observations make_obs();
 		void draw();
 
 	private:
+		void setTactics(const Tactics &tactics);
+		Arena::Rewards makeRewards(const std::vector<int> &hps);
 		void recordFrame();
 		void populateArenaWithAsteroids(int n);
 
-		void cleanupDeadObjects();
 		void frameUpdate();
 		virtual void render() override;
 
@@ -93,8 +96,8 @@ namespace levels
 			func(projectiles);
 			func(aiShips);
 			func(shooters);
-			func(playerShips);
-			func(hostileShips);
+			func(redTeamShips);
+			func(blueTeamShips);
 		}
 
 		template <typename T, typename F>
@@ -113,7 +116,7 @@ namespace levels
 			if constexpr (std::is_base_of_v<ships::Ship, T>)
 			{
 				func(shooters);
-				team == redTeam ? func(playerShips) : func(hostileShips);
+				team == redTeam ? func(redTeamShips) : func(blueTeamShips);
 			}
 		}
 

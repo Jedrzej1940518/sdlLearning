@@ -18,7 +18,7 @@ class Environment
 public:
     Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip);
 
-    py::tuple step(py::array_t<float> action);
+    py::tuple step(py::array_t<float> actions);
     py::tuple reset();
 
     void initHumanRender();

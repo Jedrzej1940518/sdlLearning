@@ -14,29 +14,57 @@ bool make_info()
     return false;
 }
 
-py::array_t<float> make_obs(const levels::Arena::ObservationType &obs)
+py::array_t<float> make_obs(const levels::Arena::Observations &obs)
 {
-    return py::array_t<float>(obs.max_size(), obs.data());
+    auto result = py::array_t<float>(obs.size() * ObservationFactory::totalObsSize);
+    auto buf = result.request();
+    float *ptr = (float *)buf.ptr;
+
+    for (int i = 0; i < obs.size(); ++i)
+        for (int j = 0; j < ObservationFactory::totalObsSize; ++j)
+            ptr[i * ObservationFactory::totalObsSize + j] = obs[i][j];
+
+    result.resize({obs.size(), (std::size_t)ObservationFactory::totalObsSize});
+    return result;
 }
 
-py::tuple Environment::step(py::array_t<float> action)
+py::array_t<float> make_rewards(const levels::Arena::Rewards &obs)
+{
+    auto result = py::array_t<float>(obs.size(), obs.data());
+    result.resize({obs.size(), 1ul});
+    return result;
+}
+
+py::array_t<int> make_dones(const levels::Arena::Dones &dones)
+{
+    auto result = py::array_t<int>(dones.size(), dones.data());
+    result.resize({dones.size(), 1ul});
+    return result;
+}
+
+levels::Arena::Tactics make_tactics(py::array_t<float> actions)
+{
+    levels::Arena::Tactics tactics{};
+    auto buf = actions.request();
+    float *ptr = (float *)buf.ptr;
+
+    for (int i = 0; i < buf.shape[0]; ++i)
+    {
+        int offset = buf.shape[1] * i;
+        auto tactic = ships::Tactic::TacticOutcome{ptr[0 + offset], {ptr[1 + offset], ptr[2 + offset]}, ptr[3 + offset] > 0.5};
+        tactics.push_back(tactic);
+    }
+    return tactics;
+}
+
+py::tuple Environment::step(py::array_t<float> actions)
 {
     ++currentStep;
-    // std::cout << "action to str " << action.ndim() << std::endl;
-    auto r = action.unchecked<1>(); // add more dims l8ter sk8ter
-    float targetAngle;
-    sf::Vector2f targetVelocity;
-    bool shoot;
-    ships::Tactic::TacticOutcome tactic{};
-    tactic.targetAngle = r(0);
-    tactic.targetVelocity = {r(1), r(2)};
-    tactic.shoot = {r(3) > 0.5};
-
-    auto [obs, reward, done] = arena.step(tactic, frameSkip);
+    auto tactics = make_tactics(actions);
+    auto [obs, rewards, dones] = arena.step(tactics, frameSkip);
 
     bool trunc = currentStep > maxEpisodeSteps;
-
-    return py::make_tuple(make_obs(obs), reward, done, trunc, make_info());
+    return py::make_tuple(make_obs(obs), make_rewards(rewards), make_dones(dones), trunc, make_info());
 }
 py::tuple Environment::reset()
 {

@@ -119,11 +119,26 @@ auto projectileObs(const ships::Ship &observer, const ships::Projectile &proj)
     */
     return 1;
 }
+ObservationFactory::Observations ObservationFactory::makeObservations(const std::vector<std::shared_ptr<ships::AiShip>> &ships)
+{
+    Observations observations{};
+    observations.reserve(maxShips);
 
-ObservationFactory::ObservationType ObservationFactory::makeObservation(const ships::Ship &observer, const std::vector<std::shared_ptr<ships::Ship>> &ships)
+    for (const auto &ship : ships)
+    {
+        if (not ship->isNeuralNetwork())
+            continue;
+
+        observations.push_back(makeObservation(*ship, ships));
+    }
+    return observations;
+}
+
+ObservationFactory::ObservationType ObservationFactory::makeObservation(const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
 {
 
     ObservationType obs{};
+
     auto observerState = baseShipObs(observer);
     int embeddedObs = 0;
     int shipNum = ships.size();
@@ -147,15 +162,15 @@ ObservationFactory::ObservationType ObservationFactory::makeObservation(const sh
 }
 
 /*
-        if (hostileShips.size() == 0)
+        if (blueTeamShips.size() == 0)
             return ObservationType{};
 
         auto vel = neuralNetworkShip->getVelocity();
         auto velNormalized = vel / neuralNetworkShip->getMaxVelocity();
 
-        auto relativePos = neuralNetworkShip->getCenter() - hostileShips[0]->getCenter();
+        auto relativePos = neuralNetworkShip->getCenter() - blueTeamShips[0]->getCenter();
         auto rposNorm = relativePos / 10000.f; // damn thats big
-        auto hostileVel = hostileShips[0]->getVelocity() / hostileShips[0]->getMaxVelocity();
+        auto hostileVel = blueTeamShips[0]->getVelocity() / blueTeamShips[0]->getMaxVelocity();
         auto obs = ObservationType{
             rposNorm.x, rposNorm.y,
             hostileVel.x, hostileVel.y,

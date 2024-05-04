@@ -9,8 +9,8 @@
 namespace rendering
 {
 
-	CollisionObject::CollisionObject(const prefabs::CollidablePrefab& prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation)
-		: Object{ prefab, position, velocity, rotation }, hp{ prefab.hp }, maxHp{ prefab.hp }
+	CollisionObject::CollisionObject(const prefabs::CollidablePrefab &prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation)
+		: Object{prefab, position, velocity, rotation}, hp{prefab.hp}, maxHp{prefab.hp}
 	{
 	}
 
@@ -35,24 +35,24 @@ namespace rendering
 		constexpr float hpBarH = 10.f;
 		constexpr float outlineThickness = 1.f;
 
-		shapesToDraw.push_back(std::make_shared<sf::RectangleShape>(sf::Vector2{ spriteRadius * 2, hpBarH }));
-		auto& hpBarOutline = shapesToDraw.back();
+		shapesToDraw.push_back(std::make_shared<sf::RectangleShape>(sf::Vector2{spriteRadius * 2, hpBarH}));
+		auto &hpBarOutline = shapesToDraw.back();
 		hpBarOutline->setPosition(sprite.getPosition());
-		hpBarOutline->move({ -spriteRadius, -spriteRadius - 20.f });
+		hpBarOutline->move({-spriteRadius, -spriteRadius - 20.f});
 		hpBarOutline->setFillColor(sf::Color::Transparent);
 		hpBarOutline->setOutlineColor(sf::Color::Black);
 		hpBarOutline->setOutlineThickness(outlineThickness);
 
-		shapesToDraw.push_back(std::make_shared<sf::RectangleShape>(sf::Vector2{ spriteRadius * 2, hpBarH }));
-		auto& hpBar = shapesToDraw.back();
+		shapesToDraw.push_back(std::make_shared<sf::RectangleShape>(sf::Vector2{spriteRadius * 2, hpBarH}));
+		auto &hpBar = shapesToDraw.back();
 		hpBar->setPosition(sprite.getPosition());
-		hpBar->move({ -spriteRadius, -spriteRadius - 20.f });
+		hpBar->move({-spriteRadius, -spriteRadius - 20.f});
 
 		float healthPercentage = static_cast<float>(hp) / maxHp;
 
 		sf::Uint8 red = static_cast<sf::Uint8>(255 * (1.0 - healthPercentage));
 		sf::Uint8 green = static_cast<sf::Uint8>(255 * healthPercentage);
-		hpBar->setFillColor(sf::Color{ red, green, 0 });
+		hpBar->setFillColor(sf::Color{red, green, 0});
 		hpBar->setScale(healthPercentage, 1);
 	}
 
@@ -76,23 +76,23 @@ namespace rendering
 		// slowDown(body.getVelocity(), position, collisionModel.getGridParams());
 	}
 
-	void CollisionObject::draw(sf::RenderTarget& target, sf::RenderStates states) const
+	void CollisionObject::draw(sf::RenderTarget &target, sf::RenderStates states) const
 	{
 		Object::draw(target, states);
 
-		for (auto& shape : shapesToDraw)
+		for (auto &shape : shapesToDraw)
 			target.draw(*shape, states);
 
-		//debug purposes
-		for (auto& shape : foreverShapes)
+		// debug purposes
+		for (auto &shape : foreverShapes)
 			target.draw(*shape, states);
 	}
 
-	void CollisionObject::handleCollision(const CollisionObject& oth)
+	void CollisionObject::handleCollision(const CollisionObject &oth)
 	{
 		// soundsToPlay.insert(Sound::COLLISION);
 		sf::Vector2f collisionVector = oth.getCenter() - getCenter();
-		collisionParams = physics::CollisionParams{ true, oth.body.getVelocity(), collisionVector, oth.body.getMass() };
+		collisionParams = physics::CollisionParams{true, oth.body.getVelocity(), collisionVector, oth.body.getMass()};
 		auto sumSpeed = oth.body.getVelocity() - body.getVelocity();
 		auto magnitude = physics::getVectorMagnitude(sumSpeed);
 		auto dmg = magnitude * oth.body.getMass() / body.getMass() * constants::COLLISION_DAMAGE_FACTOR;
@@ -102,7 +102,7 @@ namespace rendering
 	void CollisionObject::hit(int dmg)
 	{
 		hp -= dmg;
-		alive = hp > 0;
+		// alive = hp > 0; //todo always dead?
 	}
 
 } // namespace rendering
