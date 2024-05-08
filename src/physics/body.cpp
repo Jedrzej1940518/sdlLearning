@@ -30,6 +30,30 @@ namespace physics
         rotationLeft = getVectorRotation(newSpeed); // todo fix this
         velocity = clampVector(newSpeed, maxVelocity);
     }
+    // when outside the arena we slow down!
+    void Body::slowDown()
+    {
+        if (position.x < -config::ARENA_MAX_X)
+        {
+            position.x = -config::ARENA_MAX_X;
+            velocity.x = 0.1f;
+        }
+        if (position.x > config::ARENA_MAX_X)
+        {
+            position.x = config::ARENA_MAX_X;
+            velocity.x = -0.1f;
+        }
+        if (position.y < -config::ARENA_MAX_Y)
+        {
+            position.y = -config::ARENA_MAX_Y;
+            velocity.y = 0.1f;
+        }
+        if (position.y > config::ARENA_MAX_Y)
+        {
+            position.y = config::ARENA_MAX_Y;
+            velocity.y = -0.1f;
+        }
+    }
     void Body::frameUpdate()
     {
         if (abs(rotationLeft) >= 0.01f)
@@ -45,6 +69,9 @@ namespace physics
             acceleratingOnce = false;
         }
         position += velocity;
+
+        if (mass == 1200) // todo super hacky this is lasher mass
+            slowDown();
     }
 
     void Body::accelerateOnce(sf::Vector2f accelerationVector)

@@ -20,6 +20,8 @@ namespace ships
 
 		CollisionObject::frameUpdate();
 
+		shapesToDraw.push_back(makeCircle(getCenter(), spriteRadius, team == config::RED_TEAM ? sf::Color::Red : sf::Color::Blue));
+
 		if (config::debugObject)
 		{
 			sf::Vector2f rotationVector = physics::getRotatedVector(targetAngle);

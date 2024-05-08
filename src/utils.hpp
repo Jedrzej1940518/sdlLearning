@@ -26,7 +26,7 @@ namespace globals
 
 namespace constants
 {
-	static inline constexpr float COLLISION_DAMAGE_FACTOR = 2.0f;
+	static inline constexpr float COLLISION_DAMAGE_FACTOR = 0.0f; // todo hehe
 	static inline constexpr float COLLISION_BOUNCE = 0.1f;
 	static inline constexpr float CARTESIAN_TO_SFML_ANGLE = 90.f;
 	static inline constexpr float BASE_SAFE_DIST = 75.f;
@@ -34,11 +34,20 @@ namespace constants
 
 namespace config
 {
-	inline static constexpr bool debugTactic{true};
-	inline static constexpr bool debugObject{true};
+	inline static constexpr bool debugTactic{false};
+	inline static constexpr bool debugObject{false};
 	inline static unsigned constexpr int SCREEN_HEIGHT = 800;
 	inline static unsigned constexpr int SCREEN_WIDTH = 1024;
 	inline static unsigned constexpr int FRAME_RATE = 1024;
+
+	inline static constexpr int ARENA_MAX_X = 750;
+	inline static constexpr int ARENA_MAX_Y = 750;
+
+	inline static unsigned constexpr int RED_TEAM = 0;
+	inline static unsigned constexpr int BLUE_TEAM = 1;
+
+	inline static unsigned constexpr int RED_TEAM_SHIPS = 3;
+	inline static unsigned constexpr int BLUE_TEAM_SHIPS = 1;
 }
 
 const char *findLastOccurrence(const char *str, const char *substr);

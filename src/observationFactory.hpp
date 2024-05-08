@@ -1,21 +1,22 @@
 
 #pragma once
 
-#include "ships/ship.hpp"
+#include "ships/aiShip.hpp"
 
 class ObservationFactory
 {
-    static constexpr int maxShips = 1;
-
-    static constexpr int baseObsSize = 16;
-    static constexpr int relativeObsSize = 20;
-
-    static constexpr int totalObsSize = baseObsSize + maxShips * relativeObsSize;
-
 public:
+    static constexpr int maxShips = config::BLUE_TEAM_SHIPS + config::RED_TEAM_SHIPS;
+
+    static constexpr int baseObsSize = 4;
+    static constexpr int relativeObsSize = 8;
+
+    static constexpr int totalObsSize = baseObsSize + (maxShips - 1) * relativeObsSize;
+
     using BaseObsType = std::array<float, baseObsSize>;
     using RelativeObsType = std::array<float, relativeObsSize>;
     using ObservationType = std::array<float, totalObsSize>;
 
-    ObservationType makeObservation(const ships::Ship &observer, const std::vector<std::shared_ptr<ships::Ship>> &ships);
+public:
+    ObservationType makeObservation(const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships);
 };

@@ -18,17 +18,36 @@ namespace levels
 		videoWriter->write(frame);
 	}
 
-	Arena::StepType Arena::step(ships::Tactic::TacticOutcome tactic, int frameSkip)
+	float Arena::teamAvgReward(int team, const std::vector<int> &hps)
+	{
+		float teamHpDelta = 0;
+
+		for (int i = 0; i < aiShips.size(); ++i)
+		{
+			const auto &ship = *(aiShips[i]);
+			int delta = ship.getHp() - hps[i];
+			if (ship.getTeam() == team)
+				teamHpDelta += delta;
+		}
+		int teamSize = team == redTeam ? redTeamShips.size() : blueTeamShips.size();
+		teamSize = teamSize == 0 ? 1 : teamSize;
+		return teamHpDelta / teamSize;
+	}
+	auto getHps(const std::vector<std::shared_ptr<ships::AiShip>> &ships)
+	{
+		std::vector<int> hps;
+		for (const auto &ship : ships)
+			hps.push_back(ship->getHp());
+		return hps;
+	}
+
+	Arena::StepType Arena::step(const Tactic &tactic, int frameSkip)
 	{
 		neuralNetworkShip->setTactic(tactic);
-
-		int playerTeamHp = 0;
-		int enemyTeamHp = 0;
-
-		std::for_each(playerShips.begin(), playerShips.end(), [&playerTeamHp](auto &obj)
-					  { playerTeamHp += obj->getHp(); });
-		std::for_each(hostileShips.begin(), hostileShips.end(), [&enemyTeamHp](auto &obj)
-					  { enemyTeamHp += obj->getHp(); });
+		int shipHp = neuralNetworkShip->getHp();
+		auto hps = getHps(aiShips);
+		int blueTeamSize = blueTeamShips.size();
+		int redTeamSize = redTeamShips.size();
 
 		for (int i = 0; i < frameSkip; ++i)
 		{
@@ -37,16 +56,41 @@ namespace levels
 			if (recordVideo)
 				recordFrame();
 		}
+		int blueTeamShipsLost = blueTeamSize - blueTeamShips.size();
+		int redTeamShipsLost = redTeamSize - redTeamShips.size();
 
-		std::for_each(playerShips.begin(), playerShips.end(), [&playerTeamHp](auto &obj)
-					  { playerTeamHp -= obj->getHp(); });
-		std::for_each(hostileShips.begin(), hostileShips.end(), [&enemyTeamHp](auto &obj)
-					  { enemyTeamHp -= obj->getHp(); });
+		int enemyTeam = neuralNetworkShip->getTeam() == redTeam ? blueTeam : redTeam;
 
-		int reward = enemyTeamHp - playerTeamHp; // how much hp diff we gained
-		bool done = neuralNetworkShip->getHp() <= 0 or (hostileShips.size() == 0);
+		bool done = neuralNetworkShip->getHp() <= 0 or (redTeamShips.size() == 0) or (blueTeamShips.size() == 0);
+
+		float reward = teamAvgReward(neuralNetworkShip->getTeam(), hps) - teamAvgReward(enemyTeam, hps);
+
+		if (blueTeamShipsLost != 0 or redTeamShipsLost != 0)
+		{
+			reward = enemyTeam == blueTeam ? blueTeamShipsLost * 150.f - redTeamShipsLost * 150.f : redTeamShipsLost * 150.f - blueTeamShipsLost * 150.f;
+		}
 
 		return std::make_tuple(make_obs(), reward, done);
+	}
+
+	void Arena::initArena()
+	{
+		clear();
+
+		std::mt19937 rng(time(nullptr));
+		std::uniform_int_distribution<int> coordDistribution(-400, 400);
+
+		addObject(std::make_shared<rendering::Background>(prefabs::background));
+
+		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{800, (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{-800, (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{0, 0}));
+
+		aiShips.back()->setNeuralNetwork(true);
+		neuralNetworkShip = aiShips.back();
+
+		// populateArenaWithAsteroids(asteroids_number);
 	}
 	Arena::ObservationType Arena::reset(bool recordEpisode)
 	{
@@ -66,41 +110,14 @@ namespace levels
 			videoWriter = std::make_shared<cv::VideoWriter>(fileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 60, cv::Size(config::SCREEN_WIDTH, config::SCREEN_HEIGHT));
 			std::cout << "Recording episode....Opening writer success? " << videoWriter->isOpened() << std::endl;
 		}
-
-		clear();
-
-		auto background = std::make_shared<rendering::Background>(prefabs::background);
-
-		// auto wolf = std::make_shared<ships::AiShip>(prefabs::wolf, sf::Vector2f{-200, -200});
-		auto lasher_blue = std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{200, 0});
-		// auto lasher2_blue = std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{400, 0});
-		// auto hammerhead_blue = std::make_shared<ships::AiShip>(prefabs::hammerhead, blueTeam, sf::Vector2f{0, -200});
-
-		// auto lasher_red = std::make_shared<ships::AiShip>(prefabs::lasher, redTeam, sf::Vector2f{200, 0});
-		// auto lasher2_red = std::make_shared<ships::AiShip>(prefabs::lasher, redTeam, sf::Vector2f{400, 0});
-		auto neuralNetwork = std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 0}, sf::Vector2f{0, 0}, 0.f, true);
-
-		addObject(background);
-		// addObject(wolf);
-		addObject(lasher_blue, lasher_blue->getTeam());
-		// addObject(lasher2_blue, lasher2_blue->getTeam());
-		// addObject(hammerhead_blue, hammerhead_blue->getTeam());
-		// // addObject(lasher_red);
-		// // addObject(lasher2);
-		// // addObject(hammerhead);
-		// addObject(lasher_red, lasher_red->getTeam());
-		// addObject(lasher2_red, lasher2_red->getTeam());
-		addObject(neuralNetwork, neuralNetwork->getTeam());
-		neuralNetworkShip = neuralNetwork;
-
-		populateArenaWithAsteroids(asteroids_number);
+		initArena();
 
 		return make_obs();
 	}
 	Arena::ObservationType Arena::make_obs()
 	{
 		ObservationFactory obsFactory{};
-		return obsFactory.makeObservation(*neuralNetworkShip, shooters);
+		return obsFactory.makeObservation(*neuralNetworkShip, aiShips);
 	}
 
 	void Arena::populateArenaWithAsteroids(int n)
@@ -155,7 +172,9 @@ namespace levels
 			paused = !paused;
 		}
 		else
+		{
 			controledObject->handleEvents(event);
+		}
 	}
 
 	void Arena::frameUpdate()
@@ -163,8 +182,12 @@ namespace levels
 		collisionModel.updateCollisions();
 
 		for (auto &aiShip : aiShips)
-			aiShip->determineTactic(hostileShips, playerShips, collidables, projectiles);
-
+		{
+			if (aiShip->getTeam() == blueTeam)
+				aiShip->determineTactic(blueTeamShips, redTeamShips, collidables, projectiles);
+			else
+				aiShip->determineTactic(redTeamShips, blueTeamShips, collidables, projectiles);
+		}
 		for (auto &obj : frameUpdateables)
 			obj->frameUpdate();
 
@@ -180,11 +203,25 @@ namespace levels
 
 	void Arena::draw()
 	{
+		static int draws = 0;
+		static int pov = 0;
+		draws++;
+		draws %= 10000;
+
+		if (draws % 200 == 0)
+		{
+			++pov;
+		}
+
 		globals::WINDOW->clear(sf::Color::White);
 
 		sf::View v = globals::WINDOW->getView();
 
-		v.setCenter(neuralNetworkShip->getSprite().getPosition());
+		if (aiShips.size() != 0)
+		{
+			pov %= aiShips.size();
+			v.setCenter(aiShips[pov]->getSprite().getPosition());
+		}
 
 		globals::WINDOW->setView(v);
 
@@ -193,7 +230,7 @@ namespace levels
 		{
 			globals::WINDOW->draw(*obj);
 		}
-		globals::WINDOW->display();
+		// globals::WINDOW->display();
 	}
 
 	void Arena::render()

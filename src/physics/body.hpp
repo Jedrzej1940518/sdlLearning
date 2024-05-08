@@ -34,8 +34,8 @@ namespace physics
     void applyCollision(const CollisionParams &cp);
 
     // setters
-    void setPosition(const sf::Vector2f& p) { position = p; }
-    void setVelocity(const sf::Vector2f& v) { velocity = physics::clampVector(v, maxVelocity); }
+    void setPosition(const sf::Vector2f &p) { position = p; }
+    void setVelocity(const sf::Vector2f &v) { velocity = physics::clampVector(v, maxVelocity); }
     void setRotation(float r) { rotation = physics::normalizeDegrees(r); }
 
     // getters
@@ -46,5 +46,9 @@ namespace physics
     float getRotation() const { return rotation; }
     float getRotationLeft() { return rotationLeft; }
     float getMass() const { return mass; }
+
+  private:
+    // when outside the arena we slow down!
+    void slowDown();
   };
 } // namespace physics

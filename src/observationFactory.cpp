@@ -3,7 +3,7 @@
 
 float normalizePos(float x)
 {
-    return std::clamp(x / 5000, -1.f, 1.f);
+    return std::clamp(x / 750, -1.f, 1.f);
 }
 
 float normalizeVelocity(float x)
@@ -13,7 +13,7 @@ float normalizeVelocity(float x)
 
 float normalizeHp(float hp)
 {
-    return std::clamp(hp / 300, 0.f, 1.f);
+    return std::clamp(hp / 600, 0.f, 1.f);
 }
 
 float normalizeAcceleration(float maxAcceleration)
@@ -38,12 +38,12 @@ float normalizeCooldown(float cooldown)
 
 float normalizeProjVelocity(float projVelocity)
 {
-    return std::clamp(projVelocity / 10, 0.f, 1.f);
+    return std::clamp(projVelocity / 20, 0.f, 1.f);
 }
 
 float normalizeProjLifetime(float projLifetime)
 {
-    return std::clamp(projLifetime / 40, 0.f, 1.f);
+    return std::clamp(projLifetime / 20, 0.f, 1.f);
 }
 float normalizeProjDmg(float projDmg)
 {
@@ -70,24 +70,26 @@ ObservationFactory::BaseObsType baseShipObs(const ships::Ship &ship)
     cooldown,
     projectile speed, projectile timespan, projetile dmg, projectile scatter
     */
-    const auto &w = ship.getWeapon();
-    return ObservationFactory::BaseObsType{
-        normalizePos(ship.getCenter().x),
-        normalizePos(ship.getCenter().y),
-        normalizeVelocity(ship.getVelocity().x),
-        normalizeVelocity(ship.getVelocity().y),
-        normalizeVelocity(physics::getVectorMagnitude(ship.getVelocity())),
-        normalizeHp((float)ship.getHp()),
-        normalizeVelocity(ship.getMaxVelocity()),
-        normalizeAcceleration(ship.getMaxAcceleration()),
-        normalizeRotation(physics::degreesToRadians(ship.getRotationCartesian())),
-        normalizeShipRadius(ship.getRadius()),
-        ship.getCooldown() / ship.getMaxCooldown(),
-        normalizeCooldown(ship.getMaxCooldown()),
-        normalizeProjVelocity(w.getMaxVelocity()),
-        normalizeProjLifetime((float)w.getLifetime()),
-        normalizeProjDmg((float)w.getDmg()),
-        normalizeProjScatter(w.getScatter())};
+    // const auto &w = ship.getWeapon();
+    // return ObservationFactory::BaseObsType{
+    //     normalizePos(ship.getCenter().x),
+    //     normalizePos(ship.getCenter().y),
+    //     normalizeVelocity(ship.getVelocity().x),
+    //     normalizeVelocity(ship.getVelocity().y),
+    //     normalizeVelocity(physics::getVectorMagnitude(ship.getVelocity())),
+    //     normalizeHp((float)ship.getHp()),
+    //     normalizeVelocity(ship.getMaxVelocity()),
+    //     normalizeAcceleration(ship.getMaxAcceleration()),
+    //     normalizeRotation(physics::degreesToRadians(ship.getRotationCartesian())),
+    //     normalizeShipRadius(ship.getRadius()),
+    //     ship.getCooldown() / ship.getMaxCooldown(),
+    //     normalizeCooldown(ship.getMaxCooldown()),
+    //     normalizeProjVelocity(w.getMaxVelocity()),
+    //     normalizeProjLifetime((float)w.getLifetime()),
+    //     normalizeProjDmg((float)w.getDmg()),
+    //     normalizeProjScatter(w.getScatter())};
+
+    return ObservationFactory::BaseObsType{normalizePos(ship.getCenter().x), normalizePos(ship.getCenter().y), normalizeHp((float)ship.getHp()), normalizeRotation(physics::degreesToRadians(ship.getRotationCartesian()))};
 }
 
 ObservationFactory::RelativeObsType relativeShipObs(const ships::Ship &observer, const ships::Ship &ship)
@@ -98,11 +100,10 @@ ObservationFactory::RelativeObsType relativeShipObs(const ships::Ship &observer,
     */
     auto baseObs = baseShipObs(ship);
 
-    float team = ship.getTeam() == observer.getTeam() ? 1.f : -1.f;
+    // float team = ship.getTeam() == observer.getTeam() ? 1.f : -1.f;
     float angle = physics::getRelativeAngle(ship.getCenter(), observer.getCenter(), ship.getRotationCartesian());
     auto dPos = normalizeRelativePos(ship.getCenter() - observer.getCenter());
-    auto obs = std::array{
-        team, normalizeRotation(physics::degreesToRadians(angle)), dPos.x, dPos.y, physics::getVectorMagnitude(dPos)};
+    auto obs = std::array{normalizeRotation(physics::degreesToRadians(angle)), dPos.x, dPos.y, physics::getVectorMagnitude(dPos)};
 
     ObservationFactory::RelativeObsType relativeShipObs{};
 
@@ -120,10 +121,10 @@ auto projectileObs(const ships::Ship &observer, const ships::Projectile &proj)
     return 1;
 }
 
-ObservationFactory::ObservationType ObservationFactory::makeObservation(const ships::Ship &observer, const std::vector<std::shared_ptr<ships::Ship>> &ships)
+ObservationFactory::ObservationType ObservationFactory::makeObservation(const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
 {
-
     ObservationType obs{};
+
     auto observerState = baseShipObs(observer);
     int embeddedObs = 0;
     int shipNum = ships.size();
@@ -145,24 +146,3 @@ ObservationFactory::ObservationType ObservationFactory::makeObservation(const sh
 
     return obs;
 }
-
-/*
-        if (hostileShips.size() == 0)
-            return ObservationType{};
-
-        auto vel = neuralNetworkShip->getVelocity();
-        auto velNormalized = vel / neuralNetworkShip->getMaxVelocity();
-
-        auto relativePos = neuralNetworkShip->getCenter() - hostileShips[0]->getCenter();
-        auto rposNorm = relativePos / 10000.f; // damn thats big
-        auto hostileVel = hostileShips[0]->getVelocity() / hostileShips[0]->getMaxVelocity();
-        auto obs = ObservationType{
-            rposNorm.x, rposNorm.y,
-            hostileVel.x, hostileVel.y,
-            velNormalized.x, velNormalized.y,
-            neuralNetworkShip->getRotationCartesian() / 360,
-            neuralNetworkShip->getCooldown() / neuralNetworkShip->getMaxCooldown()};
-
-        return obs;
-
-    */

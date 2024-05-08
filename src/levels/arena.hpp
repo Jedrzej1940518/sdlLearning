@@ -25,16 +25,17 @@ namespace levels
 	{
 	public:
 		using ObservationType = ObservationFactory::ObservationType;
-		using StepType = std::tuple<ObservationType, int, bool>; // obs, reward, done
+		using StepType = std::tuple<ObservationType, float, bool>; // obs, reward, done
+		using Tactic = ships::Tactic::TacticOutcome;
 
 	private:
 		// size from -x, x
 		//  to -y, y
-		int x = 5000;
-		int y = 5000;
+		int x = config::ARENA_MAX_X;
+		int y = config::ARENA_MAX_Y;
 
-		int redTeam = 0;
-		int blueTeam = 1;
+		int redTeam = config::RED_TEAM;
+		int blueTeam = config::BLUE_TEAM;
 
 		int asteroids_number{0};
 
@@ -50,16 +51,14 @@ namespace levels
 		std::vector<std::shared_ptr<rendering::CollisionObject>> collidables;
 		std::vector<std::shared_ptr<ships::Projectile>> projectiles;
 
-		std::vector<std::shared_ptr<ships::Ship>> shooters;
-
 		std::vector<std::shared_ptr<ships::AiShip>> aiShips;
 
-		std::vector<std::shared_ptr<ships::Ship>> hostileShips;
-		std::vector<std::shared_ptr<ships::Ship>> playerShips;
-
-		std::shared_ptr<ships::PlayerShip> controledObject;
+		std::vector<std::shared_ptr<ships::Ship>> shooters;
+		std::vector<std::shared_ptr<ships::Ship>> blueTeamShips;
+		std::vector<std::shared_ptr<ships::Ship>> redTeamShips;
 
 		std::shared_ptr<ships::AiShip> neuralNetworkShip;
+		std::shared_ptr<ships::PlayerShip> controledObject; // not used
 
 		physics::CollisionModel collisionModel{};
 
@@ -71,16 +70,17 @@ namespace levels
 		virtual ~Arena();
 		virtual void handleEvents(const sf::Event &event) override;
 
-		StepType step(ships::Tactic::TacticOutcome tactic, int frameSkip);
+		StepType step(const Tactic &tactic, int frameSkip);
 		ObservationType reset(bool recordEpisode = false);
 		ObservationType make_obs();
 		void draw();
 
 	private:
+		void initArena();
+		float teamAvgReward(int team, const std::vector<int> &hps);
 		void recordFrame();
 		void populateArenaWithAsteroids(int n);
 
-		void cleanupDeadObjects();
 		void frameUpdate();
 		virtual void render() override;
 
@@ -93,8 +93,8 @@ namespace levels
 			func(projectiles);
 			func(aiShips);
 			func(shooters);
-			func(playerShips);
-			func(hostileShips);
+			func(redTeamShips);
+			func(blueTeamShips);
 		}
 
 		template <typename T, typename F>
@@ -113,20 +113,28 @@ namespace levels
 			if constexpr (std::is_base_of_v<ships::Ship, T>)
 			{
 				func(shooters);
-				team == redTeam ? func(playerShips) : func(hostileShips);
+				team == redTeam ? func(redTeamShips) : func(blueTeamShips);
 			}
 		}
 
 		// templated
 		template <typename T>
-		void addObject(std::shared_ptr<T> obj, int team = 0)
+		void addObject(std::shared_ptr<T> obj)
 		{
+
 			auto pushBack = [&obj]<typename Container>(Container &c)
 			{
 				c.push_back(obj);
 			};
 
-			doOnBaseContainers<T>(pushBack, team);
+			if constexpr (std::is_base_of_v<ships::Ship, T>)
+			{
+				auto ship = std::dynamic_pointer_cast<ships::Ship>(obj);
+				doOnBaseContainers<T>(pushBack, ship->getTeam());
+			}
+			else
+				doOnBaseContainers<T>(pushBack);
+
 			if constexpr (std::is_base_of_v<ships::Projectile, T> || std::is_base_of_v<rendering::CollisionObject, T>)
 				collisionModel.add(obj);
 

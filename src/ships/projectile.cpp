@@ -6,7 +6,7 @@
 namespace ships
 {
 
-	void Projectile::handleCollision(rendering::CollisionObject& oth)
+	void Projectile::handleCollision(rendering::CollisionObject &oth)
 	{
 		// auto sound = projectilePrefab.dmg > 6 ? Sound::SHELL_HIT_BIG : Sound::SHELL_HIT_SMALL;
 		// soundsToPlay.insert(sound);
@@ -14,13 +14,13 @@ namespace ships
 		oth.hit(dmg);
 		alive = false;
 	}
-	void Projectile::draw(sf::RenderTarget& target, sf::RenderStates states) const
+	void Projectile::draw(sf::RenderTarget &target, sf::RenderStates states) const
 	{
 		target.draw(sprite, states);
 	}
-	Projectile::Projectile(const prefabs::ProjectilePrefab& prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation) : position{ position }, velocity{ velocity }, rotation{ rotation }, lifetime{ prefab.lifetime }, dmg{ prefab.dmg }, reload{ prefab.reload }, scatterAngle{ prefab.scatterAngle }
+	Projectile::Projectile(const prefabs::ProjectilePrefab &prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation) : position{position}, velocity{velocity}, rotation{rotation}, lifetime{prefab.lifetime}, dmg{prefab.dmg}, reload{prefab.reload}, scatterAngle{prefab.scatterAngle}
 	{
-		static int projectiles{ 0 };
+		static int projectiles{0};
 		id = prefab.id + "_" + std::to_string(projectiles);
 		++projectiles;
 
@@ -28,7 +28,7 @@ namespace ships
 		texture.setSmooth(true);
 		sprite.setTexture(texture);
 		spriteRadius = getSpriteRadius(sprite);
-		sprite.setOrigin({ spriteRadius, spriteRadius });
+		sprite.setOrigin({spriteRadius, spriteRadius});
 		sprite.setPosition(position);
 		sprite.rotate(rotation);
 	}
@@ -41,6 +41,6 @@ namespace ships
 	{
 		sprite.move(velocity);
 		--lifetime;
-		alive &= lifetime > 0;
+		alive &= lifetime > -5; // todo omg idc
 	};
 }

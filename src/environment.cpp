@@ -5,10 +5,6 @@ Environment::Environment(int maxEpisodeSteps, int videoRecordInterval, int frame
 {
 }
 
-void Environment::initHumanRender() { initRendering(); }
-
-void Environment::draw() { arena.draw(); }
-
 bool make_info()
 {
     return false;
@@ -16,26 +12,24 @@ bool make_info()
 
 py::array_t<float> make_obs(const levels::Arena::ObservationType &obs)
 {
-    return py::array_t<float>(obs.max_size(), obs.data());
+    return py::array_t<float>(obs.size(), obs.data());
+}
+
+ships::Tactic::TacticOutcome make_tactic(py::array_t<float> action)
+{
+    auto buf = action.request();
+    float *ptr = (float *)buf.ptr;
+
+    return ships::Tactic::TacticOutcome{ptr[0], {ptr[1], ptr[2]}, ptr[3] > 0.5};
 }
 
 py::tuple Environment::step(py::array_t<float> action)
 {
     ++currentStep;
-    // std::cout << "action to str " << action.ndim() << std::endl;
-    auto r = action.unchecked<1>(); // add more dims l8ter sk8ter
-    float targetAngle;
-    sf::Vector2f targetVelocity;
-    bool shoot;
-    ships::Tactic::TacticOutcome tactic{};
-    tactic.targetAngle = r(0);
-    tactic.targetVelocity = {r(1), r(2)};
-    tactic.shoot = {r(3) > 0.5};
-
+    auto tactic = make_tactic(action);
     auto [obs, reward, done] = arena.step(tactic, frameSkip);
 
     bool trunc = currentStep > maxEpisodeSteps;
-
     return py::make_tuple(make_obs(obs), reward, done, trunc, make_info());
 }
 py::tuple Environment::reset()
