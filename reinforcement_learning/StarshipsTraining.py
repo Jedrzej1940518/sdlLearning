@@ -5,8 +5,8 @@ from PpoAgent import *
 import torch.nn.init as init
 import Starships
 
-obs_space = 28 #
-a_space = 4 # shoot, x, y
+obs_space = 42 #
+a_space = 4 # rotation, x, y, shoot?
 device = 'cuda'
 
 log_path = "Trainings/Starships"
@@ -61,9 +61,9 @@ def translate_output(net_output):
     return result
 
 def train():
-    env = Starships.Starships(4096, 600, 20) #max steps, video record, frame skip
-    ppo = SimplePPO(actor_net, a_space, critic_net, log_path, debug=True, horizon=4096, discount=0.95, debug_period = 100, minibatch_size=1024, actor_lr=0.000005, min_actor_lr=0.000005, critic_lr= 0.000005, min_critic_lr= 0.000005, entropy_factor=0.00005, translate_observation = translate_observation, translate_ouput= translate_output, target_device=device)
-    ppo.train(env, 40000, export_model=True, resume=True, export_iteration_period=100)
+    env = Starships.Starships(2048, 300, 10) #max steps, video record, frame skip
+    ppo = SimplePPO(actor_net, a_space, critic_net, log_path, debug=True, horizon=4096, epochs=20, discount=0.95, gae=0.95,debug_period = 100, minibatch_size=1024, actor_lr=0.000003, critic_lr= 0.000003, entropy_factor=0.00005, translate_observation = translate_observation, translate_ouput= translate_output, target_device=device)
+    ppo.train(env, 5000, export_model=True, resume=False, export_iteration_period=100)
 
 
 def test():
@@ -78,7 +78,7 @@ def main():
 if __name__ == "__main__":
     main()
 
-#2k iterations, it can kinda shoot in the rgith direction? pretty bad overall
 
-#add a new layer but it looks promising now, lower lr?
+#add a new layer / make the network bigger ONE BY ONE
+#grad norm?
 

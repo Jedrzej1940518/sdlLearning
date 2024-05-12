@@ -48,7 +48,7 @@ namespace physics
     float getMass() const { return mass; }
 
   private:
-    // when outside the arena we slow down!
-    void slowDown();
+    // when outside the arena we slow down! (bounds multiplied by f)
+    void slowDown(float f);
   };
 } // namespace physics

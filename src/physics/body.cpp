@@ -31,26 +31,26 @@ namespace physics
         velocity = clampVector(newSpeed, maxVelocity);
     }
     // when outside the arena we slow down!
-    void Body::slowDown()
+    void Body::slowDown(float f)
     {
-        if (position.x < -config::ARENA_MAX_X)
+        if (position.x < -config::ARENA_MAX_X * f)
         {
-            position.x = -config::ARENA_MAX_X;
+            position.x = -config::ARENA_MAX_X * f;
             velocity.x = 0.1f;
         }
-        if (position.x > config::ARENA_MAX_X)
+        if (position.x > config::ARENA_MAX_X * f)
         {
-            position.x = config::ARENA_MAX_X;
+            position.x = config::ARENA_MAX_X * f;
             velocity.x = -0.1f;
         }
-        if (position.y < -config::ARENA_MAX_Y)
+        if (position.y < -config::ARENA_MAX_Y * f)
         {
-            position.y = -config::ARENA_MAX_Y;
+            position.y = -config::ARENA_MAX_Y * f;
             velocity.y = 0.1f;
         }
-        if (position.y > config::ARENA_MAX_Y)
+        if (position.y > config::ARENA_MAX_Y * f)
         {
-            position.y = config::ARENA_MAX_Y;
+            position.y = config::ARENA_MAX_Y * f;
             velocity.y = -0.1f;
         }
     }
@@ -70,8 +70,10 @@ namespace physics
         }
         position += velocity;
 
-        if (mass == 1200) // todo super hacky this is lasher mass
-            slowDown();
+        if (mass == 9999) // todo super hacky this is lasher mass
+            slowDown(1.0);
+        else
+            slowDown(1.5);
     }
 
     void Body::accelerateOnce(sf::Vector2f accelerationVector)

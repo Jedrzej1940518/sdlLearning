@@ -14,8 +14,8 @@ import torch.nn.functional as F
 import torch.distributions as distributions
 import torch.optim.lr_scheduler as lr_scheduler
 
-device = 'cpu' #todo change for cuda
-debug_log = None #debug function
+device = 'cpu' # this changes to cuda in init func
+debug_log = None # this changes to proper function in init func
 
 class Critic(nn.Module):
     def __init__(self, sequential_network: nn.Sequential, discount = 0.99, gae = 0.95):
@@ -68,7 +68,7 @@ class Actor(nn.Module):
 
 class SimplePPO:
 
-    def __init__(self, actor_network, action_space, critic_network, log_path, translate_observation = lambda i: i, translate_ouput = lambda o: o, debug = False, debug_period = 10, target_device = 'cpu', clip = 0.2, horizon = 2048, actor_lr = 0.0001, min_actor_lr =0.00001, critic_lr = 0.0003, min_critic_lr = 0.00003, epochs = 10, minibatch_size = 64, discount = 0.99, gae = 0.95, entropy_factor = 0.01):
+    def __init__(self, actor_network, action_space, critic_network, log_path, translate_observation = lambda i: i, translate_ouput = lambda o: o, debug = False, debug_period = 10, target_device = 'cpu', clip = 0.2, horizon = 2048, actor_lr = 0.0001, critic_lr = 0.0003, epochs = 10, minibatch_size = 64, discount = 0.99, gae = 0.95, entropy_factor = 0.01):
         global device
         device = target_device
 
@@ -85,11 +85,6 @@ class SimplePPO:
 
         self.actor_optimizer = torch.optim.Adam(self.actor.network.parameters(), lr= actor_lr, maximize=True)
         self.critic_optimizer = torch.optim.Adam(self.critic.network.parameters(), lr = critic_lr)
-        self.actor_lr_scheduler = lr_scheduler.ExponentialLR(self.actor_optimizer, gamma=0.9995)
-        self.critic_lr_scheduler  = lr_scheduler.ExponentialLR(self.critic_optimizer, gamma=0.9995)
-        
-        self.min_critic_lr = min_critic_lr
-        self.min_actor_lr = min_actor_lr
 
         #debugging below
         self.log_path = log_path
@@ -113,19 +108,10 @@ class SimplePPO:
         debug_log(lambda: f"device: {device}, horizon: {horizon}, epochs: {epochs}, minibatch_size: {minibatch_size}, clip: {clip}\n")
         debug_log(lambda: f"discount: {discount}, gae: {gae}, actor_lr: {actor_lr}, critic_lr: {critic_lr}\n")
 
-    def _wrap_env_base(self, env): #no video recording
-        #transform_obs = lambda obs: self.translate_input(torch.tensor(obs, dtype=torch.float, device=device, requires_grad=False)) #turn to tensor and then apply translation
-        #env = gym.wrappers.TransformObservation(env, transform_obs)
-        #env = gym.wrappers.RecordEpisodeStatistics(env)
-        #env = gym.wrappers.RecordVideo(env, f'{self.log_path}/videos', episode_trigger=lambda x : x % self.video_interval == 0, disable_logger=False)
-        #env.metadata['render_fps'] = 60
-        return env
 
     #todo probably make this for N actors
     def train(self, env, iterations, resume = False, export_model = False, export_iteration_period = 100):
         
-        env = self._wrap_env_base(env)
-
         if resume:
             print("Resuming training....")
             self.critic.load_state_dict(torch.load(f'{self.log_path}/Critic.pth'))
@@ -251,19 +237,9 @@ class SimplePPO:
                 c_loss = torch.nn.functional.smooth_l1_loss(self.critic(obs_t[indices]).squeeze(), target_v[indices])
                 c_loss.backward()
                 self.critic_optimizer.step()
-               
-                self.actor_lr_scheduler.step()
-                self.critic_lr_scheduler.step()
-                actor_lr, critic_lr = 0,0
-                for param_group in self.actor_optimizer.param_groups:
-                    param_group['lr'] = max(param_group['lr'], self.min_actor_lr)
-                    actor_lr = param_group['lr']
-                for param_group in self.critic_optimizer.param_groups:
-                    param_group['lr'] = max(param_group['lr'], self.min_critic_lr)
-                    critic_lr = param_group['lr']
-
+            
                 with torch.no_grad():
-                    debug_log(lambda: f"epoch:{k}| actor_loss: {a_loss:.2f}, critic_loss {c_loss:.2f}, actor_lr {actor_lr}, critic_lr {critic_lr}\n")
+                    debug_log(lambda: f"epoch:{k}| actor_loss: {a_loss:.2f}\n")
                     debug_log(lambda: f"epoch:{k}| mean prob ratio: {torch.mean(ratio).item()}, mean_adv: {torch.mean(advantages).item()}, mean_target_v: {torch.mean(target_v).item()}\n")
 
 

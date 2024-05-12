@@ -42,12 +42,13 @@ namespace config
 
 	inline static constexpr int ARENA_MAX_X = 750;
 	inline static constexpr int ARENA_MAX_Y = 750;
+	inline static constexpr float SHIP_LOST_REWARD = 25.f;
 
-	inline static unsigned constexpr int RED_TEAM = 0;
-	inline static unsigned constexpr int BLUE_TEAM = 1;
+	inline static constexpr int RED_TEAM = 0;
+	inline static constexpr int BLUE_TEAM = 1;
 
-	inline static unsigned constexpr int RED_TEAM_SHIPS = 3;
-	inline static unsigned constexpr int BLUE_TEAM_SHIPS = 1;
+	inline static constexpr int RED_TEAM_SHIPS = 3;
+	inline static constexpr int BLUE_TEAM_SHIPS = 2;
 }
 
 const char *findLastOccurrence(const char *str, const char *substr);

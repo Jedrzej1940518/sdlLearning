@@ -23,7 +23,7 @@ float normalizeAcceleration(float maxAcceleration)
 
 float normalizeRotation(float radians)
 {
-    return std::clamp(radians / 6.28f, -1.f, 1.f);
+    return std::clamp(radians / 3.14f, -1.f, 1.f);
 }
 
 float normalizeShipRadius(float radius)
@@ -89,7 +89,7 @@ ObservationFactory::BaseObsType baseShipObs(const ships::Ship &ship)
     //     normalizeProjDmg((float)w.getDmg()),
     //     normalizeProjScatter(w.getScatter())};
 
-    return ObservationFactory::BaseObsType{normalizePos(ship.getCenter().x), normalizePos(ship.getCenter().y), normalizeHp((float)ship.getHp()), normalizeRotation(physics::degreesToRadians(ship.getRotationCartesian()))};
+    return ObservationFactory::BaseObsType{normalizeVelocity(ship.getVelocity().x), normalizeVelocity(ship.getVelocity().y), normalizePos(ship.getCenter().x), normalizePos(ship.getCenter().y), normalizeHp((float)ship.getHp()), normalizeRotation(physics::degreesToRadians(ship.getRotationCartesian()))};
 }
 
 ObservationFactory::RelativeObsType relativeShipObs(const ships::Ship &observer, const ships::Ship &ship)
@@ -103,7 +103,7 @@ ObservationFactory::RelativeObsType relativeShipObs(const ships::Ship &observer,
     // float team = ship.getTeam() == observer.getTeam() ? 1.f : -1.f;
     float angle = physics::getRelativeAngle(ship.getCenter(), observer.getCenter(), ship.getRotationCartesian());
     auto dPos = normalizeRelativePos(ship.getCenter() - observer.getCenter());
-    auto obs = std::array{normalizeRotation(physics::degreesToRadians(angle)), dPos.x, dPos.y, physics::getVectorMagnitude(dPos)};
+    auto obs = std::array{normalizeRotation(physics::degreesToRadians(angle)), dPos.x, dPos.y};
 
     ObservationFactory::RelativeObsType relativeShipObs{};
 
@@ -121,28 +121,45 @@ auto projectileObs(const ships::Ship &observer, const ships::Projectile &proj)
     return 1;
 }
 
+void embbedShip(int team, int mass, int cpyIndex, ObservationFactory::ObservationType &obs, const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
+{
+    auto findShip = [&](std::shared_ptr<ships::AiShip> ship)
+    {
+        return (ship->getTeam() == team) && (ship->getMass() == mass);
+    };
+
+    auto ship = std::find_if(ships.begin(), ships.end(), findShip);
+
+    if (ship != ships.end())
+    {
+        auto teammateObs = relativeShipObs(observer, **ship);
+        std::copy(teammateObs.begin(), teammateObs.end(), obs.begin() + cpyIndex);
+    }
+}
+
 ObservationFactory::ObservationType ObservationFactory::makeObservation(const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
 {
     ObservationType obs{};
 
     auto observerState = baseShipObs(observer);
-    int embeddedObs = 0;
     int shipNum = ships.size();
     std::copy(observerState.begin(), observerState.end(), obs.begin());
     int cpyIndex = observerState.size();
-    // embedding alive ships
-    for (int i = 0; i < shipNum; ++i)
-    {
-        auto &ship = *(ships[i]);
 
-        if (ship.getShipId() == observer.getShipId())
-            continue;
+    // ONE ORDER - observer, teammate hammerhead, scarab, scarab, hammerhead
+    embbedShip(observer.getTeam(), 2500, cpyIndex, obs, observer, ships);
+    cpyIndex += relativeObsSize;
 
-        auto shipObs = relativeShipObs(observer, ship);
-        std::copy(shipObs.begin(), shipObs.end(), obs.begin() + cpyIndex);
-        cpyIndex += shipObs.size();
-    }
-    // rest of observation is empty
+    int enemyTeam = observer.getTeam() == config::BLUE_TEAM ? config::RED_TEAM : config::BLUE_TEAM;
+
+    embbedShip(enemyTeam, 1000, cpyIndex, obs, observer, ships);
+    cpyIndex += relativeObsSize;
+
+    embbedShip(enemyTeam, 1000, cpyIndex, obs, observer, ships);
+    cpyIndex += relativeObsSize;
+
+    embbedShip(enemyTeam, 2500, cpyIndex, obs, observer, ships);
+    cpyIndex += relativeObsSize;
 
     return obs;
 }

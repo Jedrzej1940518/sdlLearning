@@ -8,8 +8,8 @@ class ObservationFactory
 public:
     static constexpr int maxShips = config::BLUE_TEAM_SHIPS + config::RED_TEAM_SHIPS;
 
-    static constexpr int baseObsSize = 4;
-    static constexpr int relativeObsSize = 8;
+    static constexpr int baseObsSize = 6;
+    static constexpr int relativeObsSize = 9;
 
     static constexpr int totalObsSize = baseObsSize + (maxShips - 1) * relativeObsSize;
 

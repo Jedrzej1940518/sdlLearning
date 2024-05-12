@@ -18,34 +18,31 @@ namespace levels
 		videoWriter->write(frame);
 	}
 
-	float Arena::teamAvgReward(int team, const std::vector<int> &hps)
-	{
-		float teamHpDelta = 0;
-
-		for (int i = 0; i < aiShips.size(); ++i)
-		{
-			const auto &ship = *(aiShips[i]);
-			int delta = ship.getHp() - hps[i];
-			if (ship.getTeam() == team)
-				teamHpDelta += delta;
-		}
-		int teamSize = team == redTeam ? redTeamShips.size() : blueTeamShips.size();
-		teamSize = teamSize == 0 ? 1 : teamSize;
-		return teamHpDelta / teamSize;
-	}
 	auto getHps(const std::vector<std::shared_ptr<ships::AiShip>> &ships)
 	{
-		std::vector<int> hps;
+		int blueTeamHps = 0;
+		int redTeamHps = 0;
+
 		for (const auto &ship : ships)
-			hps.push_back(ship->getHp());
-		return hps;
+		{
+			blueTeamHps += ship->getTeam() == config::BLUE_TEAM ? ship->getHp() : 0;
+			redTeamHps += ship->getTeam() == config::RED_TEAM ? ship->getHp() : 0;
+		}
+		return std::tuple(blueTeamHps, redTeamHps);
+	}
+
+	auto teamsHpDelta(int blueTeamPrevHp, int redTeamPrevHp, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
+	{
+		auto [blueTeamHp, redTeamHp] = getHps(ships);
+		return std::tuple(blueTeamHp - blueTeamPrevHp, redTeamHp - redTeamPrevHp);
 	}
 
 	Arena::StepType Arena::step(const Tactic &tactic, int frameSkip)
 	{
 		neuralNetworkShip->setTactic(tactic);
-		int shipHp = neuralNetworkShip->getHp();
-		auto hps = getHps(aiShips);
+
+		auto [blueTeamHp, redTeamHp] = getHps(aiShips);
+
 		int blueTeamSize = blueTeamShips.size();
 		int redTeamSize = redTeamShips.size();
 
@@ -59,17 +56,15 @@ namespace levels
 		int blueTeamShipsLost = blueTeamSize - blueTeamShips.size();
 		int redTeamShipsLost = redTeamSize - redTeamShips.size();
 
-		int enemyTeam = neuralNetworkShip->getTeam() == redTeam ? blueTeam : redTeam;
+		int team = neuralNetworkShip->getTeam();
+
+		auto [blueTeamHpDelta, redTeamHpDelta] = teamsHpDelta(blueTeamHp, redTeamHp, aiShips);
+
+		float reward = team == blueTeam ? redTeamShipsLost - blueTeamShipsLost : blueTeamShipsLost - redTeamShipsLost;
+		reward *= config::SHIP_LOST_REWARD;
+		reward += team == blueTeam ? blueTeamHpDelta - redTeamHpDelta : redTeamHpDelta - blueTeamHpDelta;
 
 		bool done = neuralNetworkShip->getHp() <= 0 or (redTeamShips.size() == 0) or (blueTeamShips.size() == 0);
-
-		float reward = teamAvgReward(neuralNetworkShip->getTeam(), hps) - teamAvgReward(enemyTeam, hps);
-
-		if (blueTeamShipsLost != 0 or redTeamShipsLost != 0)
-		{
-			reward = enemyTeam == blueTeam ? blueTeamShipsLost * 150.f - redTeamShipsLost * 150.f : redTeamShipsLost * 150.f - blueTeamShipsLost * 150.f;
-		}
-
 		return std::make_tuple(make_obs(), reward, done);
 	}
 
@@ -85,7 +80,9 @@ namespace levels
 		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
 		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{800, (float)(coordDistribution(rng))}));
 		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{-800, (float)(coordDistribution(rng))}));
-		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{0, 0}));
+
+		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, blueTeam, sf::Vector2f{0, 0}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{0, -300}));
 
 		aiShips.back()->setNeuralNetwork(true);
 		neuralNetworkShip = aiShips.back();
