@@ -39,6 +39,11 @@ namespace prefabs
 		const ProjectilePrefab &weaponPrefab;
 	};
 
+	inline static constexpr int lasherMass = 9999;
+	inline static constexpr int hammerheadMass = 2500;
+	inline static constexpr int wolfMass = 600;
+	inline static constexpr int scarabMass = 1000;
+
 	const inline Prefab background{getDataPath("graphics/backgrounds/background3.jpg"), "background3"};
 
 	const inline CollidablePrefab asteroid2{getDataPath("graphics/asteroids/asteroid2.png"), "asteroid2", 4, 600, 4, 0.f, 60};
@@ -51,9 +56,9 @@ namespace prefabs
 	const inline ProjectilePrefab scarabShell{getDataPath("graphics/projectiles/rift_torpedo.png"), "scarab_shell", 25, 1, 15, 20, 0.f};
 	const inline ProjectilePrefab torpedo{getDataPath("graphics/projectiles/missile_torpedo_compact.png"), "torpedo", 20, 20, 90, 25.f, 0};
 	// max_velocity, mass, max_rotation_speed (degrees), max_acceleration, hp
-	const inline ShipPrefab hammerhead{getDataPath("graphics/ships/hammerhead_dd.png"), "hammerhead", 3.2f, 2500, 2.f, 0.2f, 200, hammerheadShell};
-	const inline ShipPrefab lasher{getDataPath("graphics/ships/lasher_ff.png"), "lasher", 4.6f, 9999, 20.f, 0.6f, 600, lasherShell};
-	const inline ShipPrefab wolf{getDataPath("graphics/ships/wolf_ff.png"), "wolf", 5.5f, 600, 20.f, 0.7f, 40, torpedo};
-	const inline ShipPrefab scarab{getDataPath("graphics/ships/scarab.png"), "scarab", 4.3f, 1000, 3.f, 0.5f, 100, scarabShell};
+	const inline ShipPrefab hammerhead{getDataPath("graphics/ships/hammerhead_dd.png"), "hammerhead", 3.2f, hammerheadMass, 2.f, 0.2f, 200, hammerheadShell};
+	const inline ShipPrefab lasher{getDataPath("graphics/ships/lasher_ff.png"), "lasher", 4.6f, lasherMass, 20.f, 0.6f, 600, lasherShell};
+	const inline ShipPrefab wolf{getDataPath("graphics/ships/wolf_ff.png"), "wolf", 5.5f, wolfMass, 20.f, 0.7f, 40, torpedo};
+	const inline ShipPrefab scarab{getDataPath("graphics/ships/scarab.png"), "scarab", 4.3f, scarabMass, 3.f, 0.5f, 100, scarabShell};
 
 }

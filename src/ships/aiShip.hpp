@@ -9,7 +9,7 @@ namespace ships
     {
         Tactic tactic{*this};
         Tactic::TacticOutcome currentTactic;
-        bool neuralNetwork = false;
+        bool neuralNetwork{false};
 
     public:
         AiShip(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, bool neuralNetwork = false, sf::Vector2f velocity = {0, 0}, float rotation = 0);

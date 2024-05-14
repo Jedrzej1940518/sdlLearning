@@ -1,7 +1,7 @@
 
 #include "environment.hpp"
 
-Environment::Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, frameSkip{frameSkip}, arena{fakeLevel}
+Environment::Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip, int scenario) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, frameSkip{frameSkip}, scenario{scenario}, arena{fakeLevel}
 {
 }
 
@@ -10,17 +10,12 @@ bool make_info()
     return false;
 }
 
-py::array_t<float> make_obs(const levels::Arena::ObservationType &obs)
-{
-    return py::array_t<float>(obs.size(), obs.data());
-}
-
 ships::Tactic::TacticOutcome make_tactic(py::array_t<float> action)
 {
     auto buf = action.request();
     float *ptr = (float *)buf.ptr;
 
-    return ships::Tactic::TacticOutcome{ptr[0], {ptr[1], ptr[2]}, ptr[3] > 0.5};
+    return ships::Tactic::TacticOutcome{ptr[0], {ptr[1], ptr[2]}, ptr[3] > 0};
 }
 
 py::tuple Environment::step(py::array_t<float> action)
@@ -30,7 +25,9 @@ py::tuple Environment::step(py::array_t<float> action)
     auto [obs, reward, done] = arena.step(tactic, frameSkip);
 
     bool trunc = currentStep > maxEpisodeSteps;
-    return py::make_tuple(make_obs(obs), reward, done, trunc, make_info());
+    auto convertedObs = py::array_t<float>(obs.size(), obs.data());
+
+    return py::make_tuple(convertedObs, reward, done, trunc, make_info());
 }
 py::tuple Environment::reset()
 {
@@ -38,7 +35,8 @@ py::tuple Environment::reset()
     currentStep = 0;
     bool recordEpisode = videoRecordInterval and (currentEpsiode % videoRecordInterval == 0);
 
-    auto obs = arena.reset(recordEpisode);
+    auto obs = arena.reset(scenario, recordEpisode);
+    auto convertedObs = py::array_t<float>(obs.size(), obs.data());
 
-    return py::make_tuple(make_obs(obs), make_info());
+    return py::make_tuple(convertedObs, make_info());
 }

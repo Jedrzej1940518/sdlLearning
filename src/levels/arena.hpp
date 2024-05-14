@@ -65,18 +65,24 @@ namespace levels
 		int teamHp{0};
 		int enemyHp{0};
 
+		int currentScenario{0};
+
 	public:
 		Arena(LevelType &level);
 		virtual ~Arena();
 		virtual void handleEvents(const sf::Event &event) override;
 
 		StepType step(const Tactic &tactic, int frameSkip);
-		ObservationType reset(bool recordEpisode = false);
+		ObservationType reset(int scenario, bool recordEpisode = false);
 		ObservationType make_obs();
 		void draw();
 
 	private:
 		void initArena();
+		void initScenario0();
+		void initScenario1();
+		void initScenario2();
+
 		float teamAvgReward(int team, const std::vector<int> &hps);
 		void recordFrame();
 		void populateArenaWithAsteroids(int n);

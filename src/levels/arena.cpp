@@ -68,7 +68,42 @@ namespace levels
 		return std::make_tuple(make_obs(), reward, done);
 	}
 
-	void Arena::initArena()
+	void Arena::initScenario0()
+	{
+		clear();
+
+		std::mt19937 rng(time(nullptr));
+		std::uniform_int_distribution<int> coordDistribution(-400, 400);
+
+		addObject(std::make_shared<rendering::Background>(prefabs::background));
+
+		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{0, -300}));
+
+		aiShips.back()->setNeuralNetwork(true);
+		neuralNetworkShip = aiShips.back();
+	}
+
+	void Arena::initScenario1()
+	{
+		clear();
+
+		std::mt19937 rng(time(nullptr));
+		std::uniform_int_distribution<int> coordDistribution(-400, 400);
+
+		addObject(std::make_shared<rendering::Background>(prefabs::background));
+
+		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{800, (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{-800, (float)(coordDistribution(rng))}));
+
+		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{0, -300}));
+
+		aiShips.back()->setNeuralNetwork(true);
+		neuralNetworkShip = aiShips.back();
+	}
+
+	void Arena::initScenario2()
 	{
 		clear();
 
@@ -86,11 +121,33 @@ namespace levels
 
 		aiShips.back()->setNeuralNetwork(true);
 		neuralNetworkShip = aiShips.back();
+	}
+
+	void Arena::initArena()
+	{
+
+		switch (currentScenario)
+		{
+		case 0:
+			initScenario0();
+			break;
+		case 1:
+			initScenario1();
+			break;
+		case 2:
+			initScenario2();
+			break;
+
+		default:
+			break;
+		}
 
 		// populateArenaWithAsteroids(asteroids_number);
 	}
-	Arena::ObservationType Arena::reset(bool recordEpisode)
+	Arena::ObservationType Arena::reset(int scenario, bool recordEpisode)
 	{
+		currentScenario = scenario;
+
 		++episodeNumber;
 		if (videoWriter)
 		{
@@ -102,18 +159,19 @@ namespace levels
 		if (recordVideo)
 		{
 			initRendering();
-			std::string dirName = "Trainings/Starships/videos/";
+			std::string dirName = "Trainings/Starships/scenario_" + std::to_string(scenario) + "/videos/";
 			std::string fileName = dirName + "output_" + std::to_string(episodeNumber) + ".avi";
 			videoWriter = std::make_shared<cv::VideoWriter>(fileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 60, cv::Size(config::SCREEN_WIDTH, config::SCREEN_HEIGHT));
 			std::cout << "Recording episode....Opening writer success? " << videoWriter->isOpened() << std::endl;
 		}
+
 		initArena();
 
 		return make_obs();
 	}
 	Arena::ObservationType Arena::make_obs()
 	{
-		ObservationFactory obsFactory{};
+		ObservationFactory obsFactory(currentScenario);
 		return obsFactory.makeObservation(*neuralNetworkShip, aiShips);
 	}
 
@@ -152,7 +210,6 @@ namespace levels
 
 	Arena::Arena(LevelType &level) : Level{level}
 	{
-		reset();
 	}
 
 	void Arena::handleEvents(const sf::Event &event)

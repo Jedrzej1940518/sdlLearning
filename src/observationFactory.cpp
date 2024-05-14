@@ -56,110 +56,118 @@ float normalizeProjScatter(float projScatter)
 
 sf::Vector2f normalizeRelativePos(sf::Vector2f dPos)
 {
-    dPos /= 500.f;
+    dPos /= 800.f;
     return physics::clampVector(dPos, 1.f);
 }
 
-ObservationFactory::BaseObsType baseShipObs(const ships::Ship &ship)
+void fillBaseShipObs(ObservationFactory::ObservationType &obs, const ships::Ship &ship)
 {
-    /*
-    pos x, pos y,
-    velocity_x, velocity_y, velocity_magnitude,
-    hp,
-    max_velocity, max_acceleration, rotation (radians), radius,
-    cooldown,
-    projectile speed, projectile timespan, projetile dmg, projectile scatter
-    */
-    // const auto &w = ship.getWeapon();
-    // return ObservationFactory::BaseObsType{
-    //     normalizePos(ship.getCenter().x),
-    //     normalizePos(ship.getCenter().y),
-    //     normalizeVelocity(ship.getVelocity().x),
-    //     normalizeVelocity(ship.getVelocity().y),
-    //     normalizeVelocity(physics::getVectorMagnitude(ship.getVelocity())),
-    //     normalizeHp((float)ship.getHp()),
-    //     normalizeVelocity(ship.getMaxVelocity()),
-    //     normalizeAcceleration(ship.getMaxAcceleration()),
-    //     normalizeRotation(physics::degreesToRadians(ship.getRotationCartesian())),
-    //     normalizeShipRadius(ship.getRadius()),
-    //     ship.getCooldown() / ship.getMaxCooldown(),
-    //     normalizeCooldown(ship.getMaxCooldown()),
-    //     normalizeProjVelocity(w.getMaxVelocity()),
-    //     normalizeProjLifetime((float)w.getLifetime()),
-    //     normalizeProjDmg((float)w.getDmg()),
-    //     normalizeProjScatter(w.getScatter())};
-
-    return ObservationFactory::BaseObsType{normalizeVelocity(ship.getVelocity().x), normalizeVelocity(ship.getVelocity().y), normalizePos(ship.getCenter().x), normalizePos(ship.getCenter().y), normalizeHp((float)ship.getHp()), normalizeRotation(physics::degreesToRadians(ship.getRotationCartesian()))};
+    obs.push_back(normalizeVelocity(ship.getVelocity().x));
+    obs.push_back(normalizeVelocity(ship.getVelocity().y));
+    obs.push_back(normalizePos(ship.getCenter().x));
+    obs.push_back(normalizePos(ship.getCenter().y));
+    obs.push_back(normalizeHp((float)ship.getHp()));
+    obs.push_back(normalizeRotation(physics::degreesToRadians(ship.getRotationCartesian())));
 }
 
-ObservationFactory::RelativeObsType relativeShipObs(const ships::Ship &observer, const ships::Ship &ship)
+void fillRelativeShipObs(ObservationFactory::ObservationType &obs, const ships::Ship &observer, const ships::Ship &ship)
 {
-    /*
-    baseShipObs,
-    team (-1 enemy, 1 friendly), rotation to observer(radians), dx, dy, d magnitude (to observer),
-    */
-    auto baseObs = baseShipObs(ship);
 
-    // float team = ship.getTeam() == observer.getTeam() ? 1.f : -1.f;
-    float angle = physics::getRelativeAngle(ship.getCenter(), observer.getCenter(), ship.getRotationCartesian());
+    fillBaseShipObs(obs, ship);
+    float angle = physics::getRelativeAngle(observer.getCenter(), ship.getCenter(), observer.getRotationCartesian());
     auto dPos = normalizeRelativePos(ship.getCenter() - observer.getCenter());
-    auto obs = std::array{normalizeRotation(physics::degreesToRadians(angle)), dPos.x, dPos.y};
 
-    ObservationFactory::RelativeObsType relativeShipObs{};
-
-    std::copy(baseObs.begin(), baseObs.end(), relativeShipObs.begin());
-    std::copy(obs.begin(), obs.end(), relativeShipObs.begin() + baseObs.size());
-    return relativeShipObs;
+    obs.push_back(normalizeRotation(physics::degreesToRadians(angle)));
+    obs.push_back(dPos.x);
+    obs.push_back(dPos.y);
 }
 
-auto projectileObs(const ships::Ship &observer, const ships::Projectile &proj)
+void fillDeadShip(ObservationFactory::ObservationType &obs)
 {
-    /*
-    dx, dy, d magnitude (to observer),
-    velocity_x, velocity_y, velocity_magnitude, radius, timespan_left, dmg
-    */
-    return 1;
+    const int relativeObsSize = 9;
+
+    for (int i = 0; i < relativeObsSize; ++i)
+        obs.push_back(0);
 }
 
-void embbedShip(int team, int mass, int cpyIndex, ObservationFactory::ObservationType &obs, const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
+void ObservationFactory::embbedShip(int team, int mass, ObservationFactory::ObservationType &obs, const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
 {
     auto findShip = [&](std::shared_ptr<ships::AiShip> ship)
     {
-        return (ship->getTeam() == team) && (ship->getMass() == mass);
+        bool rightShip = (ship->getTeam() == team) && (ship->getMass() == mass);
+
+        auto shipById = std::find_if(shipsObserved.begin(), shipsObserved.end(), [&](int id)
+                                     { return id == ship->getShipId(); });
+
+        bool wasObserved = shipById != shipsObserved.end();
+
+        return rightShip && (not wasObserved);
     };
 
     auto ship = std::find_if(ships.begin(), ships.end(), findShip);
 
     if (ship != ships.end())
     {
-        auto teammateObs = relativeShipObs(observer, **ship);
-        std::copy(teammateObs.begin(), teammateObs.end(), obs.begin() + cpyIndex);
+        fillRelativeShipObs(obs, observer, **ship);
+        shipsObserved.push_back((*ship)->getShipId());
     }
+    else
+        fillDeadShip(obs);
+}
+
+// scenario 0 is 1v1, lasher vs hammerhead
+void ObservationFactory::fillScenario0(ObservationFactory::ObservationType &obs, const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
+{
+    obs.reserve(32);
+    fillBaseShipObs(obs, observer);
+    int enemyTeam = observer.getTeam() == config::BLUE_TEAM ? config::RED_TEAM : config::BLUE_TEAM;
+    embbedShip(enemyTeam, prefabs::hammerheadMass, obs, observer, ships);
+}
+// scenario 1 is 1v3, lasher vs hammerhead and 2 scarabs
+void ObservationFactory::fillScenario1(ObservationFactory::ObservationType &obs, const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
+{
+    obs.reserve(48);
+    fillBaseShipObs(obs, observer);
+    int enemyTeam = observer.getTeam() == config::BLUE_TEAM ? config::RED_TEAM : config::BLUE_TEAM;
+    embbedShip(enemyTeam, prefabs::hammerheadMass, obs, observer, ships);
+    embbedShip(enemyTeam, prefabs::scarabMass, obs, observer, ships);
+    embbedShip(enemyTeam, prefabs::scarabMass, obs, observer, ships);
+}
+// scenario 2 is 2v3 lasher+hammerhead vs hammerhead and 2 scarabs
+void ObservationFactory::fillScenario2(ObservationFactory::ObservationType &obs, const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
+{
+    obs.reserve(64);
+    fillBaseShipObs(obs, observer);
+    embbedShip(observer.getTeam(), prefabs::hammerheadMass, obs, observer, ships);
+
+    int enemyTeam = observer.getTeam() == config::BLUE_TEAM ? config::RED_TEAM : config::BLUE_TEAM;
+    embbedShip(enemyTeam, prefabs::hammerheadMass, obs, observer, ships);
+    embbedShip(enemyTeam, prefabs::scarabMass, obs, observer, ships);
+    embbedShip(enemyTeam, prefabs::scarabMass, obs, observer, ships);
 }
 
 ObservationFactory::ObservationType ObservationFactory::makeObservation(const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
 {
     ObservationType obs{};
 
-    auto observerState = baseShipObs(observer);
-    int shipNum = ships.size();
-    std::copy(observerState.begin(), observerState.end(), obs.begin());
-    int cpyIndex = observerState.size();
+    switch (scenario)
+    {
+    case 0:
+        fillScenario0(obs, observer, ships);
+        break;
 
-    // ONE ORDER - observer, teammate hammerhead, scarab, scarab, hammerhead
-    embbedShip(observer.getTeam(), 2500, cpyIndex, obs, observer, ships);
-    cpyIndex += relativeObsSize;
+    case 1:
+        fillScenario1(obs, observer, ships);
+        break;
+    case 2:
+        fillScenario2(obs, observer, ships);
+        break;
 
-    int enemyTeam = observer.getTeam() == config::BLUE_TEAM ? config::RED_TEAM : config::BLUE_TEAM;
+    default:
+        break;
+    }
 
-    embbedShip(enemyTeam, 1000, cpyIndex, obs, observer, ships);
-    cpyIndex += relativeObsSize;
-
-    embbedShip(enemyTeam, 1000, cpyIndex, obs, observer, ships);
-    cpyIndex += relativeObsSize;
-
-    embbedShip(enemyTeam, 2500, cpyIndex, obs, observer, ships);
-    cpyIndex += relativeObsSize;
+    shipsObserved.clear();
 
     return obs;
 }

@@ -5,7 +5,14 @@ from PpoAgent import *
 import torch.nn.init as init
 import Starships
 
-obs_space = 42 #
+
+base_obs_size = 6
+relative_obs_size = 9
+
+obs_space_scenario0 = base_obs_size + relative_obs_size # 1v1
+obs_space_scenario1 = base_obs_size + relative_obs_size * 3 # 1v3 
+obs_space_scenario2 = base_obs_size + relative_obs_size * 4 # 2v3
+
 a_space = 4 # rotation, x, y, shoot?
 device = 'cuda'
 
@@ -17,17 +24,19 @@ def init_weights(m):
         if m.bias is not None:
             init.constant_(m.bias, 0)
 
-#critic
-critic_net =  nn.Sequential(  nn.Linear(obs_space, 512),
+def make_critic_net(obs_space):
+    net =  nn.Sequential(  nn.Linear(obs_space, 512),
                                         nn.ReLU(),
                                         nn.Linear(512, 256),
                                         nn.ReLU(),
                                         nn.Linear(256, 128),
                                         nn.ReLU(),
                                         nn.Linear(128, 1))
+    net.apply(init_weights)
+    return net
 
-#actor 
-actor_net = nn.Sequential(    nn.Linear(obs_space, 512),
+def make_actor_net(obs_space):
+    net =  nn.Sequential(    nn.Linear(obs_space, 512),
                                         nn.ReLU(),
                                         nn.Linear(512, 256),
                                         nn.ReLU(),
@@ -35,8 +44,8 @@ actor_net = nn.Sequential(    nn.Linear(obs_space, 512),
                                         nn.ReLU(),
                                         nn.Linear(128, a_space * 2)) # times 2 because we're outputting mean and std
 
-critic_net.apply(init_weights)
-actor_net.apply(init_weights)
+    net.apply(init_weights)
+    return net
 
 
 def translate_observation(obs):
@@ -60,20 +69,18 @@ def translate_output(net_output):
     result[2] *=10
     return result
 
-def train():
-    env = Starships.Starships(2048, 300, 10) #max steps, video record, frame skip
-    ppo = SimplePPO(actor_net, a_space, critic_net, log_path, debug=True, horizon=4096, epochs=20, discount=0.95, gae=0.95,debug_period = 100, minibatch_size=1024, actor_lr=0.000003, critic_lr= 0.000003, entropy_factor=0.00005, translate_observation = translate_observation, translate_ouput= translate_output, target_device=device)
-    ppo.train(env, 5000, export_model=True, resume=False, export_iteration_period=100)
+def train(scenario, iterations):
+    env = Starships.Starships(2048, 300, 10, scenario) #max steps, video record, frame skip
+    obs_space = obs_space_scenario0 if scenario == 0 else (obs_space_scenario1 if scenario == 1 else obs_space_scenario2)
+    print(f"Training scenario {scenario} for {iterations} iterations, obs_space {obs_space}")
+    ppo = SimplePPO(make_actor_net(obs_space), a_space, make_critic_net(obs_space), log_path+f"/scenario_{scenario}", debug=True, horizon=4096, epochs=20, discount=0.95, gae=0.95,debug_period = 100, minibatch_size=1024, actor_lr=0.000003, critic_lr= 0.000003, entropy_factor=0.00005, translate_observation = translate_observation, translate_ouput= translate_output, target_device=device)
+    ppo.train(env, iterations, export_model=True, resume=False, export_iteration_period=100)
 
-
-def test():
-    env = Starships.Starships()
-    ppo = SimplePPO(actor_net, a_space, critic_net, log_path, translate_observation = translate_observation, translate_ouput= translate_output)
-    ppo.test(env)
 
 def main(): 
-    train()
-    #test()
+    #train(0, 200)
+    train(1, 4000)
+    train(2, 8000)
 
 if __name__ == "__main__":
     main()
@@ -82,3 +89,4 @@ if __name__ == "__main__":
 #add a new layer / make the network bigger ONE BY ONE
 #grad norm?
 
+#optimize this env to make it way faster ey? TIME IT and stuff
