@@ -60,7 +60,6 @@ targetVelocity (x, y) = {r(1), r(2)};
 shoot = {r(3) > 0.5};
 """
 
-
 def translate_output(net_output):
     actions = net_output.clamp(-1,1)
     result = np.array(actions.cpu())
@@ -70,17 +69,17 @@ def translate_output(net_output):
     return result
 
 def train(scenario, iterations):
-    env = Starships.Starships(2048, 300, 10, scenario) #max steps, video record, frame skip
+    env = Starships.Starships(2048, 300, 1, scenario) #max steps, video record, frame skip
     obs_space = obs_space_scenario0 if scenario == 0 else (obs_space_scenario1 if scenario == 1 else obs_space_scenario2)
     print(f"Training scenario {scenario} for {iterations} iterations, obs_space {obs_space}")
-    ppo = SimplePPO(make_actor_net(obs_space), a_space, make_critic_net(obs_space), log_path+f"/scenario_{scenario}", debug=True, horizon=4096, epochs=20, discount=0.95, gae=0.95,debug_period = 100, minibatch_size=1024, actor_lr=0.000003, critic_lr= 0.000003, entropy_factor=0.00005, translate_observation = translate_observation, translate_ouput= translate_output, target_device=device)
+    ppo = SimplePPO(make_actor_net(obs_space), a_space, make_critic_net(obs_space), log_path+f"/timing_{scenario}", debug=True, horizon=4096, epochs=10, discount=0.95, gae=0.95,debug_period = 100, minibatch_size=2048, actor_lr=0.000003, critic_lr= 0.000003, entropy_factor=0.00005, translate_observation = translate_observation, translate_ouput= translate_output, target_device=device)
     ppo.train(env, iterations, export_model=True, resume=False, export_iteration_period=100)
 
 
 def main(): 
     #train(0, 200)
-    train(1, 4000)
-    train(2, 8000)
+    train(1, 50)
+    #train(2, 8000)
 
 if __name__ == "__main__":
     main()

@@ -52,7 +52,7 @@ class Actor(nn.Module):
         std = std.squeeze()
         std_softplus = F.softplus(std)
                                                 
-        debug_log(lambda :f"NEWLOG| mean_tan{mean_tan}, mean {mean}\n std_softplus {std_softplus} \n std {std}\n")
+        #debug_log(lambda :f"NEWLOG| mean_tan{mean_tan}, mean {mean}\n std_softplus {std_softplus} \n std {std}\n")
 
         return mean_tan, std_softplus
     
@@ -62,7 +62,7 @@ class Actor(nn.Module):
         actions = normal_dist.sample()                          # Sample from the normal distribution
         actions = actions.squeeze()
         log_probs = normal_dist.log_prob(actions).sum(axis=-1)  # Sum log probabilities for multi-dimensional actions
-        debug_log(lambda :f"NEWLOG| actions {actions}\n log_probs {log_probs} \n exp(log_probs){torch.exp(log_probs)}\n")
+#        debug_log(lambda :f"NEWLOG| actions {actions}\n log_probs {log_probs} \n exp(log_probs){torch.exp(log_probs)}\n")
         return actions, log_probs
 
 
@@ -82,6 +82,10 @@ class SimplePPO:
 
         self.actor = Actor(action_space, actor_network) 
         self.critic = Critic(critic_network, discount, gae)
+
+        torch.set_float32_matmul_precision('medium')
+        self.actor = torch.compile(self.actor)
+        self.critic = torch.compile(self.critic)
 
         self.actor_optimizer = torch.optim.Adam(self.actor.network.parameters(), lr= actor_lr, maximize=True)
         self.critic_optimizer = torch.optim.Adam(self.critic.network.parameters(), lr = critic_lr)
