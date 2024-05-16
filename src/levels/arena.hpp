@@ -66,9 +66,10 @@ namespace levels
 		int enemyHp{0};
 
 		int currentScenario{0};
+		std::string logPath;
 
 	public:
-		Arena(LevelType &level);
+		Arena(LevelType &level, std::string logPath = "");
 		virtual ~Arena();
 		virtual void handleEvents(const sf::Event &event) override;
 

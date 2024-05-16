@@ -22,7 +22,7 @@ class GameState
   levels::Level *currentLevel{&menu};
 
 public:
-  GameState() :  menu{levelType}, arena{new levels::Arena(levelType)} {};
+  GameState() : menu{levelType}, arena{new levels::Arena(levelType)} {};
   void handleEvents();
   void render();
 };

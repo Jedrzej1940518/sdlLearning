@@ -159,7 +159,7 @@ namespace levels
 		if (recordVideo)
 		{
 			initRendering();
-			std::string dirName = "Trainings/Starships/scenario_" + std::to_string(scenario) + "/videos/";
+			std::string dirName = logPath + "/videos/";
 			std::string fileName = dirName + "output_" + std::to_string(episodeNumber) + ".avi";
 			videoWriter = std::make_shared<cv::VideoWriter>(fileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 60, cv::Size(config::SCREEN_WIDTH, config::SCREEN_HEIGHT));
 			std::cout << "Recording episode....Opening writer success? " << videoWriter->isOpened() << std::endl;
@@ -208,7 +208,7 @@ namespace levels
 		}
 	}
 
-	Arena::Arena(LevelType &level) : Level{level}
+	Arena::Arena(LevelType &level, std::string logPath) : Level{level}, logPath{logPath}
 	{
 	}
 

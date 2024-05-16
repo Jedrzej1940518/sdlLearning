@@ -56,7 +56,7 @@ def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters,
     frame_skip = env_parameters.get('frame_skip', 10)
     scenario = env_parameters.get('scenario', 1)
 
-    env = Starships.Starships(max_steps, record_episode_period, frame_skip, scenario)
+    env = Starships.Starships(max_steps, record_episode_period, frame_skip, scenario, full_log_path)
     obs_space = obs_space_scenario0 if scenario == 0 else (obs_space_scenario1 if scenario == 1 else obs_space_scenario2)
     actor_net = make_actor_net(obs_space, a_space*2)
     critic_net = make_critic_net(obs_space, 1)
@@ -75,7 +75,8 @@ def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters,
 
 def main(): 
     hyperparameters = {'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': 'cuda'}
-    train('base_training', 200, make_narrow_net, make_narrow_net, {}, hyperparameters)
+    env_parameters = {'record_episode_period' : 10}
+    train('base_training', 200, make_narrow_net, make_narrow_net, env_parameters, hyperparameters)
 
 if __name__ == "__main__":
     main()

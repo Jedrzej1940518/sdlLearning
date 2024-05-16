@@ -1,7 +1,7 @@
 
 #include "environment.hpp"
 
-Environment::Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip, int scenario) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, frameSkip{frameSkip}, scenario{scenario}, arena{fakeLevel}
+Environment::Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip, int scenario, std::string logPath) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, frameSkip{frameSkip}, scenario{scenario}, logPath{logPath}, arena{fakeLevel, logPath}
 {
 }
 
