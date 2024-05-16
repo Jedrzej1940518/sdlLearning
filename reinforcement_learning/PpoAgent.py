@@ -68,27 +68,34 @@ class Actor(nn.Module):
 
 class SimplePPO:
 
-    def __init__(self, actor_network, action_space, critic_network, log_path, translate_observation = lambda i: i, translate_ouput = lambda o: o, debug = False, debug_period = 10, target_device = 'cpu', clip = 0.2, horizon = 2048, actor_lr = 0.0001, critic_lr = 0.0003, epochs = 10, minibatch_size = 64, discount = 0.99, gae = 0.95, entropy_factor = 0.01):
-        global device
-        device = target_device
+    def __init__(self, actor_network, action_space, critic_network, log_path, hyperparameters):
 
-        self.horizon = horizon
-        self.epochs = epochs
-        self.minibatch_size = minibatch_size 
-        self.clip = clip
-        self.entropy_factor = entropy_factor
-        self.translate_ouput = translate_ouput
-        self.translate_observation = translate_observation
+        global device
+        device = hyperparameters.get('target_device', 'cpu')
+
+        self.horizon = hyperparameters.get('horizon', 2048)
+        self.epochs = hyperparameters.get('epochs', 10)
+        self.minibatch_size = hyperparameters.get('minibatch_size', 1024) 
+        self.clip = hyperparameters.get('clip', 0.2)
+        self.entropy_factor = hyperparameters.get('entropy_factor', 0.01)
+        self.actor_lr = hyperparameters.get('actor_lr', 0.0001)
+        self.critic_lr = hyperparameters.get('critic_lr', 0.0001)
+
+        self.translate_ouput = hyperparameters.get('translate_output', lambda o: o)
+        self.translate_observation = hyperparameters.get('translate_observation', lambda i: i)
+        
+        self.discount = hyperparameters.get('discount', 0.99)
+        self.gae = hyperparameters.get('gae', 0.95)
 
         self.actor = Actor(action_space, actor_network) 
-        self.critic = Critic(critic_network, discount, gae)
+        self.critic = Critic(critic_network, self.discount, self.gae)
 
         torch.set_float32_matmul_precision('medium')
         self.actor = torch.compile(self.actor)
         self.critic = torch.compile(self.critic)
 
-        self.actor_optimizer = torch.optim.Adam(self.actor.network.parameters(), lr= actor_lr, maximize=True)
-        self.critic_optimizer = torch.optim.Adam(self.critic.network.parameters(), lr = critic_lr)
+        self.actor_optimizer = torch.optim.Adam(self.actor.network.parameters(), lr= self.actor_lr, maximize=True)
+        self.critic_optimizer = torch.optim.Adam(self.critic.network.parameters(), lr = self.critic_lr)
 
         #debugging below
         self.log_path = log_path
@@ -98,8 +105,8 @@ class SimplePPO:
         self.exported_models = 0
 
         global debug_log
-        self.debug = debug
-        self.debug_period = debug_period
+        self.debug = hyperparameters.get('debug', False)
+        self.debug_period = hyperparameters.get('debug_period', 100)
         #this take msg lambda to prevent evaluating the string if no debug flag is active
         debug_log = lambda msg_lambda, file = 'debug' : self._debug_log(msg_lambda, file)
         
@@ -109,8 +116,7 @@ class SimplePPO:
         os.makedirs(f'{self.log_path}/models/actor', exist_ok=True)
         
         debug_log(lambda: "\n............................Another run happening............................\n")
-        debug_log(lambda: f"device: {device}, horizon: {horizon}, epochs: {epochs}, minibatch_size: {minibatch_size}, clip: {clip}\n")
-        debug_log(lambda: f"discount: {discount}, gae: {gae}, actor_lr: {actor_lr}, critic_lr: {critic_lr}\n")
+        debug_log(lambda: f"device: {device}, {self.export_hyperparameters()} \n")
 
 
     #todo probably make this for N actors
@@ -269,30 +275,10 @@ class SimplePPO:
 
         self.exported_models+=1
 
-    def test(self, env, episodes = 5):
-    
-        self.critic.load_state_dict(torch.load(f'{self.log_path}/Critic.pth'))
-        self.actor.load_state_dict(torch.load(f'{self.log_path}/Actor.pth'))
+    def export_hyperparameters(self):
 
-        env.init_rendering()
-       
-
-        for i in range(episodes):
-            obs, _ = env.reset()
-            
-            done = False
-            cum_r = 0
-            steps = 0
-            
-            while not done:
-                env.draw()
-                obs = self.translate_observation(obs)
-                acts, _ = self.actor.sample_continous_action(obs)
-                env_actions = self.translate_ouput(acts)
-                
-                obs, r, done, trunc, _ = env.step(env_actions)
-                done = done or trunc
-                cum_r += r
-                steps +=1
-
-            print(f"Episode: {i} | cum_r:{cum_r}, steps {steps}")
+        return {"horizon": self.horizon, "epochs" : self.epochs, 
+                "minibatch_size" : self.minibatch_size, "clip" : self.clip, 
+                "entropy_factor": self.entropy_factor, 
+                "gae": self.gae, "discount": self.discount, 
+                "actor_lr": self.actor_lr, "critic_lr": self.critic_lr }
