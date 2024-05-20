@@ -40,7 +40,6 @@ class Actor(nn.Module):
         self.network.to(device)
         
     def forward(self, x: torch.Tensor):
-
         x = self.network(x)
         if x.dim() == 1:  # If the input is of dim 1 because we're just playin
             x = x.unsqueeze(0)  # Unsqueeze it so we can properly select its halfs
@@ -52,7 +51,7 @@ class Actor(nn.Module):
         std = std.squeeze()
         std_softplus = F.softplus(std)
                                                 
-        #debug_log(lambda :f"NEWLOG| mean_tan{mean_tan}, mean {mean}\n std_softplus {std_softplus} \n std {std}\n")
+       # debug_log(lambda :f"NEWLOG| mean_tan{mean_tan}, mean {mean}\n std_softplus {std_softplus} \n std {std}\n")
 
         return mean_tan, std_softplus
     
@@ -62,14 +61,13 @@ class Actor(nn.Module):
         actions = normal_dist.sample()                          # Sample from the normal distribution
         actions = actions.squeeze()
         log_probs = normal_dist.log_prob(actions).sum(axis=-1)  # Sum log probabilities for multi-dimensional actions
-#        debug_log(lambda :f"NEWLOG| actions {actions}\n log_probs {log_probs} \n exp(log_probs){torch.exp(log_probs)}\n")
+     #   debug_log(lambda :f"NEWLOG| actions {actions}\n log_probs {log_probs} \n exp(log_probs){torch.exp(log_probs)}\n")
         return actions, log_probs
 
 
 class SimplePPO:
 
     def __init__(self, actor_network, action_space, critic_network, log_path, hyperparameters):
-
         global device
         device = hyperparameters.get('target_device', 'cpu')
 
@@ -96,6 +94,8 @@ class SimplePPO:
 
         self.actor_optimizer = torch.optim.Adam(self.actor.network.parameters(), lr= self.actor_lr, maximize=True)
         self.critic_optimizer = torch.optim.Adam(self.critic.network.parameters(), lr = self.critic_lr)
+
+        self.max_grad_norm = 0.5
 
         #debugging below
         self.log_path = log_path
@@ -129,11 +129,19 @@ class SimplePPO:
 
         cum_r = 0
         cum_rs = deque(maxlen=1000)
+        cum_rs.append(0)
+
+        cum_vs = deque(maxlen=1000)
         
         obs, _ = env.reset()
         obs = self.translate_observation(obs)
+    
+        self._training_log(f"iter,mean_cum_r_{cum_rs.maxlen},last_mean_vs,last_mean_entropy")
         
         for i in range(1, iterations):
+            
+            last_mean_vs = 0
+            last_mean_entropy = 0
 
             if export_model and (i % export_iteration_period == 0):
                 self._export_model(np.mean(cum_rs))
@@ -191,6 +199,8 @@ class SimplePPO:
             #calculate advantages
             
                 vs = self.critic(obs_t).squeeze()
+                last_mean_vs = torch.mean(vs).item() #training_log
+                cum_vs.append(last_mean_vs)
                 vs_n = self.critic(obs_n_t).squeeze() #squeeze :|
                 vs_n = torch.where(terminals_t, 0, vs_n)
                 dts = rs + self.critic.discount * vs_n - vs
@@ -233,6 +243,7 @@ class SimplePPO:
 
                 new_probs = torch.exp(new_log_probs[indices])
                 entropy_scalar = distributions.Categorical(probs = new_probs).entropy()
+                last_mean_entropy += entropy_scalar.item()
 
                 debug_log(lambda: f"entropy calc | \nnew_probs {new_probs}, \nentropy scalar: {entropy_scalar}, times factor: {self.entropy_factor *entropy_scalar}\n")
 
@@ -240,17 +251,21 @@ class SimplePPO:
 
                 debug_log(lambda: f"loss components | obj1 (policy gradient): {torch.mean(obj1).item():.5f}, obj2 (clip): {torch.mean(obj2).item():.5f}\n")
                 a_loss.backward()                                                 
+                nn.utils.clip_grad_norm_(self.actor.network.parameters(), self.max_grad_norm)
                 self.actor_optimizer.step()
                 with torch.no_grad():
                     debug_log(lambda: f"critic loss calculation| critic obs\n{self.critic(obs_t[indices])}\ntarget_vs\n{target_v[indices]}\n")      
 
                 c_loss = torch.nn.functional.smooth_l1_loss(self.critic(obs_t[indices]).squeeze(), target_v[indices])
                 c_loss.backward()
+                nn.utils.clip_grad_norm_(self.critic.network.parameters(), self.max_grad_norm)
                 self.critic_optimizer.step()
             
                 with torch.no_grad():
                     debug_log(lambda: f"epoch:{k}| actor_loss: {a_loss:.2f}\n")
                     debug_log(lambda: f"epoch:{k}| mean prob ratio: {torch.mean(ratio).item()}, mean_adv: {torch.mean(advantages).item()}, mean_target_v: {torch.mean(target_v).item()}\n")
+             
+            self._training_log(f"{self.global_iterations},{np.mean(cum_rs)},{np.mean(cum_vs)},{last_mean_entropy/self.epochs}")
 
 
     def _debug_log(self, msg_lambda, filename):
@@ -274,6 +289,10 @@ class SimplePPO:
             f.write(f'exported_models: {self.exported_models}, mean_r: {mean_r}\n')
 
         self.exported_models+=1
+
+    def _training_log(self, msg):
+        with open(f'{self.log_path}/logs/training.csv', 'a') as f:
+                f.write(f'{msg}\n')
 
     def export_hyperparameters(self):
 

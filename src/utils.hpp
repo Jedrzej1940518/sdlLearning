@@ -42,7 +42,7 @@ namespace config
 
 	inline static constexpr int ARENA_MAX_X = 750;
 	inline static constexpr int ARENA_MAX_Y = 750;
-	inline static constexpr float SHIP_LOST_REWARD = 25.f;
+	inline static constexpr float SHIP_LOST_REWARD = 10.f;
 
 	inline static constexpr int RED_TEAM = 0;
 	inline static constexpr int BLUE_TEAM = 1;
