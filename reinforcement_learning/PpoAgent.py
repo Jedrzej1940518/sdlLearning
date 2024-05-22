@@ -291,7 +291,7 @@ class SimplePPO:
         self.exported_models+=1
 
     def _training_log(self, msg):
-        with open(f'{self.log_path}/logs/training.csv', 'a') as f:
+        with open(f'{self.log_path}/training.csv', 'a') as f:
                 f.write(f'{msg}\n')
 
     def export_hyperparameters(self):
