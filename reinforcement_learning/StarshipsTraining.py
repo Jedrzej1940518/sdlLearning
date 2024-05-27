@@ -85,20 +85,31 @@ def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters,
 
 def main(): 
     hyperparameters = {'debug_period': 100, 'debug': True, 'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': device}
-    env_parameters = {'scenario':1, 'record_episode_period' : 300}
+    env_parameters = {'scenario':1, 'record_episode_period' : 20}
 
     hyperparameters['actor_lr'] = 0.00003
     hyperparameters['critic_lr'] = 0.00003
-    env_parameters['scenario'] = 0
-    
-    #train('scenario_0_base_net_3_runs', 150, make_base_net, make_base_net, env_parameters, hyperparameters, runs=3)
-    export_report_data(base_log_path + 'scenario_0_base_net_3_runs', 'Base Net', 'Base configuration with base net', 'Scenario 0', 3)
-    generate_report(base_log_path + 'scenario_0_base_net_3_runs')
+
+    env_parameters['scenario'] = 2
+
+    training_name = 'scenario_0_base_net_camera_debugging'
+    train(training_name,200, make_deeper_net, make_deeper_net, env_parameters, hyperparameters, runs=3)
+    export_report_data(base_log_path + training_name, 'Deep net', 'Deep net with lower lr', 'Scenario 2', 3)
+    generate_report(base_log_path + training_name)
+
+
+
 
 if __name__ == "__main__":
     main()
 
-#grad norm? CHECK LATER
+
 #increase GAE probably, seems good 
 #change optimizers
 #change loss from l1 ?
+#zoom out 
+#MAKE IT FASTER !!!
+
+#mean, std =  self.actor(obs_t)                                #todo probaby should use only indexes
+#normal_dist = torch.distributions.Normal(mean, std)
+#new_log_probs = normal_dist.log_prob(acts_t)

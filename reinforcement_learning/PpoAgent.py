@@ -105,7 +105,7 @@ class SimplePPO:
         self.exported_models = 0
 
         global debug_log
-        self.debug = hyperparameters.get('debug', False)
+        self.debug = hyperparameters.get('debug', True)
         self.debug_period = hyperparameters.get('debug_period', 100)
         #this take msg lambda to prevent evaluating the string if no debug flag is active
         debug_log = lambda msg_lambda, file = 'debug' : self._debug_log(msg_lambda, file)

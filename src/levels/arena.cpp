@@ -257,26 +257,16 @@ namespace levels
 
 	void Arena::draw()
 	{
-		static int draws = 0;
-		static int pov = 0;
-		draws++;
-		draws %= 10000;
-
-		if (draws % 200 == 0)
-		{
-			++pov;
-		}
 
 		globals::WINDOW->clear(sf::Color::White);
 
-		sf::View v = globals::WINDOW->getView();
+		sf::View v = globals::WINDOW->getDefaultView();
 
 		if (aiShips.size() != 0)
 		{
-			pov %= aiShips.size();
-			v.setCenter(aiShips[pov]->getSprite().getPosition());
+			v.setCenter(neuralNetworkShip->getSprite().getPosition());
+			v.zoom(2.f);
 		}
-
 		globals::WINDOW->setView(v);
 
 		// todo dont draw objects outside view
