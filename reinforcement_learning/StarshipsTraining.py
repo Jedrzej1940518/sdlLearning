@@ -82,19 +82,18 @@ def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters,
         print(f"Run_{i}, training scenario {scenario} for {iterations} iterations, obs_space {obs_space}")
         
         ppo.train(env, iterations, export_model=export_model, resume=resume, export_iteration_period=100)
+        env.write_times()
 
 def main(): 
     hyperparameters = {'debug_period': 100, 'debug': True, 'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': device}
-    env_parameters = {'scenario':1, 'record_episode_period' : 20}
+    env_parameters = {'scenario':0, 'record_episode_period' : 1000, 'frame_skip': 3}
 
     hyperparameters['actor_lr'] = 0.00003
     hyperparameters['critic_lr'] = 0.00003
-
-    env_parameters['scenario'] = 2
-
-    training_name = 'scenario_0_base_net_camera_debugging'
-    train(training_name,200, make_deeper_net, make_deeper_net, env_parameters, hyperparameters, runs=3)
-    export_report_data(base_log_path + training_name, 'Deep net', 'Deep net with lower lr', 'Scenario 2', 3)
+    runs = 1
+    training_name = f'scenario_{env_parameters["scenario"]}' + '_timing_results'
+    train(training_name,100, make_base_net, make_base_net, env_parameters, hyperparameters, runs=runs)
+    export_report_data(base_log_path + training_name, 'Base net', 'Base net with prefab multi', f'Scenario {env_parameters["scenario"]}', runs)
     generate_report(base_log_path + training_name)
 
 

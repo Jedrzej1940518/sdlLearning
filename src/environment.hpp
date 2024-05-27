@@ -23,6 +23,8 @@ public:
     py::tuple step(py::array_t<float> action);
     py::tuple reset();
 
+    void writeTimerResults();
+
 private:
     levels::Arena arena;
     levels::LevelType fakeLevel{levels::LevelType::ARENA};

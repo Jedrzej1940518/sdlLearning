@@ -3,6 +3,7 @@
 
 Environment::Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip, int scenario, std::string logPath) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, frameSkip{frameSkip}, scenario{scenario}, logPath{logPath}, arena{fakeLevel, logPath}
 {
+    initTimer();
 }
 
 bool make_info()
@@ -39,4 +40,9 @@ py::tuple Environment::reset()
     auto convertedObs = py::array_t<float>(obs.size(), obs.data());
 
     return py::make_tuple(convertedObs, make_info());
+}
+
+void Environment::writeTimerResults()
+{
+    globals::TIMER->writeResults(logPath + std::string{"timer.csv"});
 }

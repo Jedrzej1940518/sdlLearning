@@ -161,7 +161,7 @@ namespace levels
 			initRendering();
 			std::string dirName = logPath + "/videos/";
 			std::string fileName = dirName + "output_" + std::to_string(episodeNumber) + ".avi";
-			videoWriter = std::make_shared<cv::VideoWriter>(fileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), 60, cv::Size(config::SCREEN_WIDTH, config::SCREEN_HEIGHT));
+			videoWriter = std::make_shared<cv::VideoWriter>(fileName, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), config::VIDEO_FRAME_RATE, cv::Size(config::SCREEN_WIDTH, config::SCREEN_HEIGHT));
 			std::cout << "Recording episode....Opening writer success? " << videoWriter->isOpened() << std::endl;
 		}
 

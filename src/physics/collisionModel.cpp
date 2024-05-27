@@ -12,6 +12,8 @@ namespace physics
     }
     void CollisionModel::updateCollisions()
     {
+        auto start = std::chrono::high_resolution_clock::now();
+
         // projectiles
         // collidables
         auto cmp = []<typename Object>(const Object &a, const Object &b)
@@ -46,9 +48,10 @@ namespace physics
                     a->handleCollision(*b);
             }
         }
-        // debugPrint(collidables, "collidables");
-        // debugPrint(projectiles, "projectiles");
-        // std::sort(collidables.begin(), collidables.end(), cmp);
-        // std::sort(projectiles.begin(), projectiles.end(), cmp);
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::chrono::duration<float> duration = end - start;
+
+        globals::TIMER->addTime(globals::CollisionModelFunction, duration.count());
     }
 } // namespace physics

@@ -1,57 +1,28 @@
 
 #include "observationFactory.hpp"
+#include "prefabs/prefabs.hpp"
+
+inline static constexpr float maxVelocity = prefabs::wolfMaxVelocity * 1.41f; // velocity component
+inline static constexpr float maxHp = prefabs::hammerheadHp;
 
 float normalizePos(float x)
 {
-    return std::clamp(x / 750, -1.f, 1.f);
+    return std::clamp(x / std::max(config::ARENA_MAX_X, config::ARENA_MAX_Y), -1.f, 1.f);
 }
 
 float normalizeVelocity(float x)
 {
-    return std::clamp(x / 6, -1.f, 1.f);
+    return std::clamp(x / maxVelocity, -1.f, 1.f);
 }
 
 float normalizeHp(float hp)
 {
-    return std::clamp(hp / 600, 0.f, 1.f);
-}
-
-float normalizeAcceleration(float maxAcceleration)
-{
-    return std::clamp(maxAcceleration / 1, 0.f, 1.f);
+    return std::clamp(hp / maxHp, 0.f, 1.f);
 }
 
 float normalizeRotation(float radians)
 {
     return std::clamp(radians / 3.14f, -1.f, 1.f);
-}
-
-float normalizeShipRadius(float radius)
-{
-    return std::clamp(radius / 100, 0.f, 1.f);
-}
-
-float normalizeCooldown(float cooldown)
-{
-    return std::clamp(cooldown / 50, 0.f, 1.f);
-}
-
-float normalizeProjVelocity(float projVelocity)
-{
-    return std::clamp(projVelocity / 20, 0.f, 1.f);
-}
-
-float normalizeProjLifetime(float projLifetime)
-{
-    return std::clamp(projLifetime / 20, 0.f, 1.f);
-}
-float normalizeProjDmg(float projDmg)
-{
-    return std::clamp(projDmg / 5, 0.f, 1.f);
-}
-float normalizeProjScatter(float projScatter)
-{
-    return std::clamp(projScatter / 5, 0.f, 1.f);
 }
 
 sf::Vector2f normalizeRelativePos(sf::Vector2f dPos)
@@ -148,6 +119,8 @@ void ObservationFactory::fillScenario2(ObservationFactory::ObservationType &obs,
 
 ObservationFactory::ObservationType ObservationFactory::makeObservation(const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
     ObservationType obs{};
 
     switch (scenario)
@@ -168,6 +141,11 @@ ObservationFactory::ObservationType ObservationFactory::makeObservation(const sh
     }
 
     shipsObserved.clear();
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<float> duration = end - start;
+
+    globals::TIMER->addTime(globals::MakeObsFunction, duration.count());
 
     return obs;
 }

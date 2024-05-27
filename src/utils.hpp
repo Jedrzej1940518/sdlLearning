@@ -8,11 +8,14 @@
 #include <random>
 #include <utility>
 #include <memory>
+#include <chrono>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Font.hpp>
 #include <SFML/Graphics/ConvexShape.hpp>
+
+#include "timer.hpp"
 
 #ifndef M_PI
 #define M_PI 3.14159265359f
@@ -22,6 +25,11 @@ namespace globals
 {
 	static inline sf::Color GREY{200, 200, 200, 200};
 	extern sf::RenderWindow *WINDOW;
+	extern Timer *TIMER;
+
+	extern const std::string MakeObsFunction;
+	extern const std::string CollisionModelFunction;
+	extern const std::string BodyFunction;
 }
 
 namespace constants
@@ -49,6 +57,11 @@ namespace config
 
 	inline static constexpr int RED_TEAM_SHIPS = 3;
 	inline static constexpr int BLUE_TEAM_SHIPS = 2;
+
+	inline static constexpr int VIDEO_FRAME_RATE = 20;
+	inline static constexpr float PREFAB_MULTIPLIER = 3.5f;
+
+	inline static constexpr bool SHOULD_TIME = true;
 }
 
 const char *findLastOccurrence(const char *str, const char *substr);
@@ -76,6 +89,7 @@ namespace sf
 }
 
 void initRendering();
+void initTimer();
 
 std::string boolToString(bool b);
 std::string getDataPath(std::string dataPath);
