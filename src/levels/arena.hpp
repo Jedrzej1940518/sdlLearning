@@ -123,12 +123,10 @@ namespace levels
 				team == redTeam ? func(redTeamShips) : func(blueTeamShips);
 			}
 		}
-
 		// templated
 		template <typename T>
 		void addObject(std::shared_ptr<T> obj)
 		{
-
 			auto pushBack = [&obj]<typename Container>(Container &c)
 			{
 				c.push_back(obj);

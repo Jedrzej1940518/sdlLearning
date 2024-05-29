@@ -32,12 +32,16 @@ py::tuple Environment::step(py::array_t<float> action)
 }
 py::tuple Environment::reset()
 {
+    globals::TIMER->startTimer(__FUNCTION__);
+
     ++currentEpsiode;
     currentStep = 0;
     bool recordEpisode = videoRecordInterval and (currentEpsiode % videoRecordInterval == 0);
 
     auto obs = arena.reset(scenario, recordEpisode);
     auto convertedObs = py::array_t<float>(obs.size(), obs.data());
+
+    globals::TIMER->endTimer(__FUNCTION__);
 
     return py::make_tuple(convertedObs, make_info());
 }

@@ -13,10 +13,6 @@ namespace globals
 	sf::RenderWindow *WINDOW{nullptr};
 	Timer *TIMER{nullptr};
 
-	const std::string MakeObsFunction = "MakeObs";
-	const std::string CollisionModelFunction = "CollisionCheck";
-	const std::string BodyFunction = "BodyUpdate";
-
 }
 
 void initRendering()
@@ -28,12 +24,6 @@ void initRendering()
 void initTimer()
 {
 	globals::TIMER = new Timer(config::SHOULD_TIME);
-	if (config::SHOULD_TIME)
-	{
-		globals::TIMER->registerFunc(globals::MakeObsFunction);
-		globals::TIMER->registerFunc(globals::CollisionModelFunction);
-		globals::TIMER->registerFunc(globals::BodyFunction);
-	}
 }
 
 std::pair<std::shared_ptr<sf::ConvexShape>, std::shared_ptr<sf::ConvexShape>> getVectorShapes(const sf::Vector2f &vector, const sf::Vector2f &center, sf::Color color, float multiplier)

@@ -119,7 +119,7 @@ void ObservationFactory::fillScenario2(ObservationFactory::ObservationType &obs,
 
 ObservationFactory::ObservationType ObservationFactory::makeObservation(const ships::AiShip &observer, const std::vector<std::shared_ptr<ships::AiShip>> &ships)
 {
-    auto start = std::chrono::high_resolution_clock::now();
+    globals::TIMER->startTimer(__FUNCTION__);
 
     ObservationType obs{};
 
@@ -142,10 +142,7 @@ ObservationFactory::ObservationType ObservationFactory::makeObservation(const sh
 
     shipsObserved.clear();
 
-    auto end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<float> duration = end - start;
-
-    globals::TIMER->addTime(globals::MakeObsFunction, duration.count());
+    globals::TIMER->endTimer(__FUNCTION__);
 
     return obs;
 }

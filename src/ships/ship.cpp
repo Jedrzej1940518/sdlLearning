@@ -13,6 +13,7 @@ namespace ships
 
 	void Ship::frameUpdate()
 	{
+		globals::TIMER->startTimer("ShipFrameUpdate");
 		float relativeAngle = physics::normalizeDegrees(targetAngle - getRotationCartesian());
 		body.rotateOnce(relativeAngle);
 		body.accelerateOnce(accelerationVector);
@@ -29,6 +30,7 @@ namespace ships
 			shapesToDraw.push_back(std::move(arrowBase));
 			shapesToDraw.push_back(std::move(arrowPoint));
 		}
+		globals::TIMER->endTimer("ShipFrameUpdate");
 	}
 
 	std::shared_ptr<Projectile> Ship::shoot()

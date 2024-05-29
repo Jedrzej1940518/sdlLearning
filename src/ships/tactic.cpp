@@ -294,6 +294,8 @@ namespace ships
 
 	Tactic::TacticOutcome Tactic::generateTactic(const Ships &friends, const Ships &foes, const Collidables &collidables, const Projectiles &projectiles)
 	{
+		globals::TIMER->startTimer(__FUNCTION__);
+
 		debugShapes.clear();
 
 		const Ship &target = chooseTarget(foes, friends);
@@ -318,6 +320,7 @@ namespace ships
 			//	guidedShip.getRange(), guidedShip.getVelocity().x, guidedShip.getVelocity().y, (int)targetInRange, (int)rotationAchieved);
 		}
 
+		globals::TIMER->endTimer(__FUNCTION__);
 		return {angle, velocity, shoot, debugShapes};
 	}
 

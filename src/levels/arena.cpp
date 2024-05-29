@@ -233,6 +233,8 @@ namespace levels
 
 	void Arena::frameUpdate()
 	{
+		globals::TIMER->startTimer("ArenaFrameUpdate");
+
 		collisionModel.updateCollisions();
 
 		for (auto &aiShip : aiShips)
@@ -253,6 +255,8 @@ namespace levels
 				addObject(proj);
 		}
 		cleanupDeads();
+
+		globals::TIMER->endTimer("ArenaFrameUpdate");
 	}
 
 	void Arena::draw()

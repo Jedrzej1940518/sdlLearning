@@ -12,7 +12,7 @@ namespace physics
     }
     void CollisionModel::updateCollisions()
     {
-        auto start = std::chrono::high_resolution_clock::now();
+        globals::TIMER->startTimer(__FUNCTION__);
 
         // projectiles
         // collidables
@@ -48,10 +48,6 @@ namespace physics
                     a->handleCollision(*b);
             }
         }
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<float> duration = end - start;
-
-        globals::TIMER->addTime(globals::CollisionModelFunction, duration.count());
+        globals::TIMER->endTimer(__FUNCTION__);
     }
 } // namespace physics

@@ -85,14 +85,14 @@ def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters,
         env.write_times()
 
 def main(): 
-    hyperparameters = {'debug_period': 100, 'debug': True, 'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': device}
-    env_parameters = {'scenario':0, 'record_episode_period' : 1000, 'frame_skip': 3}
+    hyperparameters = {'debug_period': 10000, 'debug': True, 'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': device}
+    env_parameters = {'scenario':2, 'record_episode_period' : 100000, 'frame_skip': 3}
 
     hyperparameters['actor_lr'] = 0.00003
     hyperparameters['critic_lr'] = 0.00003
     runs = 1
     training_name = f'scenario_{env_parameters["scenario"]}' + '_timing_results'
-    train(training_name,100, make_base_net, make_base_net, env_parameters, hyperparameters, runs=runs)
+    train(training_name,4, make_base_net, make_base_net, env_parameters, hyperparameters, runs=runs)
     export_report_data(base_log_path + training_name, 'Base net', 'Base net with prefab multi', f'Scenario {env_parameters["scenario"]}', runs)
     generate_report(base_log_path + training_name)
 
@@ -112,3 +112,7 @@ if __name__ == "__main__":
 #mean, std =  self.actor(obs_t)                                #todo probaby should use only indexes
 #normal_dist = torch.distributions.Normal(mean, std)
 #new_log_probs = normal_dist.log_prob(acts_t)
+
+#collision check - ~20% env time
+#reset - ~25% env time
+#arena step - ~55% env time

@@ -56,8 +56,6 @@ namespace physics
     }
     void Body::frameUpdate()
     {
-        auto start = std::chrono::high_resolution_clock::now();
-
         if (abs(rotationLeft) >= 0.01f)
         {
             rotation += rotationLeft;
@@ -76,11 +74,6 @@ namespace physics
             slowDown(1.0);
         else
             slowDown(1.5);
-
-        auto end = std::chrono::high_resolution_clock::now();
-        std::chrono::duration<float> duration = end - start;
-
-        globals::TIMER->addTime(globals::BodyFunction, duration.count());
     }
 
     void Body::accelerateOnce(sf::Vector2f accelerationVector)

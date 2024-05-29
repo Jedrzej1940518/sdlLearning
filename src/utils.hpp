@@ -26,10 +26,6 @@ namespace globals
 	static inline sf::Color GREY{200, 200, 200, 200};
 	extern sf::RenderWindow *WINDOW;
 	extern Timer *TIMER;
-
-	extern const std::string MakeObsFunction;
-	extern const std::string CollisionModelFunction;
-	extern const std::string BodyFunction;
 }
 
 namespace constants

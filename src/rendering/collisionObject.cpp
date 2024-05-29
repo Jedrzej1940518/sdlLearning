@@ -32,6 +32,7 @@ namespace rendering
 
 	void CollisionObject::addHpBar()
 	{
+
 		constexpr float hpBarH = 10.f;
 		constexpr float outlineThickness = 1.f;
 
