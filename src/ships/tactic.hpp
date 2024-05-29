@@ -14,9 +14,6 @@ namespace ships
 	class Tactic
 	{
 	private:
-		// fake target in case no foes are present
-		inline static Ship fakeShip{prefabs::scarab, 99, {std::numeric_limits<float>::max() / 4.f, std::numeric_limits<float>::max() / 4.f}};
-
 		std::vector<std::shared_ptr<sf::Shape>> debugShapes;
 
 		const Ship &guidedShip;

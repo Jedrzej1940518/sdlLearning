@@ -1,9 +1,12 @@
 
 #include "environment.hpp"
+#include "prefabs/prefabs.hpp"
 
 Environment::Environment(int maxEpisodeSteps, int videoRecordInterval, int frameSkip, int scenario, std::string logPath) : maxEpisodeSteps{maxEpisodeSteps}, videoRecordInterval{videoRecordInterval}, frameSkip{frameSkip}, scenario{scenario}, logPath{logPath}, arena{fakeLevel, logPath}
 {
     initTimer();
+    prefabs::initTextures();
+    prefabs::initPrefabs();
 }
 
 bool make_info()

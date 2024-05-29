@@ -17,6 +17,7 @@ set(SOURCES
     src/physics/physics.cpp
     src/physics/body.cpp
     src/physics/collisionModel.cpp
+    src/prefabs/prefabs.cpp
     src/rendering/background.cpp
     src/rendering/object.cpp
     src/rendering/collisionObject.cpp

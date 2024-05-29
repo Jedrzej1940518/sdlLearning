@@ -4,8 +4,8 @@
 
 namespace ships
 {
-	PlayerShip::PlayerShip(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, sf::Vector2f velocity,
-						   float rotation) : Ship{prefab, team, position, velocity, rotation}
+	PlayerShip::PlayerShip(const prefabs::ShipPrefab &prefab, int team, int shipId, sf::Vector2f position, sf::Vector2f velocity,
+						   float rotation) : Ship{prefab, team, shipId, position, velocity, rotation}
 	{
 		for (int i = 0; i < 4; ++i)
 		{

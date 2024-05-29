@@ -18,9 +18,8 @@ namespace rendering
     {
 
     protected:
-        sf::Texture texture;
         sf::Sprite sprite;
-        std::string id;
+        std::string id{"Background"};
 
         double parallaxFactor;
         // std::unordered_set<Sound> soundsToPlay;

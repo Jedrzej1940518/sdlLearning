@@ -18,7 +18,7 @@ namespace ships
 		int shipId;
 
 	public:
-		Ship(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
+		Ship(const prefabs::ShipPrefab &prefab, int team, int shipId, sf::Vector2f position, sf::Vector2f velocity = {0, 0}, float rotation = 0);
 		void frameUpdate() override;
 		std::shared_ptr<Projectile> shoot();
 

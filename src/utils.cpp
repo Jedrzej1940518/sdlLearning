@@ -12,7 +12,6 @@ namespace globals
 {
 	sf::RenderWindow *WINDOW{nullptr};
 	Timer *TIMER{nullptr};
-
 }
 
 void initRendering()

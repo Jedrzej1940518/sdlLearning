@@ -86,13 +86,13 @@ def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters,
 
 def main(): 
     hyperparameters = {'debug_period': 10000, 'debug': True, 'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': device}
-    env_parameters = {'scenario':2, 'record_episode_period' : 100000, 'frame_skip': 3}
+    env_parameters = {'scenario':2, 'record_episode_period' : 100, 'frame_skip': 3}
 
     hyperparameters['actor_lr'] = 0.00003
     hyperparameters['critic_lr'] = 0.00003
     runs = 1
     training_name = f'scenario_{env_parameters["scenario"]}' + '_timing_results'
-    train(training_name,4, make_base_net, make_base_net, env_parameters, hyperparameters, runs=runs)
+    train(training_name,20, make_base_net, make_base_net, env_parameters, hyperparameters, runs=runs)
     export_report_data(base_log_path + training_name, 'Base net', 'Base net with prefab multi', f'Scenario {env_parameters["scenario"]}', runs)
     generate_report(base_log_path + training_name)
 
@@ -116,3 +116,26 @@ if __name__ == "__main__":
 #collision check - ~20% env time
 #reset - ~25% env time
 #arena step - ~55% env time
+
+#shootingMakeShared, 18.5483
+#projectileSetSprites, 4.99911
+#projectileLoadTexture, 12.5808
+#ArenaFrameUpdate, 30.2952
+#reset, 9.80388
+
+####################
+#omg
+#projectileSetSprites, 0.0390273
+#ArenaFrameUpdate, 6.80388
+#projectileLoadTexture, 0.0332051
+#reset, 8.13656
+
+#################
+#omg x2
+#shootingMakeShared, 0.0561104
+#ShipFrameUpdate, 2.0974
+#generateTactic, 0.868213
+#updateCollisions, 0.499148
+#ArenaFrameUpdate, 5.26422
+#makeObservation, 0.223912
+#reset, 0.000759485

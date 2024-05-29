@@ -4,19 +4,13 @@
 
 namespace rendering
 {
-    Object::Object(const prefabs::ObjectPrefab &prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation) : body{prefab.maxRotationSpeed, prefab.maxVelocity, prefab.maxAcceleration, prefab.mass}, id{prefab.id}
+    Object::Object(const prefabs::ObjectPrefab &prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation) : body{prefab.maxRotationSpeed, prefab.maxVelocity, prefab.maxAcceleration, prefab.mass}
     {
-        static int objects{0};
-        id = id + "_" + std::to_string(objects);
-        ++objects;
-
         body.setPosition(position);
         body.setVelocity(velocity);
         body.setRotation(rotation);
 
-        texture.loadFromFile(prefab.texturePath); // TODO optimize
-        texture.setSmooth(true);
-        sprite.setTexture(texture);
+        sprite.setTexture(*(prefab.texture));
         spriteRadius = getSpriteRadius(sprite);
 
         sprite.setOrigin({spriteRadius, spriteRadius});

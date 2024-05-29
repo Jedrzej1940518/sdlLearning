@@ -55,6 +55,7 @@ namespace config
 	inline static constexpr int BLUE_TEAM_SHIPS = 2;
 
 	inline static constexpr int VIDEO_FRAME_RATE = 20;
+	inline static constexpr int VIDEO_ZOOM_FACTOR = 2.f;
 	inline static constexpr float PREFAB_MULTIPLIER = 3.5f;
 
 	inline static constexpr bool SHOULD_TIME = true;

@@ -77,8 +77,8 @@ namespace levels
 
 		addObject(std::make_shared<rendering::Background>(prefabs::background));
 
-		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
-		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{0, -300}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, 0, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, 1, sf::Vector2f{0, -300}));
 
 		aiShips.back()->setNeuralNetwork(true);
 		neuralNetworkShip = aiShips.back();
@@ -93,11 +93,11 @@ namespace levels
 
 		addObject(std::make_shared<rendering::Background>(prefabs::background));
 
-		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
-		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{800, (float)(coordDistribution(rng))}));
-		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{-800, (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, 0, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, 1, sf::Vector2f{800, (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, 2, sf::Vector2f{-800, (float)(coordDistribution(rng))}));
 
-		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{0, -300}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, 3, sf::Vector2f{0, -300}));
 
 		aiShips.back()->setNeuralNetwork(true);
 		neuralNetworkShip = aiShips.back();
@@ -112,12 +112,12 @@ namespace levels
 
 		addObject(std::make_shared<rendering::Background>(prefabs::background));
 
-		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
-		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{800, (float)(coordDistribution(rng))}));
-		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, sf::Vector2f{-800, (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, redTeam, 0, sf::Vector2f{0, 600 + (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, 1, sf::Vector2f{800, (float)(coordDistribution(rng))}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::scarab, redTeam, 2, sf::Vector2f{-800, (float)(coordDistribution(rng))}));
 
-		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, blueTeam, sf::Vector2f{0, 0}));
-		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, sf::Vector2f{0, -300}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::hammerhead, blueTeam, 3, sf::Vector2f{0, 0}));
+		addObject(std::make_shared<ships::AiShip>(prefabs::lasher, blueTeam, 4, sf::Vector2f{0, -300}));
 
 		aiShips.back()->setNeuralNetwork(true);
 		neuralNetworkShip = aiShips.back();
@@ -269,7 +269,7 @@ namespace levels
 		if (aiShips.size() != 0)
 		{
 			v.setCenter(neuralNetworkShip->getSprite().getPosition());
-			v.zoom(2.f);
+			v.zoom(config::VIDEO_ZOOM_FACTOR);
 		}
 		globals::WINDOW->setView(v);
 
@@ -293,23 +293,4 @@ namespace levels
 	{
 	}
 
-	void Arena::debugPrint()
-	{
-		printf("drawables %zd, collidables %zd, frameUpd %zd, shooters %zd\n", drawables.size(), collidables.size(), frameUpdateables.size(), shooters.size());
-		printf("\n----Arena----\n");
-		for (auto &obj : drawables)
-		{
-			auto proj = std::dynamic_pointer_cast<ships::Projectile>(obj);
-			std::string s = "";
-			if (proj)
-				s = proj->getId();
-
-			auto collid = std::dynamic_pointer_cast<rendering::CollisionObject>(obj);
-			if (collid)
-				s = collid->getId();
-			if (s != "")
-				printf("[%s]\n", s.c_str());
-		}
-		std::cout << std::endl;
-	}
 } // namespace levels

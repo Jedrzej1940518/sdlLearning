@@ -6,15 +6,9 @@ namespace rendering
 {
     Background::Background(const prefabs::Prefab &prefab, sf::Vector2f position, double parallaxFactor) : parallaxFactor{parallaxFactor}, id{prefab.id}
     {
-        static int objects{0};
-        id = id + "_" + std::to_string(objects);
-        ++objects;
-
-        texture.loadFromFile(prefab.texturePath); // TODO optimize to share texture between prefabs probably
-        texture.setSmooth(true);
-        sprite.setTexture(texture);
+        sprite.setTexture(*(prefab.texture));
         float radius = getSpriteRadius(sprite);
-        sprite.setOrigin({ radius, radius });
+        sprite.setOrigin({radius, radius});
         sprite.setPosition(position);
     }
 

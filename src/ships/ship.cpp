@@ -2,13 +2,8 @@
 
 namespace ships
 {
-	Ship::Ship(const prefabs::ShipPrefab &prefab, int team, sf::Vector2f position, sf::Vector2f velocity, float rotation) : CollisionObject{prefab, position, velocity, rotation}, team{team}, weapon{prefab.weaponPrefab, {0, -spriteRadius}}
+	Ship::Ship(const prefabs::ShipPrefab &prefab, int team, int shipId, sf::Vector2f position, sf::Vector2f velocity, float rotation) : CollisionObject{prefab, position, velocity, rotation}, team{team}, shipId{shipId}, weapon{prefab.weaponPrefab, {0, -spriteRadius}}
 	{
-		static int shipsId = 0;
-		shipId = shipsId;
-		shipsId++;
-		if (shipsId > 100000)
-			shipsId = 0;
 	}
 
 	void Ship::frameUpdate()

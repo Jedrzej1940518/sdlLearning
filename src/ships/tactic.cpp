@@ -51,8 +51,7 @@ namespace ships
 	}
 	const Ship &Tactic::chooseTarget(const Ships &foes, const Ships &friends)
 	{
-		// in case there's no foes, target will be a fake ship thats veeery far away
-		std::reference_wrapper<Ship> target = fakeShip;
+		std::reference_wrapper<const Ship> target = *(foes[0]);
 		sf::Vector2f fleetCenterOfMass = getFleetCenterOfMass(friends);
 
 		// target is a ship closest to fleet center of mass
@@ -204,8 +203,7 @@ namespace ships
 		{
 			for (const auto &object : collidables)
 			{
-				// todo optimize, ugly, why?
-				if (object->getId() == guidedShip.getId())
+				if (object->getCenter() == guidedShip.getCenter())
 					continue;
 
 				float dist = physics::distance(object->getCollisionCircle(), guidedShip.getCollisionCircle());
@@ -270,7 +268,7 @@ namespace ships
 
 		for (const auto &ship : friends)
 		{
-			if (ship->getId() == guidedShip.getId())
+			if (ship->getShipId() == guidedShip.getShipId())
 				continue;
 
 			// if friendly fire then shouldnt shoot

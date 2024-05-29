@@ -20,13 +20,8 @@ namespace ships
 	}
 	Projectile::Projectile(const prefabs::ProjectilePrefab &prefab, sf::Vector2f position, sf::Vector2f velocity, float rotation) : position{position}, velocity{velocity}, rotation{rotation}, lifetime{prefab.lifetime}, dmg{prefab.dmg}, reload{prefab.reload}, scatterAngle{prefab.scatterAngle}
 	{
-		static int projectiles{0};
-		id = prefab.id + "_" + std::to_string(projectiles);
-		++projectiles;
+		sprite.setTexture(*(prefab.texture));
 
-		texture.loadFromFile(prefab.texturePath); // TODO optimize
-		texture.setSmooth(true);
-		sprite.setTexture(texture);
 		spriteRadius = getSpriteRadius(sprite);
 		sprite.setOrigin({spriteRadius, spriteRadius});
 		sprite.setPosition(position);

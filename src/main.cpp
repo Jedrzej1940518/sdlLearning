@@ -3,21 +3,13 @@
 #include "gameState.hpp"
 // #include "soundManager.hpp"
 
+#include "environment.hpp"
+
 int main(int argc, char **argv)
 {
-    initRendering();
+    std::cerr << __FILE__ << ": " << __LINE__ << std::endl;
 
-    // globals::WINDOW->setVerticalSyncEnabled(true);
-    GameState gameState{};
-
-    while (globals::WINDOW->isOpen())
-    {
-
-        gameState.handleEvents();
-        gameState.render();
-
-        // SoundManager::GetInstance().cleanupDeadSounds();
-    }
-
+    // int maxEpisodeSteps, int videoRecordInterval, int frameSkip, int scenario, std::string logPath
+    // auto env = Environment(100, 100, 100, 1, "debug");
     return 1;
 }
