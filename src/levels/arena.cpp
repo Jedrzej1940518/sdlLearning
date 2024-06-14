@@ -63,6 +63,7 @@ namespace levels
 		float reward = team == blueTeam ? redTeamShipsLost - blueTeamShipsLost : blueTeamShipsLost - redTeamShipsLost;
 		reward *= config::SHIP_LOST_REWARD;
 		reward += team == blueTeam ? blueTeamHpDelta - redTeamHpDelta : redTeamHpDelta - blueTeamHpDelta;
+		reward /= config::REWARD_DENOMINATOR;
 
 		bool done = neuralNetworkShip->getHp() <= 0 or (redTeamShips.size() == 0) or (blueTeamShips.size() == 0);
 		return std::make_tuple(make_obs(), reward, done);

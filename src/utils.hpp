@@ -47,16 +47,14 @@ namespace config
 	inline static constexpr int ARENA_MAX_X = 750;
 	inline static constexpr int ARENA_MAX_Y = 750;
 	inline static constexpr float SHIP_LOST_REWARD = 10.f;
+	inline static constexpr float REWARD_DENOMINATOR = 10.f;
 
 	inline static constexpr int RED_TEAM = 0;
 	inline static constexpr int BLUE_TEAM = 1;
 
-	inline static constexpr int RED_TEAM_SHIPS = 3;
-	inline static constexpr int BLUE_TEAM_SHIPS = 2;
-
-	inline static constexpr int VIDEO_FRAME_RATE = 20;
-	inline static constexpr int VIDEO_ZOOM_FACTOR = 2.f;
-	inline static constexpr float PREFAB_MULTIPLIER = 3.5f;
+	inline static constexpr float VIDEO_ZOOM_FACTOR = 1.6f;
+	inline static constexpr float PREFAB_MULTIPLIER = 1.f;
+	inline static constexpr int VIDEO_FRAME_RATE = 60 / PREFAB_MULTIPLIER;
 
 	inline static constexpr bool SHOULD_TIME = true;
 }

@@ -16,8 +16,6 @@ namespace physics
 
         // projectiles
         // collidables
-        auto cmp = []<typename Object>(const Object &a, const Object &b)
-        { return a->getCenter().x < b->getCenter().x; };
 
         auto isDead = [](const auto &obj)
         { return not obj->isAlive(); };

@@ -41,7 +41,7 @@ namespace prefabs
 
 	// lasher shell
 	inline static constexpr int lasherShellLifetime = (int)(20 / config::PREFAB_MULTIPLIER);
-	inline static constexpr int lasherShellDamage = 10;
+	inline static constexpr int lasherShellDamage = 20;
 	inline static constexpr int lasherShellReload = (int)(15 / config::PREFAB_MULTIPLIER);
 	inline static constexpr float lasherShellMaxVelocity = 20.f * config::PREFAB_MULTIPLIER;
 	// lasher

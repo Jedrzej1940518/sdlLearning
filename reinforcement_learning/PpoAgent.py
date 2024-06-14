@@ -5,6 +5,7 @@
 #todo move from discrete actions to continous action space
 
 from collections import deque
+import csv
 import os
 import random
 import numpy as np
@@ -51,7 +52,7 @@ class Actor(nn.Module):
         std = std.squeeze()
         std_softplus = F.softplus(std)
                                                 
-       # debug_log(lambda :f"NEWLOG| mean_tan{mean_tan}, mean {mean}\n std_softplus {std_softplus} \n std {std}\n")
+        #debug_log(lambda :f"NEWLOG| mean_tan{mean_tan}, mean {mean}\n std_softplus {std_softplus} \n std {std}\n")
 
         return mean_tan, std_softplus
     
@@ -61,7 +62,7 @@ class Actor(nn.Module):
         actions = normal_dist.sample()                          # Sample from the normal distribution
         actions = actions.squeeze()
         log_probs = normal_dist.log_prob(actions).sum(axis=-1)  # Sum log probabilities for multi-dimensional actions
-     #   debug_log(lambda :f"NEWLOG| actions {actions}\n log_probs {log_probs} \n exp(log_probs){torch.exp(log_probs)}\n")
+        #debug_log(lambda :f"NEWLOG| actions {actions}\n log_probs {log_probs} \n exp(log_probs){torch.exp(log_probs)}\n")
         return actions, log_probs
 
 
@@ -84,6 +85,7 @@ class SimplePPO:
         
         self.discount = hyperparameters.get('discount', 0.99)
         self.gae = hyperparameters.get('gae', 0.95)
+        self.max_grad_norm = hyperparameters.get('max_grad_norm', 0.35)
 
         self.actor = Actor(action_space, actor_network) 
         self.critic = Critic(critic_network, self.discount, self.gae)
@@ -95,7 +97,6 @@ class SimplePPO:
         self.actor_optimizer = torch.optim.Adam(self.actor.network.parameters(), lr= self.actor_lr, maximize=True)
         self.critic_optimizer = torch.optim.Adam(self.critic.network.parameters(), lr = self.critic_lr)
 
-        self.max_grad_norm = 0.5
 
         #debugging below
         self.log_path = log_path
@@ -122,23 +123,36 @@ class SimplePPO:
     #todo probably make this for N actors
     def train(self, env, iterations, resume = False, export_model = False, export_iteration_period = 100):
         
+        starting_iter = 0
+        starting_cum_r = 0
+        append_training = True
+
         if resume:
-            print("Resuming training....")
-            self.critic.load_state_dict(torch.load(f'{self.log_path}/Critic.pth'))
-            self.actor.load_state_dict(torch.load(f'{self.log_path}/Actor.pth'))
+            result = self._check_training_data()
+            if result:
+                self.critic.load_state_dict(torch.load(f'{self.log_path}/Critic.pth'))
+                self.actor.load_state_dict(torch.load(f'{self.log_path}/Actor.pth'))
+                starting_iter = int(result['iteration'])
+                starting_cum_r = float(result['mean_cum_r'])
+                self.global_iterations = starting_iter
+                print(f"Resuming training.... starting iter {starting_iter} last cum r {starting_cum_r}")
+                append_training = False
+            else:
+                print("not resuming")
 
         cum_r = 0
         cum_rs = deque(maxlen=1000)
-        cum_rs.append(0)
+        cum_rs.append(starting_cum_r)
 
         cum_vs = deque(maxlen=1000)
         
         obs, _ = env.reset()
         obs = self.translate_observation(obs)
     
-        self._training_log(f"iter,mean_cum_r_{cum_rs.maxlen},last_mean_vs,last_mean_entropy")
+        if append_training:
+            self._training_log(f"iter,mean_cum_r_{cum_rs.maxlen},last_mean_vs,last_mean_entropy")
         
-        for i in range(1, iterations):
+        for i in range(starting_iter, iterations):
             
             last_mean_vs = 0
             last_mean_entropy = 0
@@ -257,7 +271,7 @@ class SimplePPO:
                     debug_log(lambda: f"critic loss calculation| critic obs\n{self.critic(obs_t[indices])}\ntarget_vs\n{target_v[indices]}\n")      
 
                 c_loss = torch.nn.functional.smooth_l1_loss(self.critic(obs_t[indices]).squeeze(), target_v[indices])
-                c_loss.backward()
+                c_loss.backward()   #HEY BRO CHECK THIS OUT, THIS SHOULDNT BE DONE IN MINIBATCHES I THINK :)
                 nn.utils.clip_grad_norm_(self.critic.network.parameters(), self.max_grad_norm)
                 self.critic_optimizer.step()
             
@@ -266,7 +280,8 @@ class SimplePPO:
                     debug_log(lambda: f"epoch:{k}| mean prob ratio: {torch.mean(ratio).item()}, mean_adv: {torch.mean(advantages).item()}, mean_target_v: {torch.mean(target_v).item()}\n")
              
             self._training_log(f"{self.global_iterations},{np.mean(cum_rs)},{np.mean(cum_vs)},{last_mean_entropy/self.epochs}")
-
+        
+        self._export_model(np.mean(cum_rs))
 
     def _debug_log(self, msg_lambda, filename):
         if not self.debug or (self.global_iterations % self.debug_period != 0):
@@ -300,4 +315,39 @@ class SimplePPO:
                 "minibatch_size" : self.minibatch_size, "clip" : self.clip, 
                 "entropy_factor": self.entropy_factor, 
                 "gae": self.gae, "discount": self.discount, 
-                "actor_lr": self.actor_lr, "critic_lr": self.critic_lr }
+                "actor_lr": self.actor_lr, "critic_lr": self.critic_lr, "max_grad_norm": self.max_grad_norm}
+    
+    def _check_training_data(self):
+        filename = self.log_path + '/' + 'training.csv'
+        if not os.path.isfile(filename):
+            return False
+        
+        with open(filename, 'r') as file:
+            reader = csv.reader(file)
+            last_row = None
+            for row in reader:
+                last_row = row
+
+        if last_row is not None:
+            iteration = last_row[0]
+            mean_cum_r = last_row[1]
+            return {"iteration": iteration, "mean_cum_r": mean_cum_r}
+        else:
+            return False
+        
+    def record_video(self, env, videos):
+        self.actor.load_state_dict(torch.load(f'{self.log_path}/Actor.pth'))
+        
+        for i in range(videos):
+            terminal = False
+            obs, _ = env.reset()
+
+            while not terminal:
+                with torch.no_grad():
+                            obs = self.translate_observation(obs)
+                            acts, log_probs = self.actor.sample_continous_action(obs)
+                            env_actions = self.translate_ouput(acts)
+                            obs, _, done, trunc, _ = env.step(env_actions)
+                            terminal = done or trunc
+    
+        pass

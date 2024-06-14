@@ -1,54 +1,31 @@
-
-import Starships
-
 import numpy as np
-
-def test_rendering():
-    env = Starships.Starships()
-    env.init_rendering()
-    env.reset()
-
-    done = False
-    cum_r = 0
-    step = 0
-
-    while not done:
-        action = np.array([0, -10, 0, 1], dtype=np.float32)
-        obs, reward, done, trunc = env.step(action)
-        env.draw()
-        done = done or trunc
-        cum_r += reward
-        print(f"Step: {step}, State: {obs}, Reward: {reward}, Done: {done}, Cum_r: {cum_r}")
-        step+=1
-
-
-def test():
-    env = Starships.Starships()
-
-    env.reset()
-
-    done = False
-    cum_r = 0
-    step = 0
-
-    while not done:
-        action = np.array([0, -10, 0, 1], dtype=np.float32)
-        obs, reward, done, trunc = env.step(action)
-        done = done or trunc
-        cum_r += reward
-        print(f"Step: {step}, State: {obs}, Reward: {reward}, Done: {done}, Cum_r: {cum_r}")
-        step+=1
-
-
-"""
-    tactic.targetAngle = r(0);
-    tactic.targetVelocity = {r(1), r(2)};
-    tactic.shoot = {r(3) > 0.5};
-"""
-
-def main():
-    test()
-    #test_rendering()
-
-
-main()
+import matplotlib.pyplot as plt
+def smooth_l1_loss(x):
+# Define the Smooth L1 Loss
+    return np.where(np.abs(x) < 1, 0.5 * x**2, np.abs(x) - 0.5)
+def rounded_mse(x):
+# Define the Rounded MSE function
+    return (np.round(x))**2
+def visualize_functions(x_range):
+    x_values = np.linspace(-3, 3, num=400) # Generate x values within the specified range
+    y_smooth_l1 = smooth_l1_loss(x_values)
+    y_rounded_mse = rounded_mse(x_values)
+    plt.figure(figsize=(12, 6))
+    plt.subplot(1, 2, 1)
+    plt.plot(x_values, y_smooth_l1, label='Smooth L1 Loss')
+    plt.title('Smooth L1 Loss')
+    plt.xlabel('x')
+    plt.ylabel('Loss')
+    plt.grid(True)
+    plt.legend()
+    plt.subplot(1, 2, 2)
+    plt.plot(x_values, y_rounded_mse, label='Rounded MSE', color='red')
+    plt.title('Rounded MSE')
+    plt.xlabel('x')
+    plt.ylabel('Loss')
+    plt.grid(True)
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+# Call the function to visualize
+visualize_functions((-3, 3))

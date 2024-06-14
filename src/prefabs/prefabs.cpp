@@ -23,7 +23,10 @@ namespace prefabs
         textures->scarab.loadFromFile(getDataPath("graphics/ships/scarab.png"));
         textures->wolf.loadFromFile(getDataPath("graphics/ships/wolf_ff.png"));
 
-        // textures->lasher.setSmooth(true);
+        textures->lasher.setSmooth(true);
+        textures->hammerhead.setSmooth(true);
+        textures->scarab.setSmooth(true);
+        textures->wolf.setSmooth(true);
     }
 
     void initPrefabs()

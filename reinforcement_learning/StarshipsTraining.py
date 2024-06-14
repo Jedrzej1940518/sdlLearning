@@ -2,6 +2,7 @@
 from PpoAgent import *
 from MakeNets import *
 from GenerateReport import generate_report
+from datetime import datetime
 
 import Starships
 
@@ -46,6 +47,17 @@ def export_report_data(dir_path, title, desc, scenario_name, runs):
         f.write(f'scenario_name,{scenario_name}\n')
         f.write(f'runs,{runs}\n')
 
+def time_info(dir_path, msg):
+
+    if not os.path.exists(dir_path):
+        os.makedirs(dir_path)
+        
+    filename = 'time_info.csv'
+    current_time = datetime.now().time()
+
+    with open(f'{dir_path}/{filename}', 'a+') as f:
+        f.write(f'{msg},{current_time}\n')
+
 def translate_observation(obs):
     return torch.tensor(obs, device = device)
 
@@ -57,10 +69,23 @@ def translate_output(net_output):
     result[2] *=10
     return result
 
+def video_showcase(dir_path, make_actor_net, env_parameters, hyperparameters, videos = 1):
+    max_steps = env_parameters.get('max_steps', 2048)
+    record_episode_period = env_parameters.get('record_episode_period', 300)
+    frame_skip = env_parameters.get('frame_skip', 10)
+    scenario = env_parameters.get('scenario', 0)
+    env = Starships.Starships(max_steps, record_episode_period, frame_skip, scenario, dir_path)
+    obs_space = obs_space_scenario0 if scenario == 0 else (obs_space_scenario1 if scenario == 1 else obs_space_scenario2)
+    actor_net = make_actor_net(obs_space, a_space*2)
+    critic_net = make_actor_net(obs_space, 1)
+    ppo = SimplePPO(actor_net, a_space, critic_net, dir_path, hyperparameters)
+    print(f"showcasing scenario {scenario} obs_space {obs_space}")
+    ppo.record_video(env, videos)
 
-def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters, hyperparameters, runs = 1, export_model=True, resume=False):
+def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters, hyperparameters, runs = 1, export_iteration_period = 100, export_model=True, resume=False):
 
     full_log_path = base_log_path+log_path
+    time_info(full_log_path, "training start")
     max_steps = env_parameters.get('max_steps', 2048)
     record_episode_period = env_parameters.get('record_episode_period', 300)
     frame_skip = env_parameters.get('frame_skip', 10)
@@ -81,27 +106,42 @@ def train(log_path, iterations, make_actor_net, make_critic_net, env_parameters,
 
         print(f"Run_{i}, training scenario {scenario} for {iterations} iterations, obs_space {obs_space}")
         
-        ppo.train(env, iterations, export_model=export_model, resume=resume, export_iteration_period=100)
+        ppo.train(env, iterations, export_model=export_model, resume=resume, export_iteration_period=export_iteration_period)
         env.write_times()
 
-def main(): 
-    hyperparameters = {'debug_period': 10000, 'debug': True, 'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': device}
-    env_parameters = {'scenario':2, 'record_episode_period' : 100, 'frame_skip': 3}
+    time_info(full_log_path, "training end")
 
+def main_train(): 
+    hyperparameters = {'debug_period': 100000, 'debug': False, 'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': device}
+    hyperparameters['minibatch_size'] = 64
+    hyperparameters['horizon'] = 128
+    hyperparameters['max_grad_norm'] = 0.15
     hyperparameters['actor_lr'] = 0.00003
     hyperparameters['critic_lr'] = 0.00003
+    
+    env_parameters = {'scenario':2, 'record_episode_period' : 5000, 'frame_skip': 10}
+
     runs = 1
-    training_name = f'scenario_{env_parameters["scenario"]}' + '_timing_results'
-    train(training_name,20, make_base_net, make_base_net, env_parameters, hyperparameters, runs=runs)
-    export_report_data(base_log_path + training_name, 'Base net', 'Base net with prefab multi', f'Scenario {env_parameters["scenario"]}', runs)
+    base_name = f'scenario_{env_parameters["scenario"]}'
+    training_name =  base_name + '_SHORT_HOROZN_FIXED_3'
+
+    train(training_name, 80000, make_base_net, make_base_net, env_parameters, hyperparameters, runs=runs, export_iteration_period=4000, resume=True)
+    export_report_data(base_log_path + training_name, 'Base net', 'lol', f'Scenario {env_parameters["scenario"]}', runs)
     generate_report(base_log_path + training_name)
 
+def main_showcase():
+    hyperparameters = {'debug_period': 100000, 'debug': False, 'translate_output': translate_output, 'translate_observation': translate_observation, 'target_device': device}
+
+    
+    env_parameters = {'scenario':2, 'record_episode_period' : 5000, 'frame_skip': 10}
+    name = base_log_path + 'scenario_2_tactic_showcase_base_net'
+    video_showcase(name, make_base_net, env_parameters, hyperparameters, 5)
 
 
 
 if __name__ == "__main__":
-    main()
-
+    main_train()
+    #main_showcase()
 
 #increase GAE probably, seems good 
 #change optimizers

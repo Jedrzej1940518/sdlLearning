@@ -6,6 +6,10 @@
 namespace ships
 {
 
+	bool shouldDebug(int id)
+	{
+		return config::debugTactic && (id == 1);
+	}
 	float calcSafeDist(const Ship &ship)
 	{
 		return physics::getBrakingDistance(ship.getMaxVelocity(), ship.getMaxAcceleration()) + constants::BASE_SAFE_DIST;
@@ -44,14 +48,17 @@ namespace ships
 		centerOfMass.x = sumWeightedX / totalMass;
 		centerOfMass.y = sumWeightedY / totalMass;
 
-		if (config::debugTactic)
+		if (shouldDebug(guidedShip.getShipId()))
 			debugShapes.push_back(makeCircle(centerOfMass, 20 / 2.f, sf::Color::White));
 
 		return centerOfMass;
 	}
 	const Ship &Tactic::chooseTarget(const Ships &foes, const Ships &friends)
 	{
-		std::reference_wrapper<const Ship> target = *(foes[0]);
+		std::reference_wrapper<const Ship> target{guidedShip};
+		if (foes.size())
+			target = *(foes[0]);
+
 		sf::Vector2f fleetCenterOfMass = getFleetCenterOfMass(friends);
 
 		// target is a ship closest to fleet center of mass
@@ -59,7 +66,7 @@ namespace ships
 			if (physics::distance(fleetCenterOfMass, ship->getCollisionCircle()) < physics::distance(fleetCenterOfMass, target.get().getCollisionCircle()))
 				target = *ship;
 
-		if (config::debugTactic)
+		if (shouldDebug(guidedShip.getShipId()))
 			debugShapes.push_back(makeCircle(target.get().getCenter(), target.get().getRadius() + 5, sf::Color::Cyan));
 
 		return target.get();
@@ -138,7 +145,7 @@ namespace ships
 		auto pVelocity = relativeShipPos / t_norm;
 		float targetAngle = physics::getVectorRotation(pVelocity);
 
-		if (config::debugTactic)
+		if (shouldDebug(guidedShip.getShipId()))
 		{
 			debugShapes.push_back(makeCircle(pbFuture, 5, sf::Color::Blue));
 			auto [arrowBase, arrowPoint] = getVectorShapes(pVelocity, guidedShip.getCenter(), sf::Color::Yellow, 1);
@@ -169,7 +176,7 @@ namespace ships
 		rotate.rotate(modifiedSigmoid(x, 90.f));
 		sf::Vector2f encricleVector = rotate.transformPoint(targetVelocity);
 
-		if (config::debugTactic)
+		if (shouldDebug(guidedShip.getShipId()))
 		{
 			debugShapes.push_back(makeCircle(guidedShip.getCenter(), minEncircleDist + guidedShip.getRadius(), {255, 123, 123}));
 			debugShapes.push_back(makeCircle(guidedShip.getCenter(), maxEncircleDist + guidedShip.getRadius(), sf::Color::Green));
@@ -189,7 +196,7 @@ namespace ships
 	//  Vector Field Histogram algorithm
 	sf::Vector2f Tactic::avoidCollisions(sf::Vector2f velocity, const Collidables &collidables, const Projectiles &projectiles)
 	{
-		if (config::debugTactic)
+		if (shouldDebug(guidedShip.getShipId()))
 		{
 			auto [arrowBase, arrowPoint] = getVectorShapes(velocity, guidedShip.getCenter(), sf::Color::Magenta);
 
@@ -225,7 +232,7 @@ namespace ships
 						deltaVector *= scale;
 						velocity -= deltaVector;
 
-						if (config::debugTactic)
+						if (shouldDebug(guidedShip.getShipId()))
 						{
 							auto [arrowBase, arrowPoint] = getVectorShapes(-deltaVector, guidedShip.getCenter(), sf::Color::Red);
 
@@ -242,7 +249,7 @@ namespace ships
 		avoidCollisions(projectiles);
 		velocity = physics::clampVector(velocity, guidedShip.getMaxVelocity());
 
-		if (config::debugTactic)
+		if (shouldDebug(guidedShip.getShipId()))
 		{
 			auto [arrowBase, arrowPoint] = getVectorShapes(velocity, guidedShip.getCenter(), sf::Color::Yellow);
 
@@ -273,13 +280,13 @@ namespace ships
 
 			// if friendly fire then shouldnt shoot
 			noFriendlyFire &= (not shotPath.intersects(ship->getBoundingBox()));
-			if (config::debugTactic && (not shotPath.intersects(ship->getBoundingBox())))
+			if (shouldDebug(guidedShip.getShipId()) && (not shotPath.intersects(ship->getBoundingBox())))
 			{
 				// LOG("[%s] should not shoot - %s in path", guidedShip.getId().c_str(), ship->getId().c_str());
 			}
 		}
 
-		if (config::debugTactic)
+		if (shouldDebug(guidedShip.getShipId()))
 		{
 			auto rect = makeRectangle({rectW, rectH}, sf::Color::Magenta);
 			rect->setOrigin({0, rectH / 2.f});

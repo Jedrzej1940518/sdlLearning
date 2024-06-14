@@ -7,6 +7,7 @@ namespace rendering
     Background::Background(const prefabs::Prefab &prefab, sf::Vector2f position, double parallaxFactor) : parallaxFactor{parallaxFactor}, id{prefab.id}
     {
         sprite.setTexture(*(prefab.texture));
+        sprite.setScale(1.25f, 1.25f);
         float radius = getSpriteRadius(sprite);
         sprite.setOrigin({radius, radius});
         sprite.setPosition(position);
